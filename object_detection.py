@@ -1,6 +1,7 @@
 import sys
 import time
 import hailo
+import threading
 
 # -----------------------------------------------------------------------------------------------
 # 1. Imports
@@ -16,65 +17,109 @@ except ImportError:
 hailo_logger = get_logger(__name__)
 
 # -----------------------------------------------------------------------------------------------
-# 2. Custom Logic with FPS Calculation
+# 2. Custom Logic with State Control
 # -----------------------------------------------------------------------------------------------
 class PocketAI_Callback(app_callback_class):
     def __init__(self):
         super().__init__()
-        # Variables for FPS calculation
+        # Ensure detection is strictly OFF at startup
+        self.is_detecting = False 
+        
+        # FPS Calculation Variables
         self.frame_count = 0
         self.start_time = time.time()
         self.fps = 0.0
 
 def app_callback(element, buffer, user_data):
-    """
-    Runs on every frame.
-    """
     if buffer is None:
         return
 
     # --- FPS CALCULATION ---
+    # Increment frame counter
     user_data.frame_count += 1
-    # Update FPS every 30 frames to avoid jitter
-    if user_data.frame_count % 30 == 0:
-        end_time = time.time()
-        duration = end_time - user_data.start_time
-        if duration > 0:
-            user_data.fps = 30.0 / duration
-        user_data.start_time = end_time # Reset timer
-    # -----------------------
+    
+    # Check if 1 second has passed
+    current_time = time.time()
+    elapsed_time = current_time - user_data.start_time
+    
+    if elapsed_time >= 1.0:
+        # Calculate FPS: frames / seconds
+        user_data.fps = user_data.frame_count / elapsed_time
+        # Reset counter and timer
+        user_data.frame_count = 0
+        user_data.start_time = current_time
 
-    # Get the detections
+    # Get the Region of Interest (ROI) containing metadata
     roi = hailo.get_roi_from_buffer(buffer)
+
+    # --- IF DETECTION IS OFF ---
+    if not user_data.is_detecting:
+        # We must manually REMOVE existing detections from the buffer
+        # so that the video overlay element doesn't draw them.
+        detections = roi.get_objects_typed(hailo.HAILO_DETECTION)
+        for detection in detections:
+            roi.remove_object(detection)
+        return
+
+    # --- IF DETECTION IS ON ---
     detections = roi.get_objects_typed(hailo.HAILO_DETECTION)
 
-    # Gather found objects
     found_objects = []
     for detection in detections:
-        label = detection.get_label()
-        confidence = detection.get_confidence()
-        
-        # Filter noise
-        if confidence > 0.50:
-            found_objects.append(f"{label} ({confidence:.0%})")
+        # Only show high-confidence detections
+        if detection.get_confidence() > 0.50:
+            found_objects.append(detection.get_label())
 
-    # Print Status (FPS + Objects)
-    # We use \r to overwrite the line so it looks like a clean dashboard
-    objects_str = ", ".join(found_objects) if found_objects else "Scanning..."
-    print(f"\rFPS: {user_data.fps:.1f} | Visible: {objects_str} " + " "*20, end="", flush=True)
+    # Format the FPS string
+    fps_text = f"FPS: {user_data.fps:.1f}"
 
-    return
+    # Print objects found along with FPS
+    if found_objects:
+        objects_str = ", ".join(found_objects)
+        print(f"\r[{fps_text}] Detected: {objects_str} " + " "*20, end="", flush=True)
+    else:
+        print(f"\r[{fps_text}] Scanning... " + " "*20, end="", flush=True)
 
 # -----------------------------------------------------------------------------------------------
-# 3. Main
+# 3. Input Listener
+# -----------------------------------------------------------------------------------------------
+def input_listener(user_data):
+    while True:
+        try:
+            # Use a slightly more robust input method for threads
+            cmd = input().strip().lower()
+            if cmd == "detect":
+                user_data.is_detecting = True
+                # Reset timer on start to avoid weird initial calculation
+                user_data.start_time = time.time()
+                user_data.frame_count = 0
+                print("\n>>> Object Detection: STARTED")
+            elif cmd == "stop":
+                user_data.is_detecting = False
+                print("\n>>> Object Detection: STOPPED. (Type 'detect' to resume)")
+            elif cmd == "exit":
+                print("\nExiting...")
+                # We need to force kill because GStreamer threads can hang
+                import os
+                os._exit(0)
+        except EOFError:
+            break
+
+# -----------------------------------------------------------------------------------------------
+# 4. Main
 # -----------------------------------------------------------------------------------------------
 def main():
-    print("Starting Pocket AI...")
-    
     user_data = PocketAI_Callback()
-    
-    # Initialize the app
     app = GStreamerDetectionApp(app_callback, user_data)
+
+    print("------------------------------------------")
+    print("Camera Started. Detection is currently OFF.")
+    print("Commands: 'detect' to start, 'stop' to pause, 'exit' to quit.")
+    print("------------------------------------------")
+
+    # Start the input thread
+    listener_thread = threading.Thread(target=input_listener, args=(user_data,), daemon=True)
+    listener_thread.start()
     
     try:
         app.run()
