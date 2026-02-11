@@ -12,23 +12,90 @@ from gi.repository import Gst, GLib
 # -----------------------------------------------------------------------------------------------
 # 1. SHARED MEMORY
 # -----------------------------------------------------------------------------------------------
-frame_lock = threading.Lock()
-current_frame = None
+# -----------------------------------------------------------------------------------------------
+# 1. SHARED MEMORY & UTILS
+# -----------------------------------------------------------------------------------------------
+
+class FrameManager:
+    def __init__(self):
+        self._lock = threading.Lock()
+        self._current_frame = None
+        self._read_frame = None
+
+    def update(self, frame):
+        with self._lock:
+            self._current_frame = frame
+
+    def get_latest(self):
+        with self._lock:
+            if self._current_frame is None:
+                return None
+            # Return a copy to ensure thread safety for the consumer (GUI)
+            # Optimization: In some cases, we might swap buffers, but copy is safest for now.
+            return self._current_frame.copy()
+
+frame_manager = FrameManager()
 
 def get_latest_frame():
-    global current_frame
-    with frame_lock:
-        if current_frame is None:
-            return None
-        return current_frame.copy()
+    return frame_manager.get_latest()
 
 # -----------------------------------------------------------------------------------------------
-# 2. DEBUGGING UTILITIES
+# 2. DEBUGGING & GSTREAMER UTILITIES
 # -----------------------------------------------------------------------------------------------
+class CapsCache:
+    def __init__(self):
+        self.fmt = None
+        self.width = 0
+        self.height = 0
+        self.valid = False
+
+    def update(self, pad):
+        if self.valid: return
+        
+        try:
+            caps = pad.get_current_caps()
+            if not caps: return
+
+            structure = caps.get_structure(0)
+            if hasattr(structure, 'get_int'):
+                success_w, self.width = structure.get_int("width")
+                success_h, self.height = structure.get_int("height")
+                self.fmt = structure.get_value("format") if hasattr(structure, "get_value") else structure.get_string("format")
+            elif hasattr(structure, 'width') and hasattr(structure, 'height'):
+                self.width = structure.width
+                self.height = structure.height
+                self.fmt = structure.format
+            else:
+                 # Fallback parsing
+                caps_str = caps.to_string()
+                import re
+                w_match = re.search(r'width=\(int\)(\d+)', caps_str)
+                h_match = re.search(r'height=\(int\)(\d+)', caps_str)
+                f_match = re.search(r'format=\(string\)([A-Z0-9]+)', caps_str)
+                
+                if w_match: self.width = int(w_match.group(1))
+                if h_match: self.height = int(h_match.group(1))
+                if f_match: self.fmt = f_match.group(1)
+
+            if self.width and self.height:
+                self.valid = True
+
+        except Exception as e:
+            print(f"[DEBUG] Error parsing caps: {e}")
+
+global_caps_cache = CapsCache()
+
 def custom_get_caps_from_pad(pad):
     """
     Extracts width, height, and format from the GStreamer pad caps.
+    Now uses a global cache to avoid repetitive parsing.
     """
+    if global_caps_cache.valid:
+        return global_caps_cache.fmt, global_caps_cache.width, global_caps_cache.height
+    
+    global_caps_cache.update(pad)
+    return global_caps_cache.fmt, global_caps_cache.width, global_caps_cache.height
+
     try:
         caps = pad.get_current_caps()
         if not caps:
@@ -62,6 +129,8 @@ def custom_get_caps_from_pad(pad):
 
     except Exception as e:
         print(f"[DEBUG] Error in custom_get_caps: {e}")
+        # Invalidate cache on error so we try again next time
+        global_caps_cache.valid = False
         return None, None, None
 
 def get_numpy_from_buffer_safe(buffer, format, width, height):
@@ -168,14 +237,13 @@ def run_raw_camera_app():
     def app_callback(element, buffer, user_data):
         try:
             pad = element.get_static_pad("sink")
+            # Uses cached caps
             format, width, height = custom_get_caps_from_pad(pad)
             
             if width and height:
                 frame = get_numpy_from_buffer_safe(buffer, format, width, height)
                 if frame is not None:
-                    with frame_lock:
-                        global current_frame
-                        current_frame = frame
+                    frame_manager.update(frame)
         except Exception as e:
             print(f"Frame error: {e}")
         return Gst.PadProbeReturn.OK
@@ -219,6 +287,7 @@ def run_detection_app():
         if buffer is None: return
         try:
             pad = element.get_static_pad("src")
+            # Uses cached caps
             format, width, height = custom_get_caps_from_pad(pad)
             
             frame = None
@@ -274,9 +343,7 @@ def run_detection_app():
                     cv2.putText(frame, f"{label} {conf:.2f}", (x1, y1-10), 
                             cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
                 
-                with frame_lock:
-                    global current_frame
-                    current_frame = frame
+                frame_manager.update(frame)
         except Exception as e:
             pass
         return Gst.PadProbeReturn.OK
@@ -341,6 +408,7 @@ def run_pose_app():
     def app_callback(element, buffer, user_data):
         try:
             pad = element.get_static_pad("src")
+            # Uses cached caps
             format, width, height = custom_get_caps_from_pad(pad)
             
             frame = None
@@ -379,9 +447,7 @@ def run_pose_app():
                             if start_part in coords and end_part in coords:
                                 cv2.line(frame, coords[start_part], coords[end_part], (255, 0, 0), 2)
 
-                with frame_lock:
-                    global current_frame
-                    current_frame = frame
+                frame_manager.update(frame)
         except Exception as e:
             pass
         return Gst.PadProbeReturn.OK
