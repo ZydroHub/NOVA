@@ -14,9 +14,10 @@ These changes require minimal coding but provide immediate speed and stability i
 1. System Overclocking (Configuration)
 Action: Edit /boot/firmware/config.txt.
 
-Detail: Apply the "Tier 1" stable overclock (Arm: 2800, GPU: 900) to boost CPU throughput for Ollama and CV post-processing.
-
-Safety Check: Ensure you have an active cooler installed before rebooting.
+# Overclock Settings (Active Cooling Required)
+arm_freq=3000
+gpu_freq=1000
+over_voltage_delta=50000
 
 2. Ollama "Keep-Alive" (chatbot.py)
 Action: Modify generate_response in chatbot.py.
