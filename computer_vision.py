@@ -311,13 +311,35 @@ def run_detection_app():
                     label = detection.get_label()
                     conf = detection.get_confidence()
                     
-                    # Store normalized coordinates directly
-                    # The Kivy overlay will handle scaling to the display size
+                    # --- UN-LETTERBOXING ---
+                    # 1. Network Dim
+                    NETWORK_DIM = 640
+                    
+                    # 2. Scale & Pad
+                    img_w, img_h = width, height
+                    scale = min(NETWORK_DIM / img_w, NETWORK_DIM / img_h)
+                    pad_w = (NETWORK_DIM - img_w * scale) / 2
+                    pad_h = (NETWORK_DIM - img_h * scale) / 2
+                    
+                    # 3. Map (norm -> pixel -> norm)
+                    # We want normalized coordinates relative to the original image (0.0 - 1.0)
+                    # x_pixel = (x_norm * NET - pad) / scale
+                    # x_final_norm = x_pixel / img_w
+                    
+                    def unpad(val, pad, s, dim):
+                        p = (val * NETWORK_DIM - pad) / s
+                        return max(0.0, min(1.0, p / dim))
+
+                    xmin_n = unpad(bbox.xmin(), pad_w, scale, img_w)
+                    ymin_n = unpad(bbox.ymin(), pad_h, scale, img_h)
+                    xmax_n = unpad(bbox.xmax(), pad_w, scale, img_w)
+                    ymax_n = unpad(bbox.ymax(), pad_h, scale, img_h)
+
                     meta_list.append({
                         "type": "detection",
                         "label": label,
                         "confidence": conf,
-                        "bbox": [bbox.xmin(), bbox.ymin(), bbox.xmax(), bbox.ymax()]
+                        "bbox": [xmin_n, ymin_n, xmax_n, ymax_n]
                     })
                 
                 # Update frame manager with clean frame and metadata
@@ -417,13 +439,18 @@ def run_pose_app():
                         if len(landmarks) > 0:
                             points = landmarks[0].get_points()
                             
-                            # Convert to global normalized coordinates
+                            # Convert to global normalized coordinates and UN-LETTERBOX
                             current_points = {}
+                            
                             for name, index in KEYPOINTS.items():
                                 point = points[index]
-                                # Global normalized X = (local_x * bbox_w) + bbox_x
+                                
+                                # Map local-to-bbox coordinates to global-normalized coordinates
+                                # point.x() is relative to the bbox (0..1)
+                                # bbox.xmin() / width() are normalized relative to the frame (0..1)
                                 norm_x = (point.x() * bbox.width()) + bbox.xmin()
                                 norm_y = (point.y() * bbox.height()) + bbox.ymin()
+                                
                                 current_points[name] = (norm_x, norm_y)
                             
                             # Add to list

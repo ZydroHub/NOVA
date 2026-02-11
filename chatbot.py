@@ -1,13 +1,14 @@
 import requests
 import json
 import sys
+import re
 
 # Configuration
 MODEL = "qwen3:0.6b"
 API_URL = "http://localhost:11434/api/chat"
 
 class ChatBot:
-    def __init__(self, model=MODEL, api_url=API_URL, thinking=True):
+    def __init__(self, model=MODEL, api_url=API_URL, thinking=False):
         self.model = model
         self.api_url = api_url
         self.thinking = thinking
@@ -27,7 +28,7 @@ class ChatBot:
                 "messages": [{"role": "user", "content": "hi"}],
                 "stream": False
             }
-            requests.post(self.api_url, json=payload, timeout=30)
+            requests.post(self.api_url, json=payload, timeout=60)
             print("Model preloaded.")
             return True
         except Exception as e:
@@ -75,7 +76,6 @@ class ChatBot:
                                 # If thinking is disabled, strip out <think> tags from history
                                 final_content = full_response
                                 if not self.thinking:
-                                    import re
                                     final_content = re.sub(r'<think>.*?</think>', '', full_response, flags=re.DOTALL).strip()
                                 
                                 self.history.append({"role": "assistant", "content": final_content})
