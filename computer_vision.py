@@ -9,6 +9,9 @@ import numpy as np
 gi.require_version('Gst', '1.0')
 from gi.repository import Gst, GLib
 
+# Ensure Gstreamer is initialized
+Gst.init(None)
+
 # -----------------------------------------------------------------------------------------------
 # 1. SHARED MEMORY
 # -----------------------------------------------------------------------------------------------
@@ -20,19 +23,18 @@ class FrameManager:
     def __init__(self):
         self._lock = threading.Lock()
         self._current_frame = None
-        self._read_frame = None
+        self._metadata = {}
 
-    def update(self, frame):
+    def update(self, frame, metadata={}):
         with self._lock:
             self._current_frame = frame
+            self._metadata = metadata
 
     def get_latest(self):
         with self._lock:
             if self._current_frame is None:
-                return None
-            # Return a copy to ensure thread safety for the consumer (GUI)
-            # Optimization: In some cases, we might swap buffers, but copy is safest for now.
-            return self._current_frame.copy()
+                return None, {}
+            return self._current_frame.copy(), self._metadata.copy()
 
 frame_manager = FrameManager()
 
@@ -44,6 +46,13 @@ def get_latest_frame():
 # -----------------------------------------------------------------------------------------------
 class CapsCache:
     def __init__(self):
+        self.fmt = None
+        self.width = 0
+        self.height = 0
+        self.valid = False
+
+    def reset(self):
+        """Invalidate cache so the next pipeline can negotiate fresh caps."""
         self.fmt = None
         self.width = 0
         self.height = 0
@@ -88,50 +97,13 @@ global_caps_cache = CapsCache()
 def custom_get_caps_from_pad(pad):
     """
     Extracts width, height, and format from the GStreamer pad caps.
-    Now uses a global cache to avoid repetitive parsing.
+    Uses a global cache to avoid repetitive parsing.
     """
     if global_caps_cache.valid:
         return global_caps_cache.fmt, global_caps_cache.width, global_caps_cache.height
     
     global_caps_cache.update(pad)
     return global_caps_cache.fmt, global_caps_cache.width, global_caps_cache.height
-
-    try:
-        caps = pad.get_current_caps()
-        if not caps:
-            return None, None, None
-
-        structure = caps.get_structure(0)
-        width, height, fmt = 0, 0, None
-
-        if hasattr(structure, 'get_int'):
-            success_w, width = structure.get_int("width")
-            success_h, height = structure.get_int("height")
-            fmt = structure.get_value("format") if hasattr(structure, "get_value") else structure.get_string("format")
-            
-        elif hasattr(structure, 'width') and hasattr(structure, 'height'):
-            width = structure.width
-            height = structure.height
-            fmt = structure.format
-        
-        else:
-            caps_str = caps.to_string()
-            import re
-            w_match = re.search(r'width=\(int\)(\d+)', caps_str)
-            h_match = re.search(r'height=\(int\)(\d+)', caps_str)
-            f_match = re.search(r'format=\(string\)([A-Z0-9]+)', caps_str)
-            
-            if w_match: width = int(w_match.group(1))
-            if h_match: height = int(h_match.group(1))
-            if f_match: fmt = f_match.group(1)
-
-        return fmt, width, height
-
-    except Exception as e:
-        print(f"[DEBUG] Error in custom_get_caps: {e}")
-        # Invalidate cache on error so we try again next time
-        global_caps_cache.valid = False
-        return None, None, None
 
 def get_numpy_from_buffer_safe(buffer, format, width, height):
     """Safe wrapper for buffer conversion."""
@@ -170,19 +142,35 @@ def start_task(target_func):
 
 def stop_task():
     global current_app, current_thread
+    
+    # 1. Invalidate caps cache so the next pipeline gets fresh caps
+    global_caps_cache.reset()
+    
     if current_app:
         try:
-            if hasattr(current_app, 'loop') and current_app.loop is not None:
-                if current_app.loop.is_running(): current_app.loop.quit()
-            elif hasattr(current_app, 'pipeline') and current_app.pipeline is not None:
+            # Follow the Hailo framework's own shutdown sequence:
+            # PLAYING → PAUSED → READY → NULL (with delays between each)
+            if hasattr(current_app, 'pipeline') and current_app.pipeline is not None:
+                current_app.pipeline.set_state(Gst.State.PAUSED)
+                GLib.usleep(100000)  # 100ms
+                current_app.pipeline.set_state(Gst.State.READY)
+                GLib.usleep(100000)  # 100ms
                 current_app.pipeline.set_state(Gst.State.NULL)
+            
+            # Now quit the GLib main loop (this lets app.run() return)
+            if hasattr(current_app, 'loop') and current_app.loop is not None:
+                if current_app.loop.is_running():
+                    GLib.idle_add(current_app.loop.quit)
         except Exception as e:
             print(f"Error stopping app: {e}")
         current_app = None
 
     if current_thread and current_thread.is_alive():
-        current_thread.join(timeout=2.0)
+        current_thread.join(timeout=5.0)
         current_thread = None
+    
+    # Delay to ensure the camera device is fully released
+    time.sleep(0.5)
 
 # -----------------------------------------------------------------------------------------------
 # 4. WORKER FUNCTIONS
@@ -204,12 +192,28 @@ def run_app_safely(app):
     original_signal = signal.signal
     def no_op(*args, **kwargs): pass
     signal.signal = no_op
-    try:
-        app.run()
-    except Exception as e:
-        print(f"App run error: {e}")
-    finally:
-        signal.signal = original_signal
+    
+    max_retries = 3
+    retry_count = 0
+    
+    while retry_count < max_retries:
+        try:
+            app.run()
+            # If run() returns normally (not error), break loop
+            break
+        except SystemExit:
+            # GStreamerApp.run() calls sys.exit() on completion — catch it
+            # so it doesn't kill the whole application from a daemon thread.
+            break
+        except Exception as e:
+            print(f"App run error (Attempt {retry_count+1}/{max_retries}): {e}")
+            retry_count += 1
+            if retry_count < max_retries:
+                time.sleep(1) # Wait before retry
+                # Reset caps cache just in case
+                global_caps_cache.reset()
+        finally:
+            signal.signal = original_signal
 
 def run_raw_camera_app():
     global current_app
@@ -243,7 +247,8 @@ def run_raw_camera_app():
             if width and height:
                 frame = get_numpy_from_buffer_safe(buffer, format, width, height)
                 if frame is not None:
-                    frame_manager.update(frame)
+                    # Raw camera has no detection metadata
+                    frame_manager.update(frame, {})
         except Exception as e:
             print(f"Frame error: {e}")
         return Gst.PadProbeReturn.OK
@@ -297,53 +302,26 @@ def run_detection_app():
             roi = hailo.get_roi_from_buffer(buffer)
             detections = roi.get_objects_typed(hailo.HAILO_DETECTION)
 
+            # Prepare metadata list
+            meta_list = []
+
             if frame is not None:
                 for detection in detections:
                     bbox = detection.get_bbox()
                     label = detection.get_label()
                     conf = detection.get_confidence()
                     
-                    # --- FIX 2: UN-LETTERBOXING COORDINATES ---
-                    # Hailo models (like YOLO) work on square images (e.g. 640x640).
-                    # Your camera is 4:3 (e.g. 640x480).
-                    # The pipeline adds black bars (padding) to make it square.
-                    # We must undo this padding to draw boxes correctly on the original frame.
-                    
-                    # 1. Get raw normalized coordinates (0.0 to 1.0 relative to 640x640)
-                    xmin_norm = bbox.xmin()
-                    ymin_norm = bbox.ymin()
-                    xmax_norm = bbox.xmax()
-                    ymax_norm = bbox.ymax()
-                    
-                    # 2. Define Network Dimension (Assuming 640x640 for standard Hailo models)
-                    # If using a different model resolution, change this (e.g. 300, 512)
-                    NETWORK_DIM = 640 
-                    
-                    # 3. Calculate Scale and Padding
-                    img_w, img_h = width, height
-                    scale = min(NETWORK_DIM / img_w, NETWORK_DIM / img_h)
-                    
-                    pad_w = (NETWORK_DIM - img_w * scale) / 2
-                    pad_h = (NETWORK_DIM - img_h * scale) / 2
-                    
-                    # 4. Map back to original image pixels
-                    x1 = int((xmin_norm * NETWORK_DIM - pad_w) / scale)
-                    y1 = int((ymin_norm * NETWORK_DIM - pad_h) / scale)
-                    x2 = int((xmax_norm * NETWORK_DIM - pad_w) / scale)
-                    y2 = int((ymax_norm * NETWORK_DIM - pad_h) / scale)
-
-                    # Clamp to frame boundaries
-                    x1 = max(0, min(x1, width))
-                    y1 = max(0, min(y1, height))
-                    x2 = max(0, min(x2, width))
-                    y2 = max(0, min(y2, height))
-
-                    # Draw
-                    cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
-                    cv2.putText(frame, f"{label} {conf:.2f}", (x1, y1-10), 
-                            cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
+                    # Store normalized coordinates directly
+                    # The Kivy overlay will handle scaling to the display size
+                    meta_list.append({
+                        "type": "detection",
+                        "label": label,
+                        "confidence": conf,
+                        "bbox": [bbox.xmin(), bbox.ymin(), bbox.xmax(), bbox.ymax()]
+                    })
                 
-                frame_manager.update(frame)
+                # Update frame manager with clean frame and metadata
+                frame_manager.update(frame, {"detections": meta_list})
         except Exception as e:
             pass
         return Gst.PadProbeReturn.OK
@@ -419,35 +397,42 @@ def run_pose_app():
                 roi = hailo.get_roi_from_buffer(buffer)
                 detections = roi.get_objects_typed(hailo.HAILO_DETECTION)
                 
-                for detection in detections:
-                    bbox = detection.get_bbox()
-                    
-                    # NOTE: Pose models usually handle letterboxing differently or output relative to bbox
-                    # But if you see offsets, apply the same "Fix 2" logic here.
-                    # For now, we use standard scaling.
-                    xmin = int(bbox.xmin() * width)
-                    ymin = int(bbox.ymin() * height)
-                    xmax = int(bbox.xmax() * width)
-                    ymax = int(bbox.ymax() * height)
-                    
-                    cv2.rectangle(frame, (xmin, ymin), (xmax, ymax), (0, 255, 0), 2)
-                    
-                    landmarks = detection.get_objects_typed(hailo.HAILO_LANDMARKS)
-                    if len(landmarks) > 0:
-                        points = landmarks[0].get_points()
-                        coords = {}
-                        for name, index in KEYPOINTS.items():
-                            point = points[index]
-                            x = int((point.x() * bbox.width() + bbox.xmin()) * width)
-                            y = int((point.y() * bbox.height() + bbox.ymin()) * height)
-                            coords[name] = (x, y)
-                            cv2.circle(frame, (x, y), 4, (0, 255, 255), -1)
+                # Prepare pose metadata
+                pose_list = []
 
-                        for start_part, end_part in SKELETON_PAIRS:
-                            if start_part in coords and end_part in coords:
-                                cv2.line(frame, coords[start_part], coords[end_part], (255, 0, 0), 2)
+                if frame is not None:
+                    # We pass frame dimensions to helper if needed, but normalization is better.
+                    # However, pose points are often easier if we just pass processed points or normalized.
+                    # Let's stick to normalized if possible, but the `detection.get_objects_typed` returns relative to bbox?
+                    # The original code did: x = (point.x * bbox.w + bbox.x) * width
+                    # So point.x is relative to bbox.
+                    
+                    for detection in detections:
+                        bbox = detection.get_bbox()
+                        
+                        # Store bbox for context (optional)
+                        # pose_data = {"bbox": [bbox.xmin(), bbox.ymin(), bbox.xmax(), bbox.ymax()], "keypoints": [], "skeleton": []}
+                        
+                        landmarks = detection.get_objects_typed(hailo.HAILO_LANDMARKS)
+                        if len(landmarks) > 0:
+                            points = landmarks[0].get_points()
+                            
+                            # Convert to global normalized coordinates
+                            current_points = {}
+                            for name, index in KEYPOINTS.items():
+                                point = points[index]
+                                # Global normalized X = (local_x * bbox_w) + bbox_x
+                                norm_x = (point.x() * bbox.width()) + bbox.xmin()
+                                norm_y = (point.y() * bbox.height()) + bbox.ymin()
+                                current_points[name] = (norm_x, norm_y)
+                            
+                            # Add to list
+                            pose_list.append({
+                                "keypoints": current_points,
+                                "pairs": SKELETON_PAIRS # Pass structure so UI knows what to connect
+                            })
 
-                frame_manager.update(frame)
+                    frame_manager.update(frame, {"pose": pose_list})
         except Exception as e:
             pass
         return Gst.PadProbeReturn.OK
