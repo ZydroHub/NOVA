@@ -34,11 +34,11 @@ export default function ChatInput({ onSend, onAbort, streaming, disabled }) {
     }, []);
 
     return (
-        <div className="chat-input-area">
-            <div className="chat-input-wrapper">
+        <div className="min-h-[80px] px-4 py-3 bg-slate-50 border-t border-gray-200 flex items-end gap-2.5 pb-[max(12px,env(safe-area-inset-bottom,12px))]">
+            <div className="flex-1 flex items-end bg-slate-100 border border-gray-200 rounded-3xl px-[18px] py-1 transition-colors focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-500/20">
                 <textarea
                     ref={textareaRef}
-                    className="chat-input"
+                    className="flex-1 border-none bg-transparent text-slate-900 text-base leading-relaxed min-h-[48px] max-h-[120px] resize-none outline-none py-2.5 placeholder:text-gray-400"
                     value={text}
                     onChange={handleInput}
                     onKeyDown={handleKeyDown}
@@ -52,7 +52,7 @@ export default function ChatInput({ onSend, onAbort, streaming, disabled }) {
 
             {streaming ? (
                 <button
-                    className="abort-btn"
+                    className="w-11 h-11 rounded-full border-none bg-red-500 text-white text-lg flex items-center justify-center cursor-pointer transition-all duration-150 shrink-0 active:scale-90 active:bg-red-700"
                     onClick={onAbort}
                     aria-label="Stop response"
                 >
@@ -60,7 +60,7 @@ export default function ChatInput({ onSend, onAbort, streaming, disabled }) {
                 </button>
             ) : (
                 <button
-                    className="send-btn"
+                    className="w-11 h-11 rounded-full border-none bg-blue-500 text-white text-xl flex items-center justify-center cursor-pointer transition-all duration-150 shrink-0 active:scale-90 active:bg-blue-600 disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-default"
                     onClick={handleSend}
                     disabled={!text.trim() || disabled}
                     aria-label="Send message"
