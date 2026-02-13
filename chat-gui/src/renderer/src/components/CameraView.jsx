@@ -1,19 +1,25 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowLeft, RefreshCw, AlertCircle } from 'lucide-react';
+import { ArrowLeft, RefreshCw, AlertCircle, Scan } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+
+// Shared across instances so second mount can cancel first mount's pending stop (React Strict Mode)
+const pendingStopTimeoutRef = { current: null };
+const STOP_DELAY_MS = 500;
 
 export default function CameraView() {
     const navigate = useNavigate();
     const [status, setStatus] = useState('connecting'); // connecting, connected, error
     const [detections, setDetections] = useState([]);
+    const [detectionActive, setDetectionActive] = useState(false);
     const wsRef = useRef(null);
 
-    // Video feed URL
     const videoFeedUrl = `http://${window.location.hostname}:8000/video_feed`;
     const wsUrl = `ws://${window.location.hostname}:8000/ws`;
     const startUrl = `http://${window.location.hostname}:8000/camera/start`;
     const stopUrl = `http://${window.location.hostname}:8000/camera/stop`;
+    const detectionStartUrl = `http://${window.location.hostname}:8000/camera/detection/start`;
+    const detectionStopUrl = `http://${window.location.hostname}:8000/camera/detection/stop`;
 
     useEffect(() => {
         let isMounted = true;
@@ -23,12 +29,23 @@ export default function CameraView() {
         const startCamera = async () => {
             try {
                 console.log(`Starting camera session: ${sessionId}`);
-                await fetch(startUrl, {
+                const res = await fetch(startUrl, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ session_id: sessionId })
                 });
-                if (isMounted) console.log("Camera started signal sent");
+                if (res.ok) {
+                    if (pendingStopTimeoutRef.current) {
+                        clearTimeout(pendingStopTimeoutRef.current);
+                        pendingStopTimeoutRef.current = null;
+                    }
+                    setStatus('connected');
+                    console.log("Camera started");
+                } else {
+                    const err = await res.json().catch(() => ({}));
+                    console.error("Camera start failed:", err.message || res.status);
+                    if (isMounted) setStatus('error');
+                }
             } catch (error) {
                 console.error("Failed to start camera:", error);
                 if (isMounted) setStatus('error');
@@ -36,21 +53,20 @@ export default function CameraView() {
         };
 
         const connectWebSocket = () => {
-            // ... existing websocket logic ...
             console.log('Connecting to WebSocket:', wsUrl);
             const ws = new WebSocket(wsUrl);
             wsRef.current = ws;
 
             ws.onopen = () => {
-                if (isMounted) setStatus('connected');
-                console.log('WebSocket connected');
+                if (isMounted) console.log('WebSocket connected (detections)');
+                // Status already 'connected' from camera/start; WS is for detections only
             };
 
             ws.onmessage = (event) => {
                 try {
                     const message = JSON.parse(event.data);
-                    if (message.type === 'detections') {
-                        if (isMounted) setDetections(message.data);
+                    if (message.type === 'detections' && isMounted) {
+                        setDetections(Array.isArray(message.data) ? message.data : []);
                     }
                 } catch (e) {
                     console.error('Error parsing WebSocket message:', e);
@@ -63,8 +79,8 @@ export default function CameraView() {
             };
 
             ws.onclose = () => {
-                console.log('WebSocket disconnected');
-                if (isMounted) setStatus('connecting');
+                console.log('WebSocket disconnected (detections may stop)');
+                // Keep status 'connected' — stream/video are independent of WebSocket
             };
         };
 
@@ -72,25 +88,69 @@ export default function CameraView() {
             connectWebSocket();
         });
 
-        // Cleanup
+        // Cleanup: delay stop so React Strict Mode's second mount can send start and cancel this
         return () => {
             isMounted = false;
-            console.log(`Stopping camera session: ${sessionId}`);
-
             if (wsRef.current) {
                 wsRef.current.close();
             }
 
-            // Immediately send stop request.
-            // The backend handles the race condition (Strict Mode) with a 2s reference-count delay.
-            fetch(stopUrl, {
-                method: 'POST',
-                keepalive: true,
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ session_id: sessionId })
-            }).catch(console.error);
+            const sendStop = () => {
+                fetch(detectionStopUrl, {
+                    method: 'POST',
+                    keepalive: true,
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ session_id: sessionId })
+                }).catch(console.error);
+                fetch(stopUrl, {
+                    method: 'POST',
+                    keepalive: true,
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ session_id: sessionId })
+                }).catch(console.error);
+            };
+
+            if (pendingStopTimeoutRef.current) {
+                clearTimeout(pendingStopTimeoutRef.current);
+            }
+            pendingStopTimeoutRef.current = setTimeout(() => {
+                pendingStopTimeoutRef.current = null;
+                sendStop();
+            }, STOP_DELAY_MS);
         };
     }, []);
+
+    const toggleDetection = async () => {
+        if (detectionActive) {
+            try {
+                await fetch(detectionStopUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ session_id: 'default' })
+                });
+                setDetectionActive(false);
+                setDetections([]);
+            } catch (e) {
+                console.error('Failed to stop detection:', e);
+            }
+        } else {
+            try {
+                const res = await fetch(detectionStartUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ session_id: 'default' })
+                });
+                const data = await res.json().catch(() => ({}));
+                if (data.status === 'started') {
+                    setDetectionActive(true);
+                } else {
+                    console.error('Detection start failed:', data.message || data);
+                }
+            } catch (e) {
+                console.error('Failed to start detection:', e);
+            }
+        }
+    };
 
     // Function to render bounding boxes
     const renderBoundingBoxes = () => {
@@ -152,7 +212,17 @@ export default function CameraView() {
                 <div className="px-3 py-1 rounded-full bg-white/10 backdrop-blur-md text-white text-xs font-medium uppercase tracking-wider border border-white/10">
                     Live Vision
                 </div>
-                <div className="w-10"></div>
+                <button
+                    onClick={toggleDetection}
+                    className={`pointer-events-auto w-10 h-10 rounded-full flex items-center justify-center transition-colors border ${
+                        detectionActive
+                            ? 'bg-cyan-500/80 text-white border-cyan-400'
+                            : 'bg-white/10 text-white border-white/10 hover:bg-white/20'
+                    }`}
+                    title={detectionActive ? 'Stop object detection' : 'Start object detection (5 fps)'}
+                >
+                    <Scan size={24} />
+                </button>
             </div>
 
             {/* Camera Frame Container */}
@@ -187,6 +257,10 @@ export default function CameraView() {
                         src={videoFeedUrl}
                         className="w-full h-full object-contain"
                         alt="Live Camera Feed"
+                        onLoad={() => {
+                            // Fallback: show LIVE when first frame arrives (handles Strict Mode / slow start response)
+                            setStatus((s) => (s === 'connecting' ? 'connected' : s));
+                        }}
                         onError={(e) => {
                             console.error("Video feed error", e);
                             setStatus('error');
@@ -252,7 +326,7 @@ export default function CameraView() {
                         but detection bubbles will appear.
                     */}
                     <div className="absolute inset-0 w-full h-full">
-                        {renderBoundingBoxes()}
+                        {detectionActive && renderBoundingBoxes()}
                     </div>
                 </div>
             </div>
@@ -265,9 +339,9 @@ export default function CameraView() {
                         {status === 'connected' ? 'LIVE' : 'OFFLINE'}
                     </div>
                     <div className="w-px h-3 bg-white/20"></div>
-                    <div>{detections.length} Objects</div>
+                    <div>{detectionActive ? `${detections.length} Objects` : '—'}</div>
                     <div className="w-px h-3 bg-white/20"></div>
-                    <div>Hailo-8 AI</div>
+                    <div>{detectionActive ? 'Hailo 5 fps' : 'Stream 30 fps'}</div>
                 </div>
             </div>
         </motion.div>

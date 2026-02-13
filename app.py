@@ -252,17 +252,37 @@ class CameraRequest(pydantic.BaseModel):
 
 @app.post("/camera/start")
 async def start_camera(request: CameraRequest):
+    """Start 30 fps stream only (no Hailo). Required before detection."""
     global shared_detection_state
-    print(f"Received start camera request for session {request.session_id}")
-    if detection:
-         shared_detection_state = detection.start_detection(request.session_id)
-    return {"status": "started"}
+    if not detection:
+        return {"status": "error", "message": "Detection module not available"}, 503
+    try:
+        shared_detection_state = detection.start_detection(request.session_id)
+        return {"status": "started"}
+    except Exception as e:
+        logger.exception("Camera start failed")
+        return {"status": "error", "message": str(e)}, 500
 
 @app.post("/camera/stop")
 async def stop_camera(request: CameraRequest):
-    print(f"Received stop camera request for session {request.session_id}")
+    """Stop stream (and detection if active)."""
     if detection:
         detection.stop_detection(request.session_id)
+    return {"status": "stopped"}
+
+@app.post("/camera/detection/start")
+async def start_camera_detection(request: CameraRequest):
+    """Start object detection at 5 fps (Hailo). Stream must be running."""
+    if detection:
+        ok = detection.start_detection_mode(request.session_id)
+        return {"status": "started" if ok else "error", "message": "Detection started" if ok else "Start camera first"}
+    return {"status": "error", "message": "Detection module not available"}
+
+@app.post("/camera/detection/stop")
+async def stop_camera_detection(request: CameraRequest):
+    """Stop object detection."""
+    if detection:
+        detection.stop_detection_mode(request.session_id)
     return {"status": "stopped"}
 
 
