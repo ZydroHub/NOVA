@@ -218,28 +218,8 @@ export default function CameraView() {
                 >
                     <ArrowLeft size={24} />
                 </button>
-                <div className="px-3 py-1 rounded-full bg-white/10 backdrop-blur-md text-white text-xs font-medium uppercase tracking-wider border border-white/10">
-                    Live Vision
-                </div>
-                <div className="pointer-events-auto flex flex-col items-end gap-1">
-                    {detectionError && (
-                        <span className="text-[10px] text-red-400 max-w-[200px] text-right">
-                            {detectionError}
-                        </span>
-                    )}
-                    <button
-                        type="button"
-                        onClick={toggleDetection}
-                        className={`w-10 h-10 rounded-full flex items-center justify-center transition-colors border shrink-0 ${
-                            detectionActive
-                                ? 'bg-cyan-500/80 text-white border-cyan-400'
-                                : 'bg-white/10 text-white border-white/10 hover:bg-white/20'
-                        }`}
-                        title={detectionActive ? 'Stop object detection' : 'Start object detection (10 fps)'}
-                    >
-                        <Scan size={24} />
-                    </button>
-                </div>
+
+
             </div>
 
             {/* Camera Frame Container */}
@@ -360,6 +340,26 @@ export default function CameraView() {
                     <div className="w-px h-3 bg-white/20"></div>
                     <div>{detectionActive ? 'Hailo 10 fps' : 'Stream 30 fps'}</div>
                 </div>
+            </div>
+
+            {/* Object Detection Button - Bottom Right */}
+            <div className="absolute bottom-6 right-4 z-50 flex flex-col items-end gap-2 pointer-events-none">
+                {detectionError && (
+                    <span className="text-[10px] text-red-400 max-w-[200px] text-right bg-black/60 px-2 py-1 rounded backdrop-blur-sm">
+                        {detectionError}
+                    </span>
+                )}
+                <button
+                    type="button"
+                    onClick={toggleDetection}
+                    className={`pointer-events-auto w-14 h-14 rounded-full flex items-center justify-center transition-all shadow-lg border ${detectionActive
+                        ? 'bg-cyan-500 text-white border-cyan-400 shadow-[0_0_15px_rgba(6,182,212,0.5)]'
+                        : 'bg-white/10 backdrop-blur-md text-white border-white/20 hover:bg-white/20'
+                        }`}
+                    title={detectionActive ? 'Stop object detection' : 'Start object detection'}
+                >
+                    <Scan size={28} />
+                </button>
             </div>
         </motion.div>
     );

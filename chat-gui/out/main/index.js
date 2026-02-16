@@ -1,4 +1,4 @@
-import { app, BrowserWindow, shell } from "electron";
+import { app, ipcMain, BrowserWindow, shell } from "electron";
 import { join } from "path";
 import __cjs_mod__ from "node:module";
 const __filename = import.meta.filename;
@@ -8,10 +8,9 @@ function createWindow() {
   const mainWindow = new BrowserWindow({
     width: 480,
     height: 800,
-    useContentSize: true,
-    resizable: false,
-    maximizable: false,
-    fullscreenable: false,
+    fullscreen: false,
+    frame: false,
+    // User wanted to remove fullscreen code, but didn't explicitly say add frame. Keeping false to match design.
     show: false,
     autoHideMenuBar: true,
     webPreferences: {
@@ -33,13 +32,9 @@ function createWindow() {
   }
 }
 app.whenReady().then(() => {
+  ipcMain.on("app-quit", () => app.quit());
   createWindow();
   app.on("activate", function() {
     if (BrowserWindow.getAllWindows().length === 0) createWindow();
   });
-});
-app.on("window-all-closed", () => {
-  if (process.platform !== "darwin") {
-    app.quit();
-  }
 });

@@ -41,7 +41,7 @@ def run_stream_process(
             picam2 = Picamera2()
             main = {"size": (1280, 720), "format": "RGB888"}
             lores = {"size": (width, height), "format": "RGB888"}
-            controls = {"FrameRate": STREAM_FPS}
+            controls = {"FrameRate": STREAM_FPS, "AfMode": 2, "AfRange": 2}
             config = picam2.create_preview_configuration(main=main, lores=lores, controls=controls)
             picam2.configure(config)
             picam2.start()

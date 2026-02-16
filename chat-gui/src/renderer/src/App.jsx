@@ -4,6 +4,8 @@ import { AnimatePresence } from 'framer-motion';
 import Home from './components/Home';
 import ChatInterface from './components/ChatInterface';
 import CameraView from './components/CameraView';
+import CloseButton from './components/CloseButton';
+
 
 const AnimatedRoutes = () => {
   const location = useLocation();
@@ -25,6 +27,7 @@ const AnimatedRoutes = () => {
 export default function App() {
   return (
     <BrowserRouter>
+      <CloseButton />
       <AnimatedRoutes />
     </BrowserRouter>
   );
