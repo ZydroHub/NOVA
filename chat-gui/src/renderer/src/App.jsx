@@ -6,6 +6,7 @@ import ChatInterface from './components/ChatInterface';
 import CameraView from './components/CameraView';
 import Gallery from './components/Gallery';
 import Settings from './components/Settings';
+import StatusBar from './components/StatusBar';
 
 
 const AnimatedRoutes = () => {
@@ -30,7 +31,12 @@ const AnimatedRoutes = () => {
 export default function App() {
   return (
     <BrowserRouter>
-      <AnimatedRoutes />
+      <div className="flex flex-col h-screen w-screen overflow-hidden bg-black text-white">
+        <StatusBar />
+        <div className="flex-1 overflow-hidden relative w-full">
+          <AnimatedRoutes />
+        </div>
+      </div>
     </BrowserRouter>
   );
 }

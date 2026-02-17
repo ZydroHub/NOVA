@@ -45,6 +45,17 @@ except ImportError:
     print("Warning: Could not import detection.py. Make sure environment is set.")
     detection = None
 
+import psutil
+import time
+
+def get_cpu_temp():
+    """Returns CPU temperature in Celsius."""
+    try:
+        with open("/sys/class/thermal/thermal_zone0/temp", "r") as f:
+            return float(f.read()) / 1000.0
+    except:
+        return 0.0
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -65,6 +76,17 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+@app.get("/system/stats")
+async def get_system_stats():
+    """Returns current system statistics."""
+    return {
+        "time": time.strftime("%H:%M:%S"),
+        "cpu_percent": psutil.cpu_percent(interval=None),
+        "memory_percent": psutil.virtual_memory().percent,
+        "temperature": get_cpu_temp()
+    }
+
 
 # ─── Connection Management ────────────────────────────────────────────────────
 

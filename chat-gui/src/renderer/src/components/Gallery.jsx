@@ -114,7 +114,7 @@ export default function Gallery() {
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.95 }}
-            className="relative w-[480px] h-[800px] max-w-full max-h-screen mx-auto overflow-hidden bg-slate-50 shadow-2xl flex flex-col"
+            className="relative w-[480px] h-full max-w-full mx-auto overflow-hidden bg-slate-50 shadow-2xl flex flex-col"
         >
             {/* Header */}
             <div className="flex items-center p-4 bg-white shadow-sm z-10">

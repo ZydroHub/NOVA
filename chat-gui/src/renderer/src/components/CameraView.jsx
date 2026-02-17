@@ -233,7 +233,7 @@ export default function CameraView() {
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -20 }}
-            className="relative w-[480px] h-[800px] max-w-full max-h-screen mx-auto overflow-hidden bg-black shadow-2xl flex flex-col"
+            className="relative w-[480px] h-full max-w-full mx-auto overflow-hidden bg-black shadow-2xl flex flex-col"
         >
             {/* Flash Effect */}
             <AnimatePresence>

@@ -44,7 +44,7 @@ export default function Home() {
     };
 
     return (
-        <div className="relative w-[480px] h-[800px] max-w-full max-h-screen mx-auto overflow-hidden bg-white shadow-2xl">
+        <div className="relative w-[480px] h-full mx-auto overflow-hidden bg-white shadow-2xl">
             {/* Background Gradient - Light Theme */}
             <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-slate-50 to-indigo-50 z-0" />
 
