@@ -29,22 +29,16 @@ OC_URL = OC_URL or "ws://127.0.0.1:18789"
 import cv2
 from starlette.background import BackgroundTask
 from fastapi.responses import StreamingResponse
+import multiprocessing
+import queue
+import threading
 
-# Import detection module
-# Ensure sys.path includes hailo-apps logic if needed, but detection.py handles it internally?
-# Actually detection.py modifies sys.path if run as main, but as module it might not?
-# Let's add the sys.path modification here regarding hailo-apps just in case,
-# or rely on the environment being set correctly (which run_detection.sh does).
-# Since app.py is likely run from the root, we might need to be careful.
-# But detection.py uses relative imports from hailo_apps.
-# Let's assume the environment is set up (via source setup_env.sh).
-
+# Import camera_stream module
 try:
-    import detection
+    import camera_stream
 except ImportError:
-    # Fallback if running from root without python path set?
-    print("Warning: Could not import detection.py. Make sure environment is set.")
-    detection = None
+    print("Warning: Could not import camera_stream.py.")
+    camera_stream = None
 
 import psutil
 import time
@@ -61,9 +55,8 @@ def get_cpu_temp():
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     yield
-    # Shutdown: stop camera/detection child processes so the server can exit cleanly
-    if detection:
-        await asyncio.to_thread(detection.shutdown_all)
+    # Shutdown: stop camera process so the server can exit cleanly
+    perform_actual_shutdown()
     if gpio_manager:
         gpio_manager.close_all()
     logger.info("Backend shutdown complete.")
@@ -177,19 +170,7 @@ class OpenClawBridge:
             self.oc_connected = False
             return False
 
-    async def broadcast_detections_loop(self):
-        """Continuously checks and sends detections to the frontend."""
-        last_detections = None
-        while self.active:
-            if shared_detection_state:
-                _, detections = shared_detection_state.get_latest()
-                if detections and detections != last_detections:
-                    await self.safe_send({
-                        "type": "detections",
-                        "data": detections
-                    })
-                    last_detections = detections
-            await asyncio.sleep(0.05) # 20 FPS updates
+
 
     async def send_history(self):
         """Fetches and sends chat history to the frontend."""
@@ -225,8 +206,7 @@ class OpenClawBridge:
                 # 2. Send history immediately
                 await self.send_history()
 
-            # Start detection broadcaster for this connection
-            asyncio.create_task(self.broadcast_detections_loop())
+
 
             # 3. Handle messages
             while self.active:
@@ -442,19 +422,145 @@ async def websocket_endpoint(websocket: WebSocket):
 # Video Streaming & Detection Integration
 # -----------------------------------------------------------------------------------------------
 
-shared_detection_state = None
+# -----------------------------------------------------------------------------------------------
+# Video Streaming & Camera Management
+# -----------------------------------------------------------------------------------------------
+
+class SharedState:
+    def __init__(self):
+        self.frame = None
+        self.lock = threading.Lock()
+
+    def update_frame(self, frame):
+        with self.lock:
+            self.frame = frame
+
+    def get_latest(self):
+        with self.lock:
+            if self.frame is None:
+                return None, None
+            return self.frame.copy(), None # No detections
+
+shared_state = SharedState()
+stream_process = None
+stream_queue = None
+stream_stop_event = None
+stream_consumer_thread = None
+
+# Stream ref-count and shutdown (camera view open/close)
+ref_count = 0
+shutdown_timer = None
+session_lock = threading.Lock()
+
+def _stream_consumer_loop(q):
+    """Consumes stream_queue in main process; updates shared_state.frame (30 fps)."""
+    while True:
+        try:
+            frame = q.get(timeout=1.0)
+            shared_state.update_frame(frame)
+        except queue.Empty:
+            if stream_process is None or not stream_process.is_alive():
+                break
+            continue
+        except Exception as e:
+            logger.debug("Stream consumer error: %s", e)
+            break
+
+def _spawn_stream_process():
+    """Start stream process and stream consumer thread."""
+    global stream_process, stream_queue, stream_stop_event, stream_consumer_thread
+    
+    stream_stop_event = multiprocessing.Event()
+    stream_queue = multiprocessing.Queue(maxsize=2)
+    
+    # We don't use detection queue anymore
+    detection_enabled = multiprocessing.Value("b", False)
+    detection_queue = None
+
+    stream_process = multiprocessing.Process(
+        target=camera_stream.run_stream_process,
+        args=(stream_queue, stream_stop_event, detection_enabled, detection_queue),
+        # Default camera_stream width/height is 640x384 which fits our UI logic well enough
+        daemon=False,
+    )
+    stream_process.start()
+
+    stream_consumer_thread = threading.Thread(target=_stream_consumer_loop, args=(stream_queue,), daemon=True)
+    stream_consumer_thread.start()
+
+def start_camera_manager(session_id=None):
+    """
+    Starts the stream process if not already running.
+    Increments ref count for camera view.
+    """
+    global stream_process, ref_count, shutdown_timer
+
+    with session_lock:
+        ref_count += 1
+        logger.info(f"Start stream requested (session_id={session_id}). Ref count: {ref_count}")
+
+        if shutdown_timer is not None:
+            shutdown_timer.cancel()
+            shutdown_timer = None
+
+        if stream_process is not None and stream_process.is_alive():
+            logger.info("Stream process already running.")
+            return
+
+        logger.info("Spawning stream process...")
+        _spawn_stream_process()
+
+
+def stop_camera_manager(session_id=None):
+    """Decrements ref count. If 0, schedules stream shutdown."""
+    global ref_count, shutdown_timer
+
+    with session_lock:
+        if ref_count > 0:
+            ref_count -= 1
+        logger.info(f"Stop stream requested (session_id={session_id}). Ref count: {ref_count}")
+
+        if ref_count == 0:
+            if shutdown_timer is not None:
+                shutdown_timer.cancel()
+            # 1.5s delay so React Strict Mode's second mount can send start and cancel this
+            shutdown_timer = threading.Timer(1.5, perform_actual_shutdown)
+            shutdown_timer.start()
+
+    return True
+
+def perform_actual_shutdown():
+    """Stops the stream process."""
+    global stream_process, stream_queue, stream_stop_event, ref_count, shutdown_timer
+
+    with session_lock:
+        if ref_count > 0:
+            return
+        proc = stream_process
+        logger.info("Performing stream shutdown...")
+
+    if stream_stop_event:
+        stream_stop_event.set()
+    
+    if proc and proc.is_alive():
+        proc.join(timeout=2.0)
+        if proc.is_alive():
+            proc.terminate()
+            proc.join(timeout=1.0)
+    
+    with session_lock:
+        stream_process = None
+        stream_queue = None
+        shutdown_timer = None
 
 class CameraRequest(pydantic.BaseModel):
     session_id: str = "default"
 
 @app.post("/camera/start")
 async def start_camera(request: CameraRequest):
-    """Start 30 fps stream only (no Hailo). Required before detection."""
-    global shared_detection_state
-    if not detection:
-        return {"status": "error", "message": "Detection module not available"}, 503
+    """Start 30 fps stream."""
     try:
-        shared_detection_state = detection.start_detection(request.session_id)
+        start_camera_manager(request.session_id)
         return {"status": "started"}
     except Exception as e:
         logger.exception("Camera start failed")
@@ -462,32 +568,8 @@ async def start_camera(request: CameraRequest):
 
 @app.post("/camera/stop")
 async def stop_camera(request: CameraRequest):
-    """Stop stream (and detection if active)."""
-    if detection:
-        detection.stop_detection(request.session_id)
-    return {"status": "stopped"}
-
-@app.post("/camera/detection/start")
-async def start_camera_detection(request: CameraRequest):
-    """Start object detection at 10 fps (Hailo). Stream must be running."""
-    if not detection:
-        return {"status": "error", "message": "Detection module not available"}
-    try:
-        result = detection.start_detection_mode(request.session_id)
-        if result is True:
-            return {"status": "started", "message": "Detection started"}
-        if isinstance(result, tuple):
-            return {"status": "error", "message": result[1]}
-        return {"status": "error", "message": "Start camera view first, or stream not ready"}
-    except Exception as e:
-        logger.exception("Detection start failed")
-        return {"status": "error", "message": str(e)}
-
-@app.post("/camera/detection/stop")
-async def stop_camera_detection(request: CameraRequest):
-    """Stop object detection."""
-    if detection:
-        detection.stop_detection_mode(request.session_id)
+    """Stop stream."""
+    stop_camera_manager(request.session_id)
     return {"status": "stopped"}
 
 
@@ -497,10 +579,10 @@ async def capture_camera_frame(request: CameraRequest):
     import datetime
     import os
     
-    if not shared_detection_state:
+    if not stream_process:
         return {"status": "error", "message": "Camera not running"}, 400
         
-    frame, _ = shared_detection_state.get_latest()
+    frame, _ = shared_state.get_latest()
     if frame is None:
         return {"status": "error", "message": "No frame available"}, 503
         
@@ -535,25 +617,20 @@ def generate_frames():
     """Generates MJPEG frames from the shared state."""
     first_frame = True
     while True:
-        if shared_detection_state:
-            frame, _ = shared_detection_state.get_latest()
-            if frame is not None:
-                if first_frame:
-                    print("DEBUG: generate_frames received first frame!")
-                    first_frame = False
-                # Rotate 90° clockwise for portrait display in the UI
-                frame = cv2.rotate(frame, cv2.ROTATE_90_CLOCKWISE)
-                # Encode frame to JPEG; frame is RGB, OpenCV expects BGR
-                frame_bgr = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
-                ret, buffer = cv2.imencode('.jpg', frame_bgr)
-                if ret:
-                    frame_bytes = buffer.tobytes()
-                    yield (b'--frame\r\n'
-                           b'Content-Type: image/jpeg\r\n\r\n' + frame_bytes + b'\r\n')
-            else:
-                # Debugging potential stuck state
-                # print("DEBUG: generate_frames waiting for frame...")
-                pass
+        frame, _ = shared_state.get_latest()
+        if frame is not None:
+            if first_frame:
+                print("DEBUG: generate_frames received first frame!")
+                first_frame = False
+            # Rotate 90° clockwise for portrait display in the UI
+            frame = cv2.rotate(frame, cv2.ROTATE_90_CLOCKWISE)
+            # Encode frame to JPEG; frame is RGB, OpenCV expects BGR
+            frame_bgr = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
+            ret, buffer = cv2.imencode('.jpg', frame_bgr)
+            if ret:
+                frame_bytes = buffer.tobytes()
+                yield (b'--frame\r\n'
+                       b'Content-Type: image/jpeg\r\n\r\n' + frame_bytes + b'\r\n')
         
         # Avoid tight loop if no frame
         import time
@@ -563,6 +640,7 @@ def generate_frames():
 async def video_feed():
     """Video streaming route. Put this in the src attribute of an img tag."""
     return StreamingResponse(generate_frames(), media_type="multipart/x-mixed-replace; boundary=frame")
+
 
 
 # -----------------------------------------------------------------------------------------------

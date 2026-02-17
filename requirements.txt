@@ -1,0 +1,10 @@
+fastapi
+uvicorn
+pydantic
+websockets
+opencv-python
+psutil
+# Hardware libraries - best installed via apt and inherited via --system-site-packages
+# gpiozero
+# rpi-lgpio
+# picamera2
