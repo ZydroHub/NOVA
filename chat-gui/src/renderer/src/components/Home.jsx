@@ -14,15 +14,6 @@ const Orbiter = ({ icon: Icon, radius, duration, initialAngle, delay = 0, onClic
         <motion.div
             className="absolute top-1/2 left-1/2 w-0 h-0 z-10 pointer-events-none"
             initial={{ x, y }}
-            animate={{
-                y: [y - 8, y + 8, y - 8],
-            }}
-            transition={{
-                duration: 4,
-                ease: 'easeInOut',
-                repeat: Infinity,
-                delay: delay,
-            }}
         >
             <div className="-translate-x-1/2 -translate-y-1/2 absolute top-1/2 left-1/2 pointer-events-auto">
                 <div

@@ -36,13 +36,56 @@ export default function Avatar({
         blink: {
             scaleY: [1, 0.1, 1],
             transition: {
-                duration: 0.25, // Slightly slower for better visibility
+                duration: 0.25,
                 repeat: Infinity,
-                repeatDelay: 3.5 // Blink every ~3.5s
+                repeatDelay: 3.5
             }
         },
         static: {
             scaleY: 1
+        }
+    };
+
+    // Head container animation (The square/circle itself moves)
+    const headVariants = {
+        lookAround: {
+            x: ["0%", "5%", "0%", "-5%", "0%", "0%", "0%", "3%", "0%"],
+            y: ["0%", "-2%", "0%", "2%", "0%", "0%", "-2%", "0%", "0%"],
+            rotate: [0, 5, 0, -5, 0, 0, 0, 3, 0],
+            transition: {
+                x: { duration: 5, repeat: Infinity, repeatDelay: 5, ease: "easeInOut" },
+                y: { duration: 5, repeat: Infinity, repeatDelay: 5, ease: "easeInOut" },
+                rotate: { duration: 5, repeat: Infinity, repeatDelay: 5, ease: "easeInOut" },
+                opacity: { duration: 0.5 },
+                scale: { duration: 0.5 }
+            },
+            opacity: 1,
+            scale: 1
+        },
+        static: {
+            x: 0,
+            y: 0,
+            rotate: 0,
+            opacity: 1,
+            scale: 1
+        }
+    };
+
+    // Face features animation (Eyes/Mouth move MORE to simulate 3D depth/parallax)
+    const faceVariants = {
+        lookAround: {
+            x: ["0%", "15%", "0%", "-15%", "0%", "0%", "0%", "8%", "0%"],
+            y: ["0%", "-8%", "0%", "8%", "0%", "0%", "-8%", "0%", "0%"],
+            transition: {
+                duration: 5,
+                repeat: Infinity,
+                repeatDelay: 5,
+                ease: "easeInOut"
+            }
+        },
+        static: {
+            x: 0,
+            y: 0
         }
     };
 
@@ -53,11 +96,16 @@ export default function Avatar({
             whileHover={onClick ? { scale: 1.05, boxShadow: "0 12px 50px rgba(0,149,255,0.2)" } : {}}
             whileTap={onClick ? { scale: 0.95 } : {}}
             initial={animate ? { opacity: 0, scale: 0.5 } : {}}
-            animate={animate ? { opacity: 1, scale: 1 } : {}}
+            animate={animate ? "lookAround" : "static"} // Animate head container
+            variants={headVariants}
             transition={{ duration: 0.5 }}
         >
             {/* Face Container */}
-            <div className={`flex flex-col items-center justify-center ${currentStyle.gapConfig}`}>
+            <motion.div
+                className={`flex flex-col items-center justify-center ${currentStyle.gapConfig}`}
+                variants={faceVariants}
+                animate={animate ? "lookAround" : "static"}
+            >
                 {/* Eyes */}
                 <div className={`flex ${currentStyle.eyeGap}`}>
                     <motion.div
@@ -74,7 +122,7 @@ export default function Avatar({
 
                 {/* Mouth */}
                 <div className={`${currentStyle.mouthSize} border-slate-700/30 rounded-full`} />
-            </div>
+            </motion.div>
         </motion.div>
     );
 }

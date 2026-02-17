@@ -17,3 +17,10 @@ SECRUITY
 
 CODING
 1. Ai coding environment
+
+AGENT ABILITIES
+1. Checking email dailey
+2. Checking for news updates
+3. Once a month grocery shopping list
+4. Heartbeat to check for raspberry pi updated
+5. 
