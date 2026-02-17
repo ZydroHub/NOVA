@@ -64,10 +64,23 @@ async def lifespan(app: FastAPI):
     # Shutdown: stop camera/detection child processes so the server can exit cleanly
     if detection:
         await asyncio.to_thread(detection.shutdown_all)
+    if gpio_manager:
+        gpio_manager.close_all()
     logger.info("Backend shutdown complete.")
 
 
 app = FastAPI(lifespan=lifespan)
+
+# Initialize GPIO Manager
+try:
+    from gpio_manager import GPIOManager
+    gpio_manager = GPIOManager()
+except ImportError:
+    dprint("Warning: Could not import GPIOManager.")
+    gpio_manager = None
+except Exception as e:
+    print(f"Warning: Error initializing GPIOManager: {e}")
+    gpio_manager = None
 
 # Enable CORS
 app.add_middleware(
@@ -358,6 +371,50 @@ class OpenClawBridge:
                     except Exception as e:
                         logger.error(f"[{self.connection_id}] heartbeat.set error: {e}")
                         await self.safe_send({"type": "stream_error", "error": f"heartbeat.set error: {e}"})
+
+                # --- GPIO Controls ---
+                elif msg_type == "gpio.get_all":
+                    try:
+                        if gpio_manager:
+                            # Refresh state map
+                            states = gpio_manager.get_header_state()
+                            await self.safe_send({"type": "gpio_state", "pins": states})
+                        else:
+                            await self.safe_send({"type": "stream_error", "error": "GPIO Manager not available"})
+                    except Exception as e:
+                        logger.error(f"[{self.connection_id}] gpio.get_all error: {e}")
+                
+                elif msg_type == "gpio.set_mode":
+                    try:
+                        if gpio_manager:
+                            bcm = data.get("bcm")
+                            mode = data.get("mode") # 'input' or 'output'
+                            if bcm is not None and mode:
+                                success = gpio_manager.setup_pin(bcm, mode)
+                                if success:
+                                    # Send updated state back
+                                    states = gpio_manager.get_header_state()
+                                    await self.safe_send({"type": "gpio_state", "pins": states})
+                                else:
+                                    await self.safe_send({"type": "stream_error", "error": f"Failed to set GPIO {bcm} to {mode}"})
+                    except Exception as e:
+                        logger.error(f"[{self.connection_id}] gpio.set_mode error: {e}")
+
+                elif msg_type == "gpio.write":
+                    try:
+                        if gpio_manager:
+                            bcm = data.get("bcm")
+                            value = data.get("value") # 0 or 1
+                            if bcm is not None and value is not None:
+                                success = gpio_manager.set_pin_value(bcm, int(value))
+                                if success:
+                                    # Send updated state back
+                                    states = gpio_manager.get_header_state()
+                                    await self.safe_send({"type": "gpio_state", "pins": states})
+                                else:
+                                    await self.safe_send({"type": "stream_error", "error": f"Failed to write {value} to GPIO {bcm}"})
+                    except Exception as e:
+                        logger.error(f"[{self.connection_id}] gpio.write error: {e}")
 
         except Exception as e:
             logger.error(f"[{self.connection_id}] Bridge loop error: {e}")

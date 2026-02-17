@@ -9,6 +9,7 @@ import Settings from './components/Settings';
 import StatusBar from './components/StatusBar';
 import CronManager from './components/CronManager';
 import HeartbeatManager from './components/HeartbeatManager';
+import GPIOControl from './components/GPIOControl';
 import { WebSocketProvider } from './contexts/WebSocketContext';
 
 
@@ -27,6 +28,7 @@ const AnimatedRoutes = () => {
         <Route path="/gallery" element={<Gallery />} />
         <Route path="/cron" element={<CronManager />} />
         <Route path="/heartbeat" element={<HeartbeatManager />} />
+        <Route path="/gpio" element={<GPIOControl />} />
         <Route path="/settings" element={<Settings />} />
       </Routes>
     </AnimatePresence>
