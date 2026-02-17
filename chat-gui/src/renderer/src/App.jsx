@@ -4,7 +4,8 @@ import { AnimatePresence } from 'framer-motion';
 import Home from './components/Home';
 import ChatInterface from './components/ChatInterface';
 import CameraView from './components/CameraView';
-import CloseButton from './components/CloseButton';
+import Gallery from './components/Gallery';
+import Settings from './components/Settings';
 
 
 const AnimatedRoutes = () => {
@@ -19,6 +20,8 @@ const AnimatedRoutes = () => {
           element={<ChatInterface layoutId="avatar-hero" />}
         />
         <Route path="/camera" element={<CameraView />} />
+        <Route path="/gallery" element={<Gallery />} />
+        <Route path="/settings" element={<Settings />} />
       </Routes>
     </AnimatePresence>
   );
@@ -27,7 +30,6 @@ const AnimatedRoutes = () => {
 export default function App() {
   return (
     <BrowserRouter>
-      <CloseButton />
       <AnimatedRoutes />
     </BrowserRouter>
   );

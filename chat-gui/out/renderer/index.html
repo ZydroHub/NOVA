@@ -6,10 +6,38 @@
     <meta name="description" content="OpenClaw AI Chat — Touch-optimized chat interface" />
     <title>OpenClaw Chat</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='85'>🦞</text></svg>" />
-    <script type="module" crossorigin src="./assets/index-YMS-vmrl.js"></script>
-    <link rel="stylesheet" crossorigin href="./assets/index-CHGYBdIK.css">
+    <script type="module" crossorigin src="./assets/index-C3QWZlQu.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-BNwH6ffa.css">
   </head>
   <body>
     <div id="root"></div>
+    <script>
+      (function() {
+        function addCloseBtn() {
+          if (typeof window.electron === 'undefined' || typeof window.electron.quit !== 'function') return;
+          if (document.getElementById('electron-close-btn')) return;
+          var btn = document.createElement('button');
+          btn.id = 'electron-close-btn';
+          btn.setAttribute('aria-label', 'Close');
+          btn.innerHTML = '×';
+          btn.type = 'button';
+          Object.assign(btn.style, {
+            position: 'fixed', top: '0', right: '0', zIndex: '2147483647',
+            width: '44px', height: '44px', margin: '12px', padding: '0',
+            border: 'none', borderRadius: '50%', background: '#c42b1c',
+            color: '#fff', fontSize: '24px', lineHeight: '1', cursor: 'pointer',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.35)'
+          });
+          btn.onclick = function() { window.electron.quit(); };
+          document.body.appendChild(btn);
+        }
+        if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', addCloseBtn);
+        } else {
+          addCloseBtn();
+        }
+      })();
+    </script>
   </body>
 </html>

@@ -1,4 +1,5 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import ChatHeader from './ChatHeader';
 import ConnectionBar from './ConnectionBar';
 import MessageList from './MessageList';
@@ -8,6 +9,7 @@ import { motion } from 'framer-motion';
 const WS_URL = `ws://${window.location.hostname || '127.0.0.1'}:8000/ws`;
 
 export default function ChatInterface({ layoutId }) {
+    const location = useLocation();
     const [messages, setMessages] = useState([]);
     const [streaming, setStreaming] = useState(false);
     const [streamText, setStreamText] = useState('');
@@ -138,14 +140,28 @@ export default function ChatInterface({ layoutId }) {
 
     // ─── Actions ───────────────────────────────────────────────────────
     const send = useCallback(
-        (text) => {
+        (text, images = []) => {
             if (!wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) return;
             // Add user message immediately
             setMessages((prev) => [...prev, { role: 'user', text }]);
-            wsRef.current.send(JSON.stringify({ type: 'send', message: text }));
+            wsRef.current.send(JSON.stringify({ type: 'send', message: text, images }));
         },
         []
     );
+
+    // ─── Auto-send from Gallery navigation ─────────────────────────────
+    useEffect(() => {
+        if (connStatus === 'connected' && location.state?.prompt && location.state?.image) {
+            const { prompt, image } = location.state;
+            // Clear state to prevent double send on refresh/re-render logic if needed,
+            // but react-router state persists. We should probably clear it.
+            // Using history.replace to clear state is safer.
+            window.history.replaceState({}, document.title);
+
+            // Send message
+            send(prompt, [image]);
+        }
+    }, [connStatus, location.state, send]);
 
     const abort = useCallback(() => {
         if (!wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) return;

@@ -22600,12 +22600,12 @@ const createLucideIcon = (iconName, iconNode) => {
   Component.displayName = toPascalCase(iconName);
   return Component;
 };
-const __iconNode$7 = [
+const __iconNode$b = [
   ["path", { d: "m12 19-7-7 7-7", key: "1l729n" }],
   ["path", { d: "M19 12H5", key: "x3x0zl" }]
 ];
-const ArrowLeft = createLucideIcon("arrow-left", __iconNode$7);
-const __iconNode$6 = [
+const ArrowLeft = createLucideIcon("arrow-left", __iconNode$b);
+const __iconNode$a = [
   [
     "path",
     {
@@ -22615,8 +22615,14 @@ const __iconNode$6 = [
   ],
   ["circle", { cx: "12", cy: "13", r: "3", key: "1vg3eu" }]
 ];
-const Camera = createLucideIcon("camera", __iconNode$6);
-const __iconNode$5 = [
+const Camera = createLucideIcon("camera", __iconNode$a);
+const __iconNode$9 = [
+  ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }],
+  ["line", { x1: "12", x2: "12", y1: "8", y2: "12", key: "1pkeuh" }],
+  ["line", { x1: "12", x2: "12.01", y1: "16", y2: "16", key: "4dfq90" }]
+];
+const CircleAlert = createLucideIcon("circle-alert", __iconNode$9);
+const __iconNode$8 = [
   [
     "path",
     {
@@ -22627,8 +22633,8 @@ const __iconNode$5 = [
   ["path", { d: "M15 5.764v15", key: "1pn4in" }],
   ["path", { d: "M9 3.236v15", key: "1uimfh" }]
 ];
-const Map$1 = createLucideIcon("map", __iconNode$5);
-const __iconNode$4 = [
+const Map$1 = createLucideIcon("map", __iconNode$8);
+const __iconNode$7 = [
   [
     "path",
     {
@@ -22637,21 +22643,39 @@ const __iconNode$4 = [
     }
   ]
 ];
-const MessageCircle = createLucideIcon("message-circle", __iconNode$4);
-const __iconNode$3 = [
+const MessageCircle = createLucideIcon("message-circle", __iconNode$7);
+const __iconNode$6 = [
   ["path", { d: "M9 18V5l12-2v13", key: "1jmyc2" }],
   ["circle", { cx: "6", cy: "18", r: "3", key: "fqmcym" }],
   ["circle", { cx: "18", cy: "16", r: "3", key: "1hluhg" }]
 ];
-const Music = createLucideIcon("music", __iconNode$3);
-const __iconNode$2 = [
+const Music = createLucideIcon("music", __iconNode$6);
+const __iconNode$5 = [
   ["path", { d: "M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8", key: "v9h5vc" }],
   ["path", { d: "M21 3v5h-5", key: "1q7to0" }],
   ["path", { d: "M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16", key: "3uifl3" }],
   ["path", { d: "M8 16H3v5", key: "1cv678" }]
 ];
-const RefreshCw = createLucideIcon("refresh-cw", __iconNode$2);
-const __iconNode$1 = [
+const RefreshCw = createLucideIcon("refresh-cw", __iconNode$5);
+const __iconNode$4 = [
+  ["path", { d: "M3 7V5a2 2 0 0 1 2-2h2", key: "aa7l1z" }],
+  ["path", { d: "M17 3h2a2 2 0 0 1 2 2v2", key: "4qcy5o" }],
+  ["path", { d: "M21 17v2a2 2 0 0 1-2 2h-2", key: "6vwrx8" }],
+  ["path", { d: "M7 21H5a2 2 0 0 1-2-2v-2", key: "ioqczr" }]
+];
+const Scan = createLucideIcon("scan", __iconNode$4);
+const __iconNode$3 = [
+  [
+    "path",
+    {
+      d: "M14.536 21.686a.5.5 0 0 0 .937-.024l6.5-19a.496.496 0 0 0-.635-.635l-19 6.5a.5.5 0 0 0-.024.937l7.93 3.18a2 2 0 0 1 1.112 1.11z",
+      key: "1ffxy3"
+    }
+  ],
+  ["path", { d: "m21.854 2.147-10.94 10.939", key: "12cjpa" }]
+];
+const Send = createLucideIcon("send", __iconNode$3);
+const __iconNode$2 = [
   [
     "path",
     {
@@ -22661,8 +22685,8 @@ const __iconNode$1 = [
   ],
   ["circle", { cx: "12", cy: "12", r: "3", key: "1v7zrd" }]
 ];
-const Settings = createLucideIcon("settings", __iconNode$1);
-const __iconNode = [
+const Settings = createLucideIcon("settings", __iconNode$2);
+const __iconNode$1 = [
   [
     "path",
     {
@@ -22672,7 +22696,12 @@ const __iconNode = [
   ],
   ["rect", { x: "2", y: "6", width: "14", height: "12", rx: "2", key: "158x01" }]
 ];
-const Video = createLucideIcon("video", __iconNode);
+const Video = createLucideIcon("video", __iconNode$1);
+const __iconNode = [
+  ["path", { d: "M18 6 6 18", key: "1bl5f8" }],
+  ["path", { d: "m6 6 12 12", key: "d8bk6v" }]
+];
+const X = createLucideIcon("x", __iconNode);
 function Avatar({
   className = "",
   variant = "lg",
@@ -23133,57 +23162,214 @@ function ChatInterface({ layoutId }) {
     }
   );
 }
+const pendingStopTimeoutRef = { current: null };
+const STOP_DELAY_MS = 500;
 function CameraView() {
   const navigate = useNavigate();
   const [status, setStatus] = reactExports.useState("connecting");
-  const [error, setError] = reactExports.useState(null);
-  const imgRef = reactExports.useRef(null);
+  const [detections, setDetections] = reactExports.useState([]);
+  const [detectionActive, setDetectionActive] = reactExports.useState(false);
+  const [detectionError, setDetectionError] = reactExports.useState(null);
   const wsRef = reactExports.useRef(null);
-  const objectUrlRef = reactExports.useRef(null);
+  const videoFeedUrl = `http://${window.location.hostname}:8000/video_feed`;
+  const wsUrl = `ws://${window.location.hostname}:8000/ws`;
+  const startUrl = `http://${window.location.hostname}:8000/camera/start`;
+  const stopUrl = `http://${window.location.hostname}:8000/camera/stop`;
+  const detectionStartUrl = `http://${window.location.hostname}:8000/camera/detection/start`;
+  const detectionStopUrl = `http://${window.location.hostname}:8000/camera/detection/stop`;
   reactExports.useEffect(() => {
-    const wsUrl = `ws://${window.location.hostname}:8000/camera`;
-    console.log("Connecting to camera:", wsUrl);
-    const connect = () => {
+    let isMounted = true;
+    const sessionId = Math.random().toString(36).substring(7);
+    const startCamera = async () => {
+      try {
+        console.log(`Starting camera session: ${sessionId}`);
+        const res = await fetch(startUrl, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ session_id: sessionId })
+        });
+        if (res.ok) {
+          if (pendingStopTimeoutRef.current) {
+            clearTimeout(pendingStopTimeoutRef.current);
+            pendingStopTimeoutRef.current = null;
+          }
+          setStatus("connected");
+          console.log("Camera started");
+        } else {
+          const err = await res.json().catch(() => ({}));
+          console.error("Camera start failed:", err.message || res.status);
+          if (isMounted) setStatus("error");
+        }
+      } catch (error) {
+        console.error("Failed to start camera:", error);
+        if (isMounted) setStatus("error");
+      }
+    };
+    const connectWebSocket = () => {
+      console.log("Connecting to WebSocket:", wsUrl);
       const ws = new WebSocket(wsUrl);
-      ws.binaryType = "blob";
       wsRef.current = ws;
       ws.onopen = () => {
-        setStatus("connected");
-        setError(null);
-        console.log("Camera connected");
+        if (isMounted) console.log("WebSocket connected (detections)");
       };
       ws.onmessage = (event) => {
-        if (event.data instanceof Blob) {
-          const url = URL.createObjectURL(event.data);
-          if (imgRef.current) {
-            imgRef.current.src = url;
+        try {
+          const message = JSON.parse(event.data);
+          if (message.type === "detections" && isMounted) {
+            setDetections(Array.isArray(message.data) ? message.data : []);
           }
-          if (objectUrlRef.current) {
-            URL.revokeObjectURL(objectUrlRef.current);
-          }
-          objectUrlRef.current = url;
+        } catch (e) {
+          console.error("Error parsing WebSocket message:", e);
         }
       };
-      ws.onclose = () => {
-        setStatus("disconnected");
-        console.log("Camera disconnected");
+      ws.onerror = (error) => {
+        console.error("WebSocket error:", error);
+        if (isMounted) setStatus("error");
       };
-      ws.onerror = (err) => {
-        setError("Failed to connect to camera server");
-        setStatus("error");
-        console.error("WebSocket error:", err);
+      ws.onclose = () => {
+        console.log("WebSocket disconnected (detections may stop)");
       };
     };
-    connect();
+    startCamera().then(() => {
+      connectWebSocket();
+    });
     return () => {
+      isMounted = false;
       if (wsRef.current) {
         wsRef.current.close();
       }
-      if (objectUrlRef.current) {
-        URL.revokeObjectURL(objectUrlRef.current);
+      const sendStop = () => {
+        fetch(detectionStopUrl, {
+          method: "POST",
+          keepalive: true,
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ session_id: sessionId })
+        }).catch(console.error);
+        fetch(stopUrl, {
+          method: "POST",
+          keepalive: true,
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ session_id: sessionId })
+        }).catch(console.error);
+      };
+      if (pendingStopTimeoutRef.current) {
+        clearTimeout(pendingStopTimeoutRef.current);
       }
+      pendingStopTimeoutRef.current = setTimeout(() => {
+        pendingStopTimeoutRef.current = null;
+        sendStop();
+      }, STOP_DELAY_MS);
     };
   }, []);
+  const toggleDetection = async () => {
+    setDetectionError(null);
+    if (detectionActive) {
+      setDetectionActive(false);
+      setDetections([]);
+      try {
+        await fetch(detectionStopUrl, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ session_id: "default" })
+        });
+      } catch (e) {
+        console.error("Failed to stop detection:", e);
+      }
+    } else {
+      try {
+        const res = await fetch(detectionStartUrl, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ session_id: "default" })
+        });
+        const data = await res.json().catch(() => ({}));
+        if (data.status === "started") {
+          setDetectionActive(true);
+        } else {
+          const msg = data.message || data.error || "Detection failed to start";
+          setDetectionError(msg);
+          console.error("Detection start failed:", msg);
+        }
+      } catch (e) {
+        const msg = e.message || "Network error";
+        setDetectionError(msg);
+        console.error("Failed to start detection:", e);
+      }
+    }
+  };
+  const [capturedImage, setCapturedImage] = reactExports.useState(null);
+  const [prompt, setPrompt] = reactExports.useState("");
+  const [isSending, setIsSending] = reactExports.useState(false);
+  const captureImage = async () => {
+    try {
+      const res = await fetch(`http://${window.location.hostname}:8000/camera/capture`);
+      const data = await res.json();
+      if (data.status === "success") {
+        setCapturedImage(data.image);
+      } else {
+        console.error("Capture failed:", data.message);
+      }
+    } catch (e) {
+      console.error("Capture error:", e);
+    }
+  };
+  const sendCapturedImage = () => {
+    if (!wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) return;
+    setIsSending(true);
+    wsRef.current.send(JSON.stringify({
+      type: "send",
+      message: prompt,
+      images: [capturedImage]
+    }));
+    setTimeout(() => {
+      setCapturedImage(null);
+      setPrompt("");
+      setIsSending(false);
+      navigate("/");
+    }, 500);
+  };
+  const transformBboxForRotation = ([xmin, ymin, xmax, ymax]) => {
+    const left = ymin, top = 1 - xmax, right = ymax, bottom = 1 - xmin;
+    return [1 - right, top, 1 - left, bottom];
+  };
+  const renderBoundingBoxes = () => {
+    return detections.map((det, index) => {
+      const [xmin, ymin, xmax, ymax] = transformBboxForRotation(det.bbox);
+      const left = `${xmin * 100}%`;
+      const top = `${ymin * 100}%`;
+      const width = `${(xmax - xmin) * 100}%`;
+      const height = `${(ymax - ymin) * 100}%`;
+      const borderColor = "rgba(0, 255, 255, 1)";
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "div",
+        {
+          className: "absolute border-2 flex flex-col items-start justify-start pointer-events-none",
+          style: {
+            left,
+            top,
+            width,
+            height,
+            borderColor,
+            boxShadow: "0 0 10px rgba(0,255,255,0.3)"
+          },
+          children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
+            "div",
+            {
+              className: "bg-cyan-500 text-black text-[10px] font-bold px-1 py-0.5",
+              style: { marginTop: "-18px" },
+              children: [
+                det.label,
+                " ",
+                Math.round(det.confidence * 100),
+                "%"
+              ]
+            }
+          )
+        },
+        index
+      );
+    });
+  };
   return /* @__PURE__ */ jsxRuntimeExports.jsxs(
     motion.div,
     {
@@ -23192,54 +23378,151 @@ function CameraView() {
       exit: { opacity: 0, x: -20 },
       className: "relative w-[480px] h-[800px] max-w-full max-h-screen mx-auto overflow-hidden bg-black shadow-2xl flex flex-col",
       children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "absolute top-0 left-0 right-0 z-50 p-4 flex items-center justify-between bg-gradient-to-b from-black/60 to-transparent", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx(
-            "button",
-            {
-              onClick: () => navigate("/"),
-              className: "w-10 h-10 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center text-white hover:bg-white/30 transition-colors",
-              children: /* @__PURE__ */ jsxRuntimeExports.jsx(ArrowLeft, { size: 24 })
-            }
-          ),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "px-3 py-1 rounded-full bg-white/20 backdrop-blur-md text-white text-xs font-medium uppercase tracking-wider", children: "Live Feed" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-10" }),
-          " "
-        ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex-1 relative flex items-center justify-center overflow-hidden", children: [
-          status === "connecting" && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col items-center text-white/70", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute top-0 left-0 right-0 z-50 p-4 flex items-center justify-between bg-gradient-to-b from-black/80 to-transparent pointer-events-none", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "button",
+          {
+            onClick: () => navigate("/"),
+            className: "pointer-events-auto w-10 h-10 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center text-white hover:bg-white/20 transition-colors border border-white/10",
+            children: /* @__PURE__ */ jsxRuntimeExports.jsx(ArrowLeft, { size: 24 })
+          }
+        ) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex-1 relative flex items-center justify-center overflow-hidden bg-gray-900", children: [
+          status === "connecting" && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "absolute inset-0 z-10 flex flex-col items-center justify-center text-white/70 bg-black/50 backdrop-blur-sm", children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx(RefreshCw, { className: "animate-spin mb-4", size: 32 }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("p", { children: "Initializing Camera..." })
+            /* @__PURE__ */ jsxRuntimeExports.jsx("p", { children: "Connecting to Vision System..." })
           ] }),
-          status === "error" && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-center p-6 bg-red-500/20 backdrop-blur-md rounded-2xl border border-red-500/50 text-white max-w-[80%]", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "font-bold mb-2", children: "Error" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm opacity-90", children: error }),
+          status === "error" && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "absolute inset-0 z-10 flex flex-col items-center justify-center bg-black/80 backdrop-blur-sm p-6", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-red-500 mb-4", children: /* @__PURE__ */ jsxRuntimeExports.jsx(CircleAlert, { size: 48 }) }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-white text-center mb-4", children: "Connection Lost" }),
             /* @__PURE__ */ jsxRuntimeExports.jsx(
               "button",
               {
                 onClick: () => window.location.reload(),
-                className: "mt-4 px-4 py-2 bg-white/20 rounded-lg hover:bg-white/30 transition-colors text-sm",
-                children: "Retry"
+                className: "px-6 py-2 bg-white/10 rounded-full hover:bg-white/20 transition-colors text-white text-sm",
+                children: "Reconnect"
               }
             )
           ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "relative w-full h-full flex items-center justify-center", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "img",
+              {
+                src: videoFeedUrl,
+                className: "w-full h-full object-contain",
+                alt: "Live Camera Feed",
+                onLoad: () => {
+                  setStatus((s) => s === "connecting" ? "connected" : s);
+                },
+                onError: (e) => {
+                  console.error("Video feed error", e);
+                  setStatus("error");
+                }
+              }
+            ),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute inset-0 w-full h-full", children: detectionActive && renderBoundingBoxes() })
+          ] })
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute bottom-6 left-0 right-0 z-40 flex justify-center pointer-events-none", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "px-4 py-2 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white text-[10px] flex items-center gap-3 shadow-lg", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-1.5", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: `w-1.5 h-1.5 rounded-full ${status === "connected" ? "bg-green-500 animate-pulse" : "bg-red-500"}` }),
+            status === "connected" ? "LIVE" : "OFFLINE"
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-px h-3 bg-white/20" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: detectionActive ? `${detections.length} Objects` : "—" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-px h-3 bg-white/20" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: detectionActive ? "Hailo 10 fps" : "Stream 30 fps" })
+        ] }) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "absolute bottom-6 right-4 z-50 flex flex-col items-end gap-4 pointer-events-none", children: [
+          detectionError && /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[10px] text-red-400 max-w-[200px] text-right bg-black/60 px-2 py-1 rounded backdrop-blur-sm", children: detectionError }),
           /* @__PURE__ */ jsxRuntimeExports.jsx(
-            "img",
+            "button",
             {
-              ref: imgRef,
-              className: "w-full h-full object-cover",
-              alt: "Live Camera Feed",
-              style: { display: status === "connected" ? "block" : "none" }
+              type: "button",
+              onClick: toggleDetection,
+              className: `pointer-events-auto w-12 h-12 rounded-full flex items-center justify-center transition-all shadow-lg border ${detectionActive ? "bg-cyan-500 text-white border-cyan-400 shadow-[0_0_15px_rgba(6,182,212,0.5)]" : "bg-white/10 backdrop-blur-md text-white/80 border-white/20 hover:bg-white/20"}`,
+              title: detectionActive ? "Stop object detection" : "Start object detection",
+              children: /* @__PURE__ */ jsxRuntimeExports.jsx(Scan, { size: 20 })
+            }
+          ),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "button",
+            {
+              type: "button",
+              onClick: captureImage,
+              className: "pointer-events-auto w-16 h-16 rounded-full flex items-center justify-center transition-all shadow-lg border-2 border-white bg-white/20 hover:bg-white/30 active:scale-95",
+              title: "Take Picture",
+              children: /* @__PURE__ */ jsxRuntimeExports.jsx(Camera, { size: 32, className: "text-white drop-shadow-md" })
             }
           )
         ] }),
-        status === "connected" && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute bottom-8 left-0 right-0 z-50 flex justify-center", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "px-4 py-2 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white text-sm flex items-center gap-2", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-2 h-2 rounded-full bg-red-500 animate-pulse" }),
-          "480x800 • 30 FPS"
-        ] }) })
+        capturedImage && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "absolute inset-0 z-[60] bg-black flex flex-col", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "relative flex-1 bg-black flex items-center justify-center overflow-hidden", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "img",
+              {
+                src: `data:image/jpeg;base64,${capturedImage}`,
+                className: "w-full h-full object-contain",
+                alt: "Captured"
+              }
+            ),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "button",
+              {
+                onClick: () => setCapturedImage(null),
+                className: "absolute top-4 left-4 p-2 bg-black/50 rounded-full text-white hover:bg-black/70",
+                children: /* @__PURE__ */ jsxRuntimeExports.jsx(X, { size: 24 })
+              }
+            )
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "p-4 bg-gray-900 border-t border-gray-800", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex gap-2", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "input",
+              {
+                type: "text",
+                value: prompt,
+                onChange: (e) => setPrompt(e.target.value),
+                placeholder: "Ask about this image...",
+                className: "flex-1 bg-gray-800 text-white px-4 py-3 rounded-xl focus:outline-none focus:ring-1 focus:ring-cyan-500 border border-gray-700",
+                onKeyDown: (e) => {
+                  if (e.key === "Enter" && !isSending) sendCapturedImage();
+                }
+              }
+            ),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "button",
+              {
+                onClick: sendCapturedImage,
+                disabled: isSending,
+                className: "bg-cyan-500 hover:bg-cyan-400 text-black p-3 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium",
+                children: isSending ? /* @__PURE__ */ jsxRuntimeExports.jsx(RefreshCw, { className: "animate-spin", size: 24 }) : /* @__PURE__ */ jsxRuntimeExports.jsx(Send, { size: 24 })
+              }
+            )
+          ] }) })
+        ] })
       ]
     }
   );
 }
+const CloseButton = () => {
+  const handleClose = () => {
+    if (window.electron && window.electron.quit) {
+      window.electron.quit();
+    } else {
+      console.log("Close button clicked (Electron API not available)");
+      window.close();
+    }
+  };
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(
+    "button",
+    {
+      onClick: handleClose,
+      className: "absolute top-4 right-4 z-[9999] w-10 h-10 flex items-center justify-center rounded-full bg-black/20 hover:bg-red-500/80 text-white backdrop-blur-sm transition-all duration-200 border border-white/10",
+      "aria-label": "Close Application",
+      title: "Close Application",
+      children: /* @__PURE__ */ jsxRuntimeExports.jsx(X, { size: 20 })
+    }
+  );
+};
 const AnimatedRoutes = () => {
   const location = useLocation();
   return /* @__PURE__ */ jsxRuntimeExports.jsx(AnimatePresence, { mode: "wait", children: /* @__PURE__ */ jsxRuntimeExports.jsxs(Routes, { location, children: [
@@ -23255,7 +23538,10 @@ const AnimatedRoutes = () => {
   ] }, location.pathname) });
 };
 function App() {
-  return /* @__PURE__ */ jsxRuntimeExports.jsx(BrowserRouter, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(AnimatedRoutes, {}) });
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs(BrowserRouter, { children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsx(CloseButton, {}),
+    /* @__PURE__ */ jsxRuntimeExports.jsx(AnimatedRoutes, {})
+  ] });
 }
 clientExports.createRoot(document.getElementById("root")).render(
   /* @__PURE__ */ jsxRuntimeExports.jsx(reactExports.StrictMode, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(App, {}) })

@@ -208,11 +208,35 @@ class OpenClawBridge:
 
                 if msg_type == "send":
                     message = data.get("message", "").strip()
-                    logger.info(f"[{self.connection_id}] Received send request")
-                    if message and self.oc_connected:
+                    images = data.get("images", [])
+                    
+                    logger.info(f"[{self.connection_id}] Received send request (images={len(images)})")
+                    
+                    if (message or images) and self.oc_connected:
                         await self.safe_send({"type": "stream_start"})
+                        
+                        full_message = message
+                        
+                        # Append images if any
+                        if images:
+                            try:
+                                base_dir = os.path.dirname(os.path.abspath(__file__))
+                                img_dir_local = os.path.join(base_dir, "img")
+                                
+                                for img_name in images:
+                                    # Basic security check
+                                    if ".." in img_name or "/" in img_name or "\\" in img_name:
+                                        logger.warning(f"[{self.connection_id}] Skipped unsafe image path: {img_name}")
+                                        continue
+                                        
+                                    abs_path = os.path.join(img_dir_local, img_name)
+                                    # Append text representation for the model
+                                    full_message += f"\n\n[Image: {abs_path}]"
+                            except Exception as e:
+                                logger.error(f"Error processing images: {e}")
+
                         try:
-                            await self.client.chat_send(message)
+                            await self.client.chat_send(full_message)
                         except Exception as e:
                             logger.error(f"[{self.connection_id}] chat_send error: {e}")
                             await self.safe_send({"type": "stream_error", "error": str(e)})
@@ -304,6 +328,46 @@ async def stop_camera_detection(request: CameraRequest):
     return {"status": "stopped"}
 
 
+@app.post("/camera/capture")
+async def capture_camera_frame(request: CameraRequest):
+    """Capture the current frame and save it to disk."""
+    import datetime
+    import os
+    
+    if not shared_detection_state:
+        return {"status": "error", "message": "Camera not running"}, 400
+        
+    frame, _ = shared_detection_state.get_latest()
+    if frame is None:
+        return {"status": "error", "message": "No frame available"}, 503
+        
+    try:
+        # Rotate 90 degrees clockwise to match UI
+        frame = cv2.rotate(frame, cv2.ROTATE_90_CLOCKWISE)
+        
+        # Convert RGB to BGR for OpenCV saving
+        frame_bgr = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
+        
+        # Ensure img directory exists
+        # Use the directory where app.py is located, not the CWD (which might be hailo-apps)
+        img_dir = "/home/pocket-ai/Pictures"        
+        os.makedirs(img_dir, exist_ok=True)
+        
+        # Generate timestamped filename
+        timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+        filename = f"capture_{timestamp}.jpg"
+        filepath = os.path.join(img_dir, filename)
+        
+        # Save image
+        cv2.imwrite(filepath, frame_bgr)
+        logger.info(f"Image saved to {filepath}")
+        
+        return {"status": "success", "filename": filename, "filepath": filepath}
+    except Exception as e:
+        logger.exception("Failed to save image")
+        return {"status": "error", "message": str(e)}, 500
+
+
 def generate_frames():
     """Generates MJPEG frames from the shared state."""
     first_frame = True
@@ -353,6 +417,58 @@ async def video_feed():
 
 # Easier approach: Client requests detections or we piggyback on existing ws connection.
 # Let's modify OpenClawBridge to include a detection broadcasting task.
+
+
+# -----------------------------------------------------------------------------------------------
+# Gallery & Static Files
+# -----------------------------------------------------------------------------------------------
+
+from fastapi.staticfiles import StaticFiles
+import os
+
+# Ensure img directory exists for StaticFiles to mount without error
+# app.py is in /home/pocket-ai/Documents/pocket-ai/
+# We want img to be in /home/pocket-ai/Documents/pocket-ai/img
+# We want img to be in /home/pocket-ai/Pictures
+img_dir = "/home/pocket-ai/Pictures"
+os.makedirs(img_dir, exist_ok=True)
+
+# Mount the img directory to serve images statically
+app.mount("/img", StaticFiles(directory=img_dir), name="img")
+
+@app.get("/gallery/images")
+async def get_gallery_images():
+    """List all images in the img directory, sorted by newest first."""
+    try:
+        files = [f for f in os.listdir(img_dir) if f.lower().endswith(('.png', '.jpg', '.jpeg'))]
+        # Sort by modification time, newest first
+        files.sort(key=lambda x: os.path.getmtime(os.path.join(img_dir, x)), reverse=True)
+        
+        # Return list of URLs/filenames
+        # Since we mounted /img, the URL is /img/filename
+        image_list = [{"filename": f, "url": f"/img/{f}"} for f in files]
+        return {"status": "success", "images": image_list}
+    except Exception as e:
+        logger.error(f"Error listing gallery images: {e}")
+        return {"status": "error", "message": str(e)}
+
+@app.delete("/gallery/images/{filename}")
+async def delete_gallery_image(filename: str):
+    """Delete an image from the gallery."""
+    try:
+        # Basic security check to prevent path traversal
+        if ".." in filename or "/" in filename or "\\" in filename:
+             return {"status": "error", "message": "Invalid filename"}, 400
+             
+        filepath = os.path.join(img_dir, filename)
+        if os.path.exists(filepath):
+            os.remove(filepath)
+            return {"status": "success", "message": f"Deleted {filename}"}
+        else:
+            return {"status": "error", "message": "File not found"}, 404
+    except Exception as e:
+        logger.error(f"Error deleting image: {e}")
+        return {"status": "error", "message": str(e)}, 500
 
 if __name__ == "__main__":
     import uvicorn

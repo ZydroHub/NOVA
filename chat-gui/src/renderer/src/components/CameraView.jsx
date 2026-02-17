@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { motion } from 'framer-motion';
-import { ArrowLeft, RefreshCw, AlertCircle, Scan } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ArrowLeft, RefreshCw, AlertCircle, Scan, Camera } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 // Shared across instances so second mount can cancel first mount's pending stop (React Strict Mode)
@@ -13,6 +13,7 @@ export default function CameraView() {
     const [detections, setDetections] = useState([]);
     const [detectionActive, setDetectionActive] = useState(false);
     const [detectionError, setDetectionError] = useState(null);
+    const [flash, setFlash] = useState(false);
     const wsRef = useRef(null);
 
     const videoFeedUrl = `http://${window.location.hostname}:8000/video_feed`;
@@ -21,6 +22,7 @@ export default function CameraView() {
     const stopUrl = `http://${window.location.hostname}:8000/camera/stop`;
     const detectionStartUrl = `http://${window.location.hostname}:8000/camera/detection/start`;
     const detectionStopUrl = `http://${window.location.hostname}:8000/camera/detection/stop`;
+    const captureUrl = `http://${window.location.hostname}:8000/camera/capture`;
 
     useEffect(() => {
         let isMounted = true;
@@ -159,6 +161,29 @@ export default function CameraView() {
         }
     };
 
+    const captureFrame = async () => {
+        // Trigger flash
+        setFlash(true);
+        setTimeout(() => setFlash(false), 150);
+
+        try {
+            const res = await fetch(captureUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ session_id: 'default' })
+            });
+            const data = await res.json();
+            if (data.status === 'success') {
+                console.log('Image captured:', data.filename);
+                // Optional: Show a toast or visual feedback
+            } else {
+                console.error('Capture failed:', data.message);
+            }
+        } catch (error) {
+            console.error('Error capturing frame:', error);
+        }
+    };
+
     // Video is rotated 90° clockwise for portrait; transform bbox to match
     const transformBboxForRotation = ([xmin, ymin, xmax, ymax]) => {
         const left = ymin, top = 1 - xmax, right = ymax, bottom = 1 - xmin;
@@ -210,6 +235,19 @@ export default function CameraView() {
             exit={{ opacity: 0, x: -20 }}
             className="relative w-[480px] h-[800px] max-w-full max-h-screen mx-auto overflow-hidden bg-black shadow-2xl flex flex-col"
         >
+            {/* Flash Effect */}
+            <AnimatePresence>
+                {flash && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.05 }}
+                        className="absolute inset-0 z-[100] bg-white pointer-events-none"
+                    />
+                )}
+            </AnimatePresence>
+
             {/* Header */}
             <div className="absolute top-0 left-0 right-0 z-50 p-4 flex items-center justify-between bg-gradient-to-b from-black/80 to-transparent pointer-events-none">
                 <button
@@ -340,6 +378,18 @@ export default function CameraView() {
                     <div className="w-px h-3 bg-white/20"></div>
                     <div>{detectionActive ? 'Hailo 10 fps' : 'Stream 30 fps'}</div>
                 </div>
+            </div>
+
+            {/* Capture Button - Bottom Left */}
+            <div className="absolute bottom-6 left-4 z-50 pointer-events-auto">
+                <button
+                    type="button"
+                    onClick={captureFrame}
+                    className="w-14 h-14 rounded-full flex items-center justify-center bg-white/10 backdrop-blur-md text-white border border-white/20 hover:bg-white/20 transition-all shadow-lg active:scale-95"
+                    title="Take Picture"
+                >
+                    <Camera size={28} />
+                </button>
             </div>
 
             {/* Object Detection Button - Bottom Right */}
