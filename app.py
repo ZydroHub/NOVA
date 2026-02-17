@@ -12,6 +12,7 @@ from typing import Dict, List, Optional
 # Import OpenClawClient from the existing file
 try:
     from openclaw_client import OpenClawClient, load_openclaw_config, DEFAULT_SESSION_KEY
+    from scheduled_tasks_manager import ScheduledTasksManager
 except ImportError as e:
     print(f"Error: Could not import openclaw_client. Details: {e}")
     sys.exit(1)
@@ -274,6 +275,89 @@ class OpenClawBridge:
                             await self.safe_send({"type": "session_reset"})
                         except Exception as e:
                             await self.safe_send({"type": "stream_error", "error": str(e)})
+
+                # --- New Handlers for Scheduled Tasks ---
+                elif msg_type == "cron.list":
+                    try:
+                        manager = ScheduledTasksManager(self.client)
+                        jobs = await manager.list_cron_jobs()
+                        await self.safe_send({
+                            "type": "cron_list",
+                            "jobs": jobs
+                        })
+                    except Exception as e:
+                        logger.error(f"[{self.connection_id}] cron.list error: {e}")
+                        await self.safe_send({"type": "stream_error", "error": f"cron.list error: {e}"})
+
+                elif msg_type == "cron.add":
+                    try:
+                        manager = ScheduledTasksManager(self.client)
+                        name = data.get("name")
+                        schedule = data.get("schedule")
+                        job_payload = data.get("payload", {})
+                        description = data.get("description", "")
+                        
+                        if not name or not schedule:
+                            raise ValueError("Missing name or schedule")
+                            
+                        # Use default session key if client session key not set, or pass explicitly
+                        session_key = self.client.session_key if self.client else DEFAULT_SESSION_KEY
+                        
+                        # Pass description if supported by manager/API
+                        # We need to update ScheduledTasksManager to accept it, 
+                        # or just bypass it here if we want to be quick, but let's do it right.
+                        # The manager.add_cron_job currently takes fixed args.
+                        # Let's call client.request directly or update the manager signature in a separate step?
+                        # Since `manager` is just a helper, let's just make the request here or update the manager.
+                        # Updating app.py is the critical path since it has the code.
+                        
+                        params = {
+                            "name": name,
+                            "schedule": schedule,
+                            "sessionTarget": session_key,
+                            "payload": job_payload,
+                            "description": description
+                        }
+                        
+                        res = await self.client.request("cron.add", params)
+                        await self.safe_send({"type": "cron_added", "result": res})
+                    except Exception as e:
+                        logger.error(f"[{self.connection_id}] cron.add error: {e}")
+                        await self.safe_send({"type": "stream_error", "error": f"cron.add error: {e}"})
+
+                elif msg_type == "cron.remove":
+                    try:
+                        manager = ScheduledTasksManager(self.client)
+                        job_id = data.get("id")
+                        if not job_id:
+                            raise ValueError("Missing job id")
+                        res = await manager.remove_cron_job(job_id)
+                        await self.safe_send({"type": "cron_removed", "result": res})
+                    except Exception as e:
+                        logger.error(f"[{self.connection_id}] cron.remove error: {e}")
+                        await self.safe_send({"type": "stream_error", "error": f"cron.remove error: {e}"})
+
+                elif msg_type == "heartbeat.get":
+                    try:
+                        manager = ScheduledTasksManager(self.client)
+                        status = await manager.get_heartbeat_status()
+                        await self.safe_send({"type": "heartbeat_status", "status": status})
+                    except Exception as e:
+                        logger.error(f"[{self.connection_id}] heartbeat.get error: {e}")
+                        await self.safe_send({"type": "stream_error", "error": f"heartbeat.get error: {e}"})
+
+                elif msg_type == "heartbeat.set":
+                    try:
+                        manager = ScheduledTasksManager(self.client)
+                        active = data.get("active", False)
+                        interval = data.get("interval", 30)
+                        
+                        session_key = self.client.session_key if self.client else DEFAULT_SESSION_KEY
+                        res = await manager.set_heartbeat(active, interval, session_key)
+                        await self.safe_send({"type": "heartbeat_updated", "status": res})
+                    except Exception as e:
+                        logger.error(f"[{self.connection_id}] heartbeat.set error: {e}")
+                        await self.safe_send({"type": "stream_error", "error": f"heartbeat.set error: {e}"})
 
         except Exception as e:
             logger.error(f"[{self.connection_id}] Bridge loop error: {e}")

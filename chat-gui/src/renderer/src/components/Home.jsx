@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { MessageCircle, Settings, Camera, Music, Video, Image as GalleryIcon } from 'lucide-react';
+import { MessageCircle, Settings, Camera, Music, Video, Image as GalleryIcon, Clock, Activity } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import Avatar from './Avatar';
 
@@ -63,15 +63,21 @@ export default function Home() {
                         icon={Camera} radius={150} initialAngle={330} delay={0.2}
                         onClick={() => navigate('/camera')}
                     />
-                    <Orbiter icon={Music} radius={150} initialAngle={30} delay={0.4} />
+                    <Orbiter
+                        icon={GalleryIcon} radius={150} initialAngle={210} delay={1.0}
+                        onClick={() => navigate('/gallery')}
+                    />
                     <Orbiter
                         icon={Settings} radius={150} initialAngle={90} delay={0.6}
                         onClick={() => navigate('/settings')}
                     />
-                    <Orbiter icon={Video} radius={150} initialAngle={150} delay={0.8} />
                     <Orbiter
-                        icon={GalleryIcon} radius={150} initialAngle={210} delay={1.0}
-                        onClick={() => navigate('/gallery')}
+                        icon={Clock} radius={150} initialAngle={150} delay={0.8}
+                        onClick={() => navigate('/cron')}
+                    />
+                    <Orbiter
+                        icon={Activity} radius={150} initialAngle={30} delay={0.4}
+                        onClick={() => navigate('/heartbeat')}
                     />
                 </div>
             </div>

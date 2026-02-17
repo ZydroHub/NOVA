@@ -6,147 +6,27 @@ import MessageList from './MessageList';
 import ChatInput from './ChatInput';
 import { motion } from 'framer-motion';
 
-const WS_URL = `ws://${window.location.hostname || '127.0.0.1'}:8000/ws`;
+import { useWebSocket } from '../contexts/WebSocketContext.jsx';
 
 export default function ChatInterface({ layoutId }) {
     const location = useLocation();
-    const [messages, setMessages] = useState([]);
-    const [streaming, setStreaming] = useState(false);
-    const [streamText, setStreamText] = useState('');
-    const [connStatus, setConnStatus] = useState('connecting'); // connected | disconnected | connecting
-    const wsRef = useRef(null);
-    const reconnectTimer = useRef(null);
-
-    // Use a ref for the message handler so ws.onmessage always calls the latest version
-    const handleServerMessageRef = useRef(null);
-
-    const handleServerMessage = useCallback((data) => {
-        switch (data.type) {
-            case 'history': {
-                const history = (data.messages || []).map((m) => ({
-                    role: m.role,
-                    text: m.text,
-                }));
-                setMessages(history);
-                break;
-            }
-
-            case 'stream_start':
-                setStreaming(true);
-                setStreamText('');
-                break;
-
-            case 'stream_delta':
-                setStreamText(data.text || '');
-                break;
-
-            case 'stream_final':
-                setStreaming(false);
-                setMessages((prev) => [
-                    ...prev,
-                    { role: 'assistant', text: data.text || '' },
-                ]);
-                setStreamText('');
-                break;
-
-            case 'stream_error':
-                setStreaming(false);
-                setMessages((prev) => [
-                    ...prev,
-                    { role: 'assistant', text: `⚠ Error: ${data.error || 'Unknown error'}` },
-                ]);
-                setStreamText('');
-                break;
-
-            case 'stream_aborted':
-                setStreaming(false);
-                // Use functional update to get the latest streamText
-                setStreamText((prevStreamText) => {
-                    if (prevStreamText) {
-                        setMessages((prev) => [
-                            ...prev,
-                            { role: 'assistant', text: prevStreamText + '\n[aborted]' },
-                        ]);
-                    }
-                    return '';
-                });
-                break;
-
-            case 'session_reset':
-                setMessages([]);
-                setStreamText('');
-                setStreaming(false);
-                break;
-
-            default:
-                break;
-        }
-    }, []);
-
-    // Keep the ref up to date
-    handleServerMessageRef.current = handleServerMessage;
-
-    // ─── WebSocket connection ──────────────────────────────────────────
-    const connect = useCallback(() => {
-        // Close existing connection if any
-        if (wsRef.current) {
-            wsRef.current.onclose = null; // prevent reconnect loop
-            wsRef.current.close();
-            wsRef.current = null;
-        }
-
-        setConnStatus('connecting');
-        const ws = new WebSocket(WS_URL);
-        wsRef.current = ws;
-
-        ws.onopen = () => {
-            setConnStatus('connected');
-            clearTimeout(reconnectTimer.current);
-        };
-
-        ws.onclose = () => {
-            setConnStatus('disconnected');
-            wsRef.current = null;
-            // Auto-reconnect after 3s
-            reconnectTimer.current = setTimeout(connect, 3000);
-        };
-
-        ws.onerror = () => {
-            // onclose will fire after this
-        };
-
-        ws.onmessage = (event) => {
-            try {
-                const data = JSON.parse(event.data);
-                // Always call the latest handler via the ref
-                handleServerMessageRef.current(data);
-            } catch {
-                // Ignore non-JSON
-            }
-        };
-    }, []);
-
-    useEffect(() => {
-        connect();
-        return () => {
-            clearTimeout(reconnectTimer.current);
-            if (wsRef.current) {
-                wsRef.current.onclose = null; // prevent reconnect on cleanup
-                wsRef.current.close();
-                wsRef.current = null;
-            }
-        };
-    }, [connect]);
+    const {
+        connStatus,
+        messages,
+        setMessages, // We need this to add optimistic user messages
+        streamText,
+        streaming,
+        sendMessage
+    } = useWebSocket();
 
     // ─── Actions ───────────────────────────────────────────────────────
     const send = useCallback(
         (text, images = []) => {
-            if (!wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) return;
             // Add user message immediately
             setMessages((prev) => [...prev, { role: 'user', text }]);
-            wsRef.current.send(JSON.stringify({ type: 'send', message: text, images }));
+            sendMessage('send', { message: text, images });
         },
-        []
+        [sendMessage, setMessages]
     );
 
     // ─── Auto-send from Gallery navigation ─────────────────────────────
@@ -164,14 +44,12 @@ export default function ChatInterface({ layoutId }) {
     }, [connStatus, location.state, send]);
 
     const abort = useCallback(() => {
-        if (!wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) return;
-        wsRef.current.send(JSON.stringify({ type: 'abort' }));
-    }, []);
+        sendMessage('abort');
+    }, [sendMessage]);
 
     const reset = useCallback(() => {
-        if (!wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) return;
-        wsRef.current.send(JSON.stringify({ type: 'reset' }));
-    }, []);
+        sendMessage('reset');
+    }, [sendMessage]);
 
     // ─── Render ────────────────────────────────────────────────────────
     return (

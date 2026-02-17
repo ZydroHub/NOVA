@@ -7,6 +7,9 @@ import CameraView from './components/CameraView';
 import Gallery from './components/Gallery';
 import Settings from './components/Settings';
 import StatusBar from './components/StatusBar';
+import CronManager from './components/CronManager';
+import HeartbeatManager from './components/HeartbeatManager';
+import { WebSocketProvider } from './contexts/WebSocketContext';
 
 
 const AnimatedRoutes = () => {
@@ -22,6 +25,8 @@ const AnimatedRoutes = () => {
         />
         <Route path="/camera" element={<CameraView />} />
         <Route path="/gallery" element={<Gallery />} />
+        <Route path="/cron" element={<CronManager />} />
+        <Route path="/heartbeat" element={<HeartbeatManager />} />
         <Route path="/settings" element={<Settings />} />
       </Routes>
     </AnimatePresence>
@@ -31,12 +36,14 @@ const AnimatedRoutes = () => {
 export default function App() {
   return (
     <BrowserRouter>
-      <div className="flex flex-col h-screen w-screen overflow-hidden bg-black text-white">
-        <StatusBar />
-        <div className="flex-1 overflow-hidden relative w-full">
-          <AnimatedRoutes />
+      <WebSocketProvider>
+        <div className="flex flex-col h-screen w-screen overflow-hidden bg-black text-white">
+          <StatusBar />
+          <div className="flex-1 overflow-hidden relative w-full">
+            <AnimatedRoutes />
+          </div>
         </div>
-      </div>
+      </WebSocketProvider>
     </BrowserRouter>
   );
 }

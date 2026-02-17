@@ -111,7 +111,7 @@ class OpenClawClient:
                 "mode": "cli",
             },
             "role": "operator",
-            "scopes": ["operator.read", "operator.write"],
+            "scopes": ["operator.read", "operator.write", "operator.admin"],
             "caps": [],
             "auth": {"token": self.token} if self.token else {},
         }

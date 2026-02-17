@@ -23,7 +23,9 @@ except ImportError:
     sys.exit(1)
 
 # Import the OpenClaw client from the same directory
+# Import the OpenClaw client from the same directory
 from openclaw_client import OpenClawClient, load_openclaw_config, DEFAULT_SESSION_KEY
+from scheduled_tasks_manager import ScheduledTasksManager
 
 
 BRIDGE_PORT = 8765
@@ -213,6 +215,66 @@ class ChatBridge:
                             "type": "stream_error",
                             "error": f"Reset failed: {e}",
                         })
+
+                # --- New Handlers for Scheduled Tasks ---
+                
+                elif msg_type == "cron.list":
+                    try:
+                        manager = ScheduledTasksManager(client)
+                        jobs = await manager.list_cron_jobs()
+                        await safe_send({
+                            "type": "cron_list",
+                            "jobs": jobs
+                        })
+                    except Exception as e:
+                        await safe_send({"type": "stream_error", "error": f"cron.list error: {e}"})
+
+                elif msg_type == "cron.add":
+                    try:
+                        manager = ScheduledTasksManager(client)
+                        # Expect payload in msg: name, schedule, payload
+                        name = data.get("name")
+                        schedule = data.get("schedule")
+                        job_payload = data.get("payload", {})
+                        
+                        if not name or not schedule:
+                            raise ValueError("Missing name or schedule")
+                            
+                        # Use current session key for target
+                        res = await manager.add_cron_job(name, schedule, job_payload, self.session_key)
+                        await safe_send({"type": "cron_added", "result": res})
+                    except Exception as e:
+                        await safe_send({"type": "stream_error", "error": f"cron.add error: {e}"})
+
+                elif msg_type == "cron.remove":
+                    try:
+                        manager = ScheduledTasksManager(client)
+                        job_id = data.get("id")
+                        if not job_id:
+                            raise ValueError("Missing job id")
+                        res = await manager.remove_cron_job(job_id)
+                        await safe_send({"type": "cron_removed", "result": res})
+                    except Exception as e:
+                        await safe_send({"type": "stream_error", "error": f"cron.remove error: {e}"})
+
+                elif msg_type == "heartbeat.get":
+                    try:
+                        manager = ScheduledTasksManager(client)
+                        status = await manager.get_heartbeat_status()
+                        await safe_send({"type": "heartbeat_status", "status": status})
+                    except Exception as e:
+                        await safe_send({"type": "stream_error", "error": f"heartbeat.get error: {e}"})
+
+                elif msg_type == "heartbeat.set":
+                    try:
+                        manager = ScheduledTasksManager(client)
+                        active = data.get("active", False)
+                        interval = data.get("interval", 30)
+                        
+                        res = await manager.set_heartbeat(active, interval, self.session_key)
+                        await safe_send({"type": "heartbeat_updated", "status": res})
+                    except Exception as e:
+                        await safe_send({"type": "stream_error", "error": f"heartbeat.set error: {e}"})
 
         except websockets.ConnectionClosed:
             print(f"[bridge] Client disconnected", flush=True)
