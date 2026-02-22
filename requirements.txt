@@ -4,6 +4,10 @@ pydantic
 websockets
 opencv-python
 psutil
+numpy
+PyAudio
+faster-whisper
+scipy
 # Hardware libraries - best installed via apt and inherited via --system-site-packages
 # gpiozero
 # rpi-lgpio

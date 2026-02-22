@@ -26,6 +26,10 @@ class STTEngine:
         self.thread = None
         self.stream = None
         self.p = pyaudio.PyAudio()
+        self.live_thread = None
+        self.audio_frames = []
+        self.current_rate = RATE
+        self.current_channels = CHANNELS
 
     def load_model(self):
         if self.model is None:
@@ -124,18 +128,39 @@ class STTEngine:
     # RETHINKING IMPLEMENTATION FOR USER REQUEST:
     # "press it, it start to transcribe... press it again it stops... then that transcription is sent"
     
+    def _get_input_device_index(self):
+        """Find the first available input device."""
+        for i in range(self.p.get_device_count()):
+            dev = self.p.get_device_info_by_index(i)
+            if dev.get('maxInputChannels') > 0:
+                print(f"Using input device: {dev.get('name')} (index {i})")
+                return i
+        return None
+
     def start_capture(self):
         if self.listening: return
+        
+        device_index = self._get_input_device_index()
+        if device_index is None:
+            print("Error: No input device found.")
+            return
+
+        device_info = self.p.get_device_info_by_index(device_index)
+        self.current_rate = int(device_info.get('defaultSampleRate', RATE))
+        self.current_channels = int(device_info.get('maxInputChannels', CHANNELS))
+        
+        print(f"Opening stream: {self.current_rate}Hz, {self.current_channels} channels")
+
         self.listening = True
         self.audio_frames = []
         
         if not self.model: self.load_model()
 
         self.stream = self.p.open(format=FORMAT,
-                        channels=CHANNELS,
-                        rate=RATE,
+                        channels=self.current_channels,
+                        rate=self.current_rate,
                         input=True,
-                        input_device_index=0,
+                        input_device_index=device_index,
                         frames_per_buffer=CHUNK_SIZE,
                         stream_callback=self._capture_callback)
         print("Capture Started")
@@ -162,8 +187,19 @@ class STTEngine:
     def _transcribe_buffer(self, frames):
         start_t = time.time()
         current_audio = b''.join(frames)
+        
         # Convert to float32
         audio_np = np.frombuffer(current_audio, dtype=np.int16).astype(np.float32) / 32768.0
+        
+        # Handle multiple channels (take first channel)
+        if self.current_channels > 1:
+            audio_np = audio_np.reshape(-1, self.current_channels)[:, 0]
+
+        # Resample if not 16kHz
+        if self.current_rate != 16000:
+            import scipy.signal
+            num_samples = int(len(audio_np) * 16000 / self.current_rate)
+            audio_np = scipy.signal.resample(audio_np, num_samples)
         
         # Transcribe
         segments, _ = self.model.transcribe(audio_np, beam_size=1, language="en", vad_filter=True)
