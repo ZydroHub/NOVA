@@ -1,0 +1,35 @@
+[
+  {
+    "id": "e5ebe671-32bd-4ac4-a999-9d1b4e1f743d",
+    "title": "New Chat",
+    "messages": [],
+    "updated_at": 1771811899.0337858
+  },
+  {
+    "id": "040d7311-8852-4db2-865d-18cb53456def",
+    "title": "hello",
+    "messages": [
+      {
+        "role": "user",
+        "content": "hello",
+        "timestamp": 1771811909.9950252
+      },
+      {
+        "role": "assistant",
+        "content": "<think>\nHello! How can I assist you today? If you have any questions or need help with something, feel free to ask!\n</think>\n\nHello! How can I assist you today? If you have any questions or need help with something, feel free to ask!",
+        "timestamp": 1771811917.3306632
+      },
+      {
+        "role": "user",
+        "content": "how are you doing?",
+        "timestamp": 1771813490.343187
+      },
+      {
+        "role": "assistant",
+        "content": "<think>\nOkay, the user just asked how I'm doing. Let me think about the response. I should acknowledge their question and provide a helpful answer.\n\nFirst, I need to confirm my current state. Since I'm an AI assistant, I can't be physically present, but I can mention that I'm working on tasks. Then, I should invite them to ask more questions if they have any.\n\nI should keep the tone friendly and open-ended. Maybe add something about being available for assistance in case there's anything else they need help with. That way, it's helpful and encourages further interaction.\n</think>\n\nHello! I'm here to help you! How can I assist you today? Let me know if there's anything you'd like to ask or need help with! \ud83d\ude0a",
+        "timestamp": 1771813515.121541
+      }
+    ],
+    "updated_at": 1771813515.1215603
+  }
+]

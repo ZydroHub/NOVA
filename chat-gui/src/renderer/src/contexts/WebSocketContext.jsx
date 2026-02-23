@@ -2,10 +2,13 @@ import React, { createContext, useContext, useEffect, useRef, useState, useCallb
 
 const WebSocketContext = createContext(null);
 
-const WS_URL = `ws://${window.location.hostname || '127.0.0.1'}:8000/ws`;
+const WS_URL = `ws://${window.location.hostname || '127.0.0.1'}:8001/ws`;
+const CHAT_WS_URL = `ws://${window.location.hostname || '127.0.0.1'}:8001/ws/chat`;
+const API_URL = `http://${window.location.hostname || '127.0.0.1'}:8001`;
 
 export function WebSocketProvider({ children }) {
     const [connStatus, setConnStatus] = useState('connecting'); // connected | disconnected | connecting
+    const [chatConnStatus, setChatConnStatus] = useState('disconnected');
     const [messages, setMessages] = useState([]); // Chat messages
     const [streamText, setStreamText] = useState('');
     const [streaming, setStreaming] = useState(false);
@@ -13,6 +16,10 @@ export function WebSocketProvider({ children }) {
     const [isVoskRecording, setIsVoskRecording] = useState(false);
     const [voiceStatus, setVoiceStatus] = useState('idle'); // idle | listening | thinking | speaking
     const [voskText, setVoskText] = useState('');
+
+    // Multi-conversation state
+    const [conversations, setConversations] = useState([]);
+    const [currentConvId, setCurrentConvId] = useState(null);
 
     // Generic event listeners for other components
     const eventListeners = useRef({});
@@ -141,20 +148,97 @@ export function WebSocketProvider({ children }) {
         };
     }, [handleServerMessage]);
 
-    useEffect(() => {
-        connect();
-        return () => {
-            clearTimeout(reconnectTimer.current);
-            if (wsRef.current) {
-                wsRef.current.onclose = null;
-                wsRef.current.close();
+    const fetchConversations = useCallback(async () => {
+        try {
+            const resp = await fetch(`${API_URL}/conversations`);
+            const data = await resp.json();
+            setConversations(data);
+            return data;
+        } catch (e) {
+            console.error("Failed to fetch conversations", e);
+        }
+    }, []);
+
+    const createConversation = useCallback(async () => {
+        try {
+            const resp = await fetch(`${API_URL}/conversations`, { method: 'POST' });
+            const data = await resp.json();
+            await fetchConversations();
+            return data;
+        } catch (e) {
+            console.error("Failed to create conversation", e);
+        }
+    }, [fetchConversations]);
+
+    const deleteConversation = useCallback(async (id) => {
+        try {
+            await fetch(`${API_URL}/conversations/${id}`, { method: 'DELETE' });
+            await fetchConversations();
+            if (currentConvId === id) {
+                setCurrentConvId(null);
+                setMessages([]);
+            }
+        } catch (e) {
+            console.error("Failed to delete conversation", e);
+        }
+    }, [currentConvId, fetchConversations]);
+
+    const renameConversation = useCallback(async (id, newTitle) => {
+        try {
+            await fetch(`${API_URL}/conversations/${id}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ title: newTitle })
+            });
+            await fetchConversations();
+        } catch (e) {
+            console.error("Failed to rename conversation", e);
+        }
+    }, [fetchConversations]);
+
+    const chatWsRef = useRef(null);
+
+    const connectChat = useCallback((convId) => {
+        if (chatWsRef.current) {
+            chatWsRef.current.close();
+        }
+
+        setChatConnStatus('connecting');
+        const ws = new WebSocket(`${CHAT_WS_URL}/${convId}`);
+        chatWsRef.current = ws;
+
+        ws.onopen = () => setChatConnStatus('connected');
+        ws.onclose = () => setChatConnStatus('disconnected');
+        ws.onmessage = (event) => {
+            try {
+                const data = JSON.parse(event.data);
+                handleServerMessage(data);
+            } catch (e) {
+                console.error("Chat WS Parse error", e);
             }
         };
-    }, [connect]);
+    }, [handleServerMessage]);
+
+    useEffect(() => {
+        connect();
+        fetchConversations();
+        return () => {
+            clearTimeout(reconnectTimer.current);
+            if (wsRef.current) wsRef.current.close();
+            if (chatWsRef.current) chatWsRef.current.close();
+        };
+    }, [connect, fetchConversations]);
+
+    useEffect(() => {
+        if (currentConvId) {
+            connectChat(currentConvId);
+        }
+    }, [currentConvId, connectChat]);
 
     const sendMessage = useCallback((type, payload = {}) => {
-        if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
-            wsRef.current.send(JSON.stringify({ type, ...payload }));
+        const targetWs = chatWsRef.current?.readyState === WebSocket.OPEN ? chatWsRef.current : wsRef.current;
+        if (targetWs && targetWs.readyState === WebSocket.OPEN) {
+            targetWs.send(JSON.stringify({ type, ...payload }));
         } else {
             console.warn("WS not connected, cannot send", type);
         }
@@ -166,16 +250,21 @@ export function WebSocketProvider({ children }) {
     const startVosk = useCallback(() => {
         setIsVoskRecording(true);
         setVoskText('');
-        sendMessage('vosk_start');
+        sendMessage('start_vosk');
     }, [sendMessage]);
 
     const stopVosk = useCallback(() => {
         setIsVoskRecording(false);
-        sendMessage('vosk_stop');
+        sendMessage('stop_vosk');
+    }, [sendMessage]);
+
+    const abort = useCallback(() => {
+        sendMessage('abort');
     }, [sendMessage]);
 
     const value = {
         connStatus,
+        chatConnStatus,
         messages,
         setMessages,
         streamText,
@@ -184,10 +273,18 @@ export function WebSocketProvider({ children }) {
         isVoskRecording,
         voiceStatus,
         voskText,
+        conversations,
+        currentConvId,
+        setCurrentConvId,
+        fetchConversations,
+        createConversation,
+        deleteConversation,
+        renameConversation,
         sendMessage,
         toggleVoice,
         startVosk,
         stopVosk,
+        abort,
         addEventListener
     };
 

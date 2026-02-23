@@ -1,16 +1,14 @@
 import os
-import re
 import time
-import asyncio
 import psutil
-from fastapi import FastAPI, WebSocket, WebSocketDisconnect
+import multiprocessing
+import cv2
+import numpy as np
+import asyncio
+from fastapi import FastAPI, Response, WebSocket, WebSocketDisconnect
+from fastapi.responses import StreamingResponse
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
-from llama_cpp import Llama
-from huggingface_hub import hf_hub_download
-from stt_whisper import STTEngine
-from stt_vosk import STTEngine as VoskEngine
-from tts_piper import PocketAudio
+from camera_stream import run_stream_process
 
 app = FastAPI()
 
@@ -23,46 +21,12 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# --- Model Configuration ---
-REPO_ID = "Qwen/Qwen3-0.6B-GGUF"
-FILENAME = "Qwen3-0.6B-Q8_0.gguf"
-LOCAL_DIR = "./models"
-MODEL_PATH = os.path.join(LOCAL_DIR, FILENAME)
-
-# --- Singleton Engines ---
-class AIState:
-    def __init__(self):
-        self.llm = None
-        self.stt = STTEngine()
-        self.vosk = VoskEngine()
-        self.tts = PocketAudio()
-        self.messages = [
-            {"role": "system", "content": "You are a helpful assistant. Keep your responses concise for text-to-speech."}
-        ]
-        self.is_recording = False
-        self.is_vosk_recording = False
-
-    def load_models(self):
-        if not os.path.exists(MODEL_PATH):
-            print("Downloading model...")
-            os.makedirs(LOCAL_DIR, exist_ok=True)
-            hf_hub_download(repo_id=REPO_ID, filename=FILENAME, local_dir=LOCAL_DIR)
-        
-        print("Loading LLM...")
-        self.llm = Llama(model_path=MODEL_PATH, n_ctx=4096, n_threads=4, verbose=False)
-        print("Loading STT (Whisper)...")
-        self.stt.load_model()
-        print("Loading STT (Vosk)...")
-        self.vosk.load_model()
-        print("AI Ready.")
-
-ai = AIState()
-
-@app.on_event("startup")
-async def startup_event():
-    ai.load_models()
-
-# --- Endpoints ---
+# Global camera state
+camera_process = None
+stop_event = multiprocessing.Event()
+stream_queue = multiprocessing.Queue(maxsize=1) # Reduced maxsize to ensure fresh frames
+detection_enabled = multiprocessing.Value('b', False)
+detection_queue = multiprocessing.Queue(maxsize=1)
 
 @app.get("/system/stats")
 async def get_stats():
@@ -73,119 +37,109 @@ async def get_stats():
         "temperature": 0 # Placeholder if no sensor access
     }
 
-def clean_for_tts(text: str) -> str:
-    # Filter out <think> tags
-    text = re.sub(r'<think>.*?</think>', '', text, flags=re.DOTALL)
-    # Remove emojis and special symbols
-    text = re.sub(r'[^\w\s\?\!\.\,\'\"\-]', '', text)
-    return text.strip()
+@app.post("/camera/start")
+async def start_camera():
+    global camera_process, stop_event
+    if camera_process and camera_process.is_alive():
+        return {"status": "already_running"}
+    
+    stop_event.clear()
+    camera_process = multiprocessing.Process(
+        target=run_stream_process,
+        args=(stream_queue, stop_event, detection_enabled, detection_queue)
+    )
+    camera_process.start()
+    return {"status": "started"}
 
-async def process_chat(websocket: WebSocket, user_text: str):
-    ai.messages.append({"role": "user", "content": user_text + " /no_think"})
-    
-    await websocket.send_json({"type": "voice_status", "status": "thinking"})
-    await websocket.send_json({"type": "stream_start"})
-    
-    full_reply = ""
-    # Run LLM in thread to avoid blocking event loop
-    loop = asyncio.get_event_loop()
-    response = await loop.run_in_executor(None, lambda: ai.llm.create_chat_completion(
-        messages=ai.messages,
-        max_tokens=512,
-        temperature=0.7,
-        stream=True
-    ))
+@app.post("/camera/stop")
+async def stop_camera():
+    global camera_process, stop_event
+    if camera_process:
+        stop_event.set()
+        camera_process.join(timeout=2)
+        if camera_process.is_alive():
+            camera_process.terminate()
+        camera_process = None
+    return {"status": "stopped"}
 
-    for chunk in response:
-        delta = chunk['choices'][0]['delta']
-        if 'content' in delta:
-            content = delta['content']
-            full_reply += content
-            await websocket.send_json({"type": "stream_delta", "text": full_reply})
-    
-    await websocket.send_json({"type": "stream_final", "text": full_reply})
-    ai.messages.append({"role": "assistant", "content": full_reply})
-    
-    # Maintain history limit (last 10 messages + system prompt)
-    if len(ai.messages) > 11:
-        ai.messages = [ai.messages[0]] + ai.messages[-10:]
-    
-    # Speak the response
-    clean_text = clean_for_tts(full_reply)
-    if clean_text:
-        await websocket.send_json({"type": "voice_status", "status": "speaking"})
-        await loop.run_in_executor(None, ai.tts.speak, clean_text)
-    
-    await websocket.send_json({"type": "voice_status", "status": "idle"})
+def generate_frames():
+    while True:
+        try:
+            # We need to use timeout or check if process is alive to avoid hanging
+            frame = stream_queue.get(timeout=1.0)
+        except Exception:
+            if camera_process and not camera_process.is_alive():
+                break
+            continue
+            
+        if frame is None:
+            break
+        
+        # Rotate 90 degrees clockwise for portrait mode
+        frame = cv2.rotate(frame, cv2.ROTATE_90_CLOCKWISE)
+        # Resize to fit window (Portrait aspect)
+        frame = cv2.resize(frame, (480, 800), interpolation=cv2.INTER_LINEAR)
+        
+        frame_bgr = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
+        ret, buffer = cv2.imencode('.jpg', frame_bgr)
+        frame_bytes = buffer.tobytes()
+        yield (b'--frame\r\n'
+               b'Content-Type: image/jpeg\r\n\r\n' + frame_bytes + b'\r\n')
+
+@app.get("/video_feed")
+async def video_feed():
+    return StreamingResponse(generate_frames(), media_type="multipart/x-mixed-replace; boundary=frame")
+
+@app.post("/camera/capture")
+async def capture_image():
+    # Get the latest frame from the queue
+    try:
+        # Try to get a frame, non-blocking if possible or with small timeout
+        frame = stream_queue.get(timeout=2.0)
+        
+        # Rotate 90 degrees clockwise for portrait mode
+        frame = cv2.rotate(frame, cv2.ROTATE_90_CLOCKWISE)
+        # Resize to fit window (Portrait aspect)
+        frame = cv2.resize(frame, (480, 800), interpolation=cv2.INTER_LINEAR)
+        
+        timestamp = int(time.time())
+        filename = f"capture_{timestamp}.jpg"
+        save_path = os.path.join("captures", filename)
+        os.makedirs("captures", exist_ok=True)
+        
+        frame_bgr = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
+        cv2.imwrite(save_path, frame_bgr)
+        print(f"Captured: {save_path}")
+        return {"status": "success", "filename": filename}
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return {"status": "error", "message": f"Capture failed: {str(e)}"}
+
+@app.post("/camera/detection/start")
+async def start_detection():
+    detection_enabled.value = True
+    return {"status": "started"}
+
+@app.post("/camera/detection/stop")
+async def stop_detection():
+    detection_enabled.value = False
+    return {"status": "stopped"}
 
 @app.websocket("/ws")
-async def websocket_endpoint(websocket: WebSocket):
+async def detection_websocket(websocket: WebSocket):
     await websocket.accept()
-    # Send history on connect
-    history = [{"role": m["role"], "text": m["content"]} for m in ai.messages if m["role"] != "system"]
-    await websocket.send_json({"type": "history", "messages": history})
-    
+    print("Detection WebSocket connected")
     try:
         while True:
-            data = await websocket.receive_json()
-            msg_type = data.get("type")
-            
-            if msg_type == "send":
-                user_text = data.get("message", "")
-                if user_text:
-                    await process_chat(websocket, user_text)
-            
-            elif msg_type == "toggle_voice":
-                if not ai.is_recording:
-                    print("Starting Voice Capture...")
-                    ai.stt.start_capture()
-                    ai.is_recording = True
-                    await websocket.send_json({"type": "voice_status", "status": "listening"})
-                else:
-                    print("Stopping Voice Capture...")
-                    ai.is_recording = False
-                    await websocket.send_json({"type": "voice_status", "status": "processing"})
-                    transcription = ai.stt.stop_and_transcribe()
-                    if transcription:
-                        await websocket.send_json({"type": "voice_transcription", "text": transcription})
-                        # Automatically process chat
-                        await process_chat(websocket, transcription)
-                    else:
-                        await websocket.send_json({"type": "voice_status", "status": "idle"})
-            
-            elif msg_type == "vosk_start":
-                if not ai.is_vosk_recording and not ai.is_recording:
-                    print("Starting Vosk Capture...")
-                    ai.is_vosk_recording = True
-                    
-                    loop = asyncio.get_running_loop()
-                    def vosk_callback(text):
-                        asyncio.run_coroutine_threadsafe(
-                            websocket.send_json({"type": "vosk_partial", "text": text}),
-                            loop
-                        )
-                    
-                    ai.vosk.start_listening(callback=vosk_callback)
-                    await websocket.send_json({"type": "voice_status", "status": "listening"})
-
-            elif msg_type == "vosk_stop":
-                if ai.is_vosk_recording:
-                    print("Stopping Vosk Capture...")
-                    ai.is_vosk_recording = False
-                    await websocket.send_json({"type": "voice_status", "status": "processing"})
-                    transcription = ai.vosk.stop_listening()
-                    if transcription:
-                        await websocket.send_json({"type": "voice_transcription", "text": transcription})
-                        await process_chat(websocket, transcription)
-                    else:
-                        await websocket.send_json({"type": "voice_status", "status": "idle"})
-
-            elif msg_type == "reset":
-                ai.messages = [ai.messages[0]] # Keep system prompt
-                await websocket.send_json({"type": "session_reset"})
-                
+            # For now, just a keep-alive or empty detection feed
+            # In the future, this would yield from detection_queue
+            await asyncio.sleep(1)
+            # await websocket.send_json({"type": "detections", "data": []})
     except WebSocketDisconnect:
-        print("Client disconnected")
+        print("Detection WebSocket disconnected")
+    except Exception as e:
+        print(f"WebSocket error: {e}")
 
 if __name__ == "__main__":
     import uvicorn

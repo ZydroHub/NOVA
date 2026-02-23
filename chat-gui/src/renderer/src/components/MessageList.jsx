@@ -1,5 +1,22 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import MessageBubble from './MessageBubble';
+
+function ThoughtBlock({ children }) {
+    const [expanded, setExpanded] = useState(true); // Default expanded for streaming
+    return (
+        <div className={`thought-container ${expanded ? 'thought-expanded' : ''}`}>
+            <div className="thought-header" onClick={() => setExpanded(!expanded)}>
+                <span className="thought-title">Thought Process</span>
+                <span className="thought-icon">▼</span>
+            </div>
+            {expanded && (
+                <div className="thought-content">
+                    {children}
+                </div>
+            )}
+        </div>
+    );
+}
 
 export default function MessageList({ messages, streaming, streamText }) {
     const bottomRef = useRef(null);
@@ -8,6 +25,25 @@ export default function MessageList({ messages, streaming, streamText }) {
     useEffect(() => {
         bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
     }, [messages, streamText]);
+
+    // Parse streamText for thinking logic
+    const thinkRegex = /<think>([\s\S]*?)(?:<\/think>|$)/; // Non-greedy or until end
+    const match = streamText.match(thinkRegex);
+    let thoughtText = '';
+    let hasCompleteThink = false;
+    let mainContent = streamText;
+
+    if (match) {
+        thoughtText = match[1];
+        hasCompleteThink = streamText.includes('</think>');
+        // If it's complete, remove it from main content. 
+        // If not, mainContent is usually empty or small until </think> is reached.
+        if (hasCompleteThink) {
+            mainContent = streamText.replace(/<think>[\s\S]*?<\/think>/, '').trim();
+        } else {
+            mainContent = ''; // Wait for finish
+        }
+    }
 
     const isEmpty = messages.length === 0 && !streaming;
 
@@ -34,8 +70,13 @@ export default function MessageList({ messages, streaming, streamText }) {
                         <div className="text-[12px] font-['Press_Start_2P'] uppercase tracking-wider mb-2 opacity-80 text-[var(--pixel-secondary)]">
                             {'> SYSTEM'}
                         </div>
+
+                        {thoughtText && (
+                            <ThoughtBlock>{thoughtText}{!hasCompleteThink && <span className="animate-blink">_</span>}</ThoughtBlock>
+                        )}
+
                         <div className="markdown-content">
-                            {streamText} <span className="animate-blink">_</span>
+                            {mainContent} {(!thoughtText || hasCompleteThink) && <span className="animate-blink">_</span>}
                         </div>
                     </div>
                 </div>
