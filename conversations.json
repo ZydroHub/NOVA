@@ -1,11 +1,5 @@
 [
   {
-    "id": "e5ebe671-32bd-4ac4-a999-9d1b4e1f743d",
-    "title": "New Chat",
-    "messages": [],
-    "updated_at": 1771811899.0337858
-  },
-  {
     "id": "040d7311-8852-4db2-865d-18cb53456def",
     "title": "hello",
     "messages": [
@@ -28,8 +22,35 @@
         "role": "assistant",
         "content": "<think>\nOkay, the user just asked how I'm doing. Let me think about the response. I should acknowledge their question and provide a helpful answer.\n\nFirst, I need to confirm my current state. Since I'm an AI assistant, I can't be physically present, but I can mention that I'm working on tasks. Then, I should invite them to ask more questions if they have any.\n\nI should keep the tone friendly and open-ended. Maybe add something about being available for assistance in case there's anything else they need help with. That way, it's helpful and encourages further interaction.\n</think>\n\nHello! I'm here to help you! How can I assist you today? Let me know if there's anything you'd like to ask or need help with! \ud83d\ude0a",
         "timestamp": 1771813515.121541
+      },
+      {
+        "role": "user",
+        "content": "what is 10+10",
+        "timestamp": 1771817549.111267
+      },
+      {
+        "role": "user",
+        "content": "what is it",
+        "timestamp": 1771817887.3794146
+      },
+      {
+        "role": "assistant",
+        "content": "<think>\nOkay, the user is asking for \"what is 10+10\". Let me think. 10 plus 10 equals 20. But I should check if they need more help or if there's a different way to phrase it. Maybe they just want the answer now. I'll make sure to confirm if they need anything else.\n</think>\n\n10 + 10 = **20**. Let me know if you need help with anything else! \ud83d\ude0a",
+        "timestamp": 1771817911.2635424
       }
     ],
-    "updated_at": 1771813515.1215603
+    "updated_at": 1771817911.263552
+  },
+  {
+    "id": "232a11fa-74e9-4a28-8ca4-877755d91d35",
+    "title": "New Chat",
+    "messages": [],
+    "updated_at": 1771818269.0494015
+  },
+  {
+    "id": "a4ee7ccd-a14c-4ac5-9906-ff4ffea28c88",
+    "title": "New Chat",
+    "messages": [],
+    "updated_at": 1771818269.0551493
   }
 ]

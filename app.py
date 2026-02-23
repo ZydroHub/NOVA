@@ -34,6 +34,16 @@ async def startup_event():
     ai_state.load_model()
     print("Unified Backend ready.")
 
+@app.post("/shutdown")
+async def shutdown():
+    import threading
+    import time
+    def delayed_exit():
+        time.sleep(1)
+        os._exit(0)
+    threading.Thread(target=delayed_exit, daemon=True).start()
+    return {"status": "shutting down..."}
+
 if __name__ == "__main__":
     # Run everything on port 8000
     uvicorn.run(app, host="0.0.0.0", port=8000)

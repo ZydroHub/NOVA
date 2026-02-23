@@ -146,6 +146,69 @@ class AIState:
         ))
         return response
 
+    async def ai_response_and_speak(self, websocket: WebSocket, text: str, abort_event: asyncio.Event, message_queue: asyncio.Queue):
+        """
+        Takes text, generates AI response, streams it to websocket, and plays it via TTS.
+        """
+        print(f"Triggering AI response for: {text}")
+        self.voice_messages.append({"role": "user", "content": text})
+        
+        # Notify frontend we are starting AI generation
+        await websocket.send_json({"type": "ai_start"})
+        await websocket.send_json({"type": "voice_status", "status": "thinking"})
+
+        full_response = ""
+        try:
+            response = await self.generate_response(self.voice_messages, thinking=False)
+            
+            for chunk in response:
+                # Check for abort messages in queue
+                while not message_queue.empty():
+                    msg = await message_queue.get()
+                    if msg.get("type") == "abort":
+                        print("AI execution aborted by user")
+                        abort_event.set()
+
+                if abort_event.is_set():
+                    await websocket.send_json({"type": "ai_aborted"})
+                    await websocket.send_json({"type": "voice_status", "status": "idle"})
+                    return
+
+                if "choices" in chunk and len(chunk["choices"]) > 0:
+                    delta = chunk["choices"][0].get("delta", {})
+                    if "content" in delta:
+                        content = delta["content"]
+                        full_response += content
+                        await websocket.send_json({"type": "ai_delta", "text": full_response})
+                
+                await asyncio.sleep(0.01)
+
+            if not abort_event.is_set():
+                print(f"AI response complete: {full_response[:50]}...")
+                self.voice_messages.append({"role": "assistant", "content": full_response})
+                
+                # Keep context window manageable
+                if len(self.voice_messages) > 11:
+                    self.voice_messages = [self.voice_messages[0]] + self.voice_messages[-10:]
+
+                # Clean reply for TTS (remove thinking tags)
+                clean_reply = re.sub(r'<think>.*?</think>', '', full_response, flags=re.DOTALL).strip()
+                
+                await websocket.send_json({"type": "ai_final", "text": full_response})
+                await websocket.send_json({"type": "voice_status", "status": "speaking"})
+                
+                if clean_reply:
+                    print(f"Speaking: {clean_reply[:50]}...")
+                    self.tts.speak(clean_reply)
+                
+                # After speaking or if empty, go back to idle
+                await websocket.send_json({"type": "voice_status", "status": "idle"})
+
+        except Exception as e:
+            print(f"Error in AI response pipeline: {e}")
+            await websocket.send_json({"type": "error", "message": str(e)})
+            await websocket.send_json({"type": "voice_status", "status": "idle"})
+
 # --- Router Initialization ---
 router = APIRouter()
 ai = AIState()
@@ -228,7 +291,8 @@ async def chat_websocket_endpoint(websocket: WebSocket, conv_id: str):
                 await websocket.send_json({"type": "stream_start"})
                 
                 full_reply = ""
-                response = await ai.generate_response(conv["messages"], thinking=True)
+                thinking_mode = data.get("thinking", True)
+                response = await ai.generate_response(conv["messages"], thinking=thinking_mode)
 
                 for chunk in response:
                     while not message_queue.empty():
@@ -283,81 +347,62 @@ async def voice_websocket(websocket: WebSocket):
         while True:
             data = await message_queue.get()
             command = data.get("type")
+            print(f"Voice Command Received: {command}")
 
             if command == "start_vosk":
                 if not ai.is_vosk_recording:
                     ai.is_vosk_recording = True
+                    loop = asyncio.get_event_loop()
                     async def vosk_callback(text):
                         try:
                             await websocket.send_json({"type": "vosk_partial", "text": text})
                         except: pass
-                    ai.vosk.start_listening(callback=lambda t: asyncio.run_coroutine_threadsafe(vosk_callback(t), asyncio.get_event_loop()))
-                    await websocket.send_json({"status": "vosk_started"})
+                    ai.vosk.start_listening(callback=lambda t: asyncio.run_coroutine_threadsafe(vosk_callback(t), loop))
+                    await websocket.send_json({"type": "voice_status", "status": "listening"})
 
             elif command == "stop_vosk":
                 if ai.is_vosk_recording:
                     ai.is_vosk_recording = False
+                    print("Stopping Vosk...")
                     text = ai.vosk.stop_listening()
-                    await websocket.send_json({"type": "vosk_final", "text": text})
+                    print(f"Vosk Final Text: {text}")
+                    if text:
+                        await websocket.send_json({"type": "vosk_final", "text": text})
+                        # Trigger AI pipeline
+                        await ai.ai_response_and_speak(websocket, text, abort_event, message_queue)
+                    else:
+                        await websocket.send_json({"type": "voice_status", "status": "idle"})
 
             elif command == "toggle_voice":
                 if not ai.is_recording:
+                    print("Starting Whisper Capture...")
                     abort_event.clear()
                     ai.is_recording = True
                     ai.stt.start_capture()
-                    await websocket.send_json({"status": "recording"})
+                    await websocket.send_json({"type": "voice_status", "status": "listening"})
                 else:
                     ai.is_recording = False
-                    await websocket.send_json({"status": "processing"})
+                    print("Stopping Whisper and Transcribing...")
+                    await websocket.send_json({"type": "voice_status", "status": "thinking"})
                     text = ai.stt.stop_and_transcribe()
+                    print(f"Whisper Transcription: {text}")
                     
                     if text:
-                        await websocket.send_json({"type": "transcription", "text": text})
-                        ai.voice_messages.append({"role": "user", "content": text})
-                        await websocket.send_json({"type": "ai_start"})
-                        full_response = ""
-                        response = await ai.generate_response(ai.voice_messages, thinking=False)
-                        
-                        for chunk in response:
-                            while not message_queue.empty():
-                                msg = await message_queue.get()
-                                if msg.get("type") == "abort":
-                                    abort_event.set()
-
-                            if abort_event.is_set():
-                                await websocket.send_json({"type": "ai_aborted"})
-                                break
-
-                            if "choices" in chunk and len(chunk["choices"]) > 0:
-                                delta = chunk["choices"][0].get("delta", {})
-                                if "content" in delta:
-                                    content = delta["content"]
-                                    full_response += content
-                                    await websocket.send_json({"type": "ai_delta", "text": full_response})
-                            
-                            await asyncio.sleep(0.01)
-
-                        if not abort_event.is_set():
-                            ai.voice_messages.append({"role": "assistant", "content": full_response})
-                            if len(ai.voice_messages) > 11:
-                                ai.voice_messages = [ai.voice_messages[0]] + ai.voice_messages[-10:]
-
-                            clean_reply = re.sub(r'<think>.*?</think>', '', full_response, flags=re.DOTALL).strip()
-                            
-                            if clean_reply:
-                                await websocket.send_json({"type": "ai_final", "text": full_response})
-                                ai.tts.speak(clean_reply)
-                            else:
-                                await websocket.send_json({"type": "ai_final", "text": full_response})
+                        await websocket.send_json({"type": "voice_transcription", "text": text})
+                        # Trigger AI pipeline
+                        await ai.ai_response_and_speak(websocket, text, abort_event, message_queue)
                     else:
-                        await websocket.send_json({"status": "idle", "error": "No speech detected"})
+                        await websocket.send_json({"type": "voice_status", "status": "idle"})
 
             elif command == "abort":
+                print("Global Abort Requested")
                 abort_event.set()
 
     except WebSocketDisconnect:
         print("Voice client disconnected")
     except Exception as e:
-        print(f"WebSocket error: {e}")
+        print(f"Voice WebSocket error: {e}")
+        import traceback
+        traceback.print_exc()
     finally:
         receive_task.cancel()

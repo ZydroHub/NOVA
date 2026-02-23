@@ -12,10 +12,13 @@ export function WebSocketProvider({ children }) {
     const [messages, setMessages] = useState([]); // Chat messages
     const [streamText, setStreamText] = useState('');
     const [streaming, setStreaming] = useState(false);
+    const [voiceStreamText, setVoiceStreamText] = useState('');
+    const [isVoiceStreaming, setIsVoiceStreaming] = useState(false);
     const [isRecording, setIsRecording] = useState(false);
     const [isVoskRecording, setIsVoskRecording] = useState(false);
     const [voiceStatus, setVoiceStatus] = useState('idle'); // idle | listening | thinking | speaking
     const [voskText, setVoskText] = useState('');
+    const [thinking, setThinking] = useState(true);
 
     // Multi-conversation state
     const [conversations, setConversations] = useState([]);
@@ -111,6 +114,21 @@ export function WebSocketProvider({ children }) {
                 // Final Vosk result
                 setMessages((prev) => [...prev, { role: 'user', text: data.text }]);
                 setVoskText('');
+                break;
+            case 'ai_start':
+                setVoiceStreamText('');
+                setIsVoiceStreaming(true);
+                break;
+            case 'ai_delta':
+                setVoiceStreamText(data.text || '');
+                break;
+            case 'ai_final':
+                setVoiceStreamText(data.text || '');
+                // We keep isVoiceStreaming true while speaking, speaking status comes from voice_status
+                break;
+            case 'ai_aborted':
+                setVoiceStreamText((prev) => prev + ' [aborted]');
+                setTimeout(() => setIsVoiceStreaming(false), 2000);
                 break;
             default:
                 break;
@@ -262,6 +280,10 @@ export function WebSocketProvider({ children }) {
         sendMessage('abort');
     }, [sendMessage]);
 
+    const toggleThinking = useCallback(() => {
+        setThinking(prev => !prev);
+    }, []);
+
     const value = {
         connStatus,
         chatConnStatus,
@@ -285,7 +307,11 @@ export function WebSocketProvider({ children }) {
         startVosk,
         stopVosk,
         abort,
-        addEventListener
+        addEventListener,
+        voiceStreamText,
+        isVoiceStreaming,
+        thinking,
+        toggleThinking
     };
 
     return (

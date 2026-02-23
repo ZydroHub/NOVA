@@ -6,7 +6,13 @@ import { useNavigate } from 'react-router-dom';
 export default function Settings() {
     const navigate = useNavigate();
 
-    const handleCloseApp = () => {
+    const handleCloseApp = async () => {
+        try {
+            await fetch('http://localhost:8000/shutdown', { method: 'POST' });
+        } catch (e) {
+            console.error('Failed to notify backend of shutdown:', e);
+        }
+
         if (window.electron && window.electron.quit) {
             window.electron.quit();
         } else {

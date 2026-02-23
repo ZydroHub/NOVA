@@ -4,7 +4,7 @@ import { MessageCircle, Settings, Camera, Image as GalleryIcon, Clock, Cpu, Code
 import { useNavigate } from 'react-router-dom';
 import Avatar from './Avatar';
 import { useWebSocket } from '../contexts/WebSocketContext.jsx';
-import { useRef, useState } from 'react';
+import { useRef, useState, useEffect } from 'react';
 
 const MenuButton = ({ icon: Icon, label, onClick, color }) => (
     <motion.button
@@ -21,7 +21,37 @@ const MenuButton = ({ icon: Icon, label, onClick, color }) => (
 
 export default function Home() {
     const navigate = useNavigate();
-    const { toggleVoice, startVosk, stopVosk, isRecording, isVoskRecording, voiceStatus, voskText } = useWebSocket();
+    const {
+        toggleVoice,
+        startVosk,
+        stopVosk,
+        isRecording,
+        isVoskRecording,
+        voiceStatus,
+        voskText,
+        voiceStreamText,
+        isVoiceStreaming
+    } = useWebSocket();
+
+    const [showBubble, setShowBubble] = useState(false);
+    const bubbleTimeoutRef = useRef(null);
+
+    useEffect(() => {
+        const active = isVoiceStreaming || voiceStatus === 'speaking';
+        if (active) {
+            if (bubbleTimeoutRef.current) clearTimeout(bubbleTimeoutRef.current);
+            setShowBubble(true);
+        } else if (showBubble) {
+            bubbleTimeoutRef.current = setTimeout(() => {
+                setShowBubble(false);
+            }, 1000);
+        }
+        return () => {
+            if (bubbleTimeoutRef.current) clearTimeout(bubbleTimeoutRef.current);
+        };
+    }, [isVoiceStreaming, voiceStatus, showBubble]);
+
+    const displayVoiceText = voiceStreamText.replace(/<think>[\s\S]*?<\/think>/g, '').trim();
 
     const pressTimer = useRef(null);
     const [isHoldMode, setIsHoldMode] = useState(false);
@@ -95,12 +125,29 @@ export default function Home() {
                         </motion.div>
                     )}
                 </AnimatePresence>
+
+                {/* AI Response Bubble */}
+                <AnimatePresence>
+                    {showBubble && displayVoiceText && (
+                        <motion.div
+                            initial={{ opacity: 0, x: -20, scale: 0.9 }}
+                            animate={{ opacity: 1, x: 0, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0.9 }}
+                            className="absolute left-[90px] top-[-20px] w-[220px] bg-[var(--pixel-surface)] p-4 border-4 border-[var(--pixel-primary)] shadow-[6px_6px_0_0_rgba(0,0,0,0.5)] z-50 rounded-xl rounded-tl-none"
+                        >
+                            <p className="text-[var(--pixel-primary)] text-sm font-['VT323'] leading-tight break-words">
+                                {displayVoiceText}
+                            </p>
+                            {/* Decorative pointer arrow (top left pointing to avatar) */}
+                            <div className="absolute left-[-14px] top-[-4px] w-0 h-0 border-r-[15px] border-r-[var(--pixel-primary)] border-b-[15px] border-b-transparent" />
+                        </motion.div>
+                    )}
+                </AnimatePresence>
             </div>
 
             {/* Title */}
             <div className="text-center mb-6 z-10">
-                <h1 className="text-4xl text-[var(--pixel-primary)] mb-2 drop-shadow-[4px_4px_0_rgba(0,0,0,1)] tracking-widest">POCKET AI</h1>
-                <p className="text-[var(--pixel-accent)] text-lg animate-pulse">SYSTEM ONLINE</p>
+                <h1 className="text-5xl text-[var(--pixel-primary)] mb-2 drop-shadow-[4px_4px_0_rgba(0,0,0,1)] tracking-widest font-['Press_Start_2P'] uppercase">POCKET</h1>
             </div>
 
             {/* Settings Button - Top Left */}

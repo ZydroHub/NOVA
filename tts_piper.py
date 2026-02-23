@@ -1,4 +1,5 @@
 import os
+import re
 import subprocess
 import shlex
 import urllib.request
@@ -27,17 +28,30 @@ class PocketAudio:
                 print(f"Downloading {name}{ext}...")
                 urllib.request.urlretrieve(url_base + name + ext, path)
 
+    def clean_text(self, text):
+        """Remove emojis and special symbols, keeping alphanumeric, spaces and basic punctuation."""
+        # This regex keeps alphanumeric, common punctuation, and whitespace
+        return re.sub(r'[^a-zA-Z0-9\s.,!?;:\'\"()-]', '', text)
+
     def speak(self, text):
+        import threading
+        cleaned_text = self.clean_text(text)
+        if not cleaned_text.strip():
+            return
+        thread = threading.Thread(target=self._speak_internal, args=(cleaned_text,), daemon=True)
+        thread.start()
+
+    def _speak_internal(self, text):
         # Target Card 3, Device 0 using plughw for compatibility
         command = "aplay -D plughw:3,0 -r 22050 -f S16_LE -t raw -"
         args = shlex.split(command)
         
-        print("Synthesizing and streaming audio...")
+        print(f"Synthesizing: {text[:50]}...")
         try:
             with subprocess.Popen(args, stdin=subprocess.PIPE) as play_process:
                 for chunk in self.voice.synthesize(text):
                     play_process.stdin.write(chunk.audio_int16_bytes)
-            print("Done.")
+            print("Playback finished.")
         except Exception as e:
             print(f"Audio Error: {e}")
 

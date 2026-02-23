@@ -30,29 +30,31 @@ export default function ChatInterface({ layoutId }) {
 
     // ─── Actions ───────────────────────────────────────────────────────
     const send = useCallback(
-        (text, images = []) => {
-            if (!currentConvId) {
-                // If no conversation selected, create one first or show error
-                console.warn("No conversation selected");
-                return;
+        async (text, images = []) => {
+            let activeConvId = currentConvId;
+            if (!activeConvId) {
+                const conv = await createConversation();
+                if (conv) {
+                    activeConvId = conv.id;
+                    setCurrentConvId(conv.id);
+                } else {
+                    console.error("Failed to create conversation");
+                    return;
+                }
             }
             // Add user message immediately
             setMessages((prev) => [...prev, { role: 'user', text }]);
-            sendMessage('send', { message: text, images });
+            sendMessage('send', { message: text, images, conv_id: activeConvId, thinking });
         },
-        [sendMessage, setMessages, currentConvId]
+        [sendMessage, setMessages, currentConvId, createConversation, setCurrentConvId, thinking]
     );
 
     // ─── Auto-select/create conversation ──────────────────────────────
     useEffect(() => {
         if (!currentConvId && conversations.length > 0) {
             setCurrentConvId(conversations[0].id);
-        } else if (!currentConvId && conversations.length === 0 && chatConnStatus !== 'connecting') {
-            createConversation().then(conv => {
-                if (conv) setCurrentConvId(conv.id);
-            });
         }
-    }, [currentConvId, conversations, createConversation, setCurrentConvId, chatConnStatus]);
+    }, [currentConvId, conversations, setCurrentConvId]);
 
     // ─── Auto-send from Gallery navigation ─────────────────────────────
     useEffect(() => {
