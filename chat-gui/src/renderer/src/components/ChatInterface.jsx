@@ -23,7 +23,8 @@ export default function ChatInterface({ layoutId }) {
         currentConvId,
         setCurrentConvId,
         createConversation,
-        deleteConversation
+        deleteConversation,
+        thinking
     } = useWebSocket();
 
     const [sidebarOpen, setSidebarOpen] = useState(false);

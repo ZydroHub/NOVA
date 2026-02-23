@@ -18,7 +18,7 @@ export function WebSocketProvider({ children }) {
     const [isVoskRecording, setIsVoskRecording] = useState(false);
     const [voiceStatus, setVoiceStatus] = useState('idle'); // idle | listening | thinking | speaking
     const [voskText, setVoskText] = useState('');
-    const [thinking, setThinking] = useState(true);
+    const [thinking, setThinking] = useState(false);
 
     // Multi-conversation state
     const [conversations, setConversations] = useState([]);
@@ -101,6 +101,10 @@ export function WebSocketProvider({ children }) {
             case 'voice_status':
                 setVoiceStatus(data.status);
                 setIsRecording(data.status === 'listening');
+                if (data.status === 'idle') {
+                    setIsVoiceStreaming(false);
+                    setVoiceStreamText('');
+                }
                 break;
             case 'voice_transcription':
                 // Whisper transcription (final)

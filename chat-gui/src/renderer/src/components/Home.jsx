@@ -51,7 +51,7 @@ export default function Home() {
         };
     }, [isVoiceStreaming, voiceStatus, showBubble]);
 
-    const displayVoiceText = voiceStreamText.replace(/<think>[\s\S]*?<\/think>/g, '').trim();
+    const displayVoiceText = voiceStreamText.trim();
 
     const pressTimer = useRef(null);
     const [isHoldMode, setIsHoldMode] = useState(false);
@@ -94,9 +94,9 @@ export default function Home() {
     return (
         <div className="relative w-full h-full overflow-hidden bg-[var(--pixel-bg)] flex flex-col items-center justify-center p-4">
 
-            {/* Avatar - Centered */}
+            {/* Avatar - Centered (higher z when bubble visible so it's not covered by buttons) */}
             <div
-                className="mb-8 z-10 relative"
+                className={`mb-8 relative ${showBubble ? 'z-20' : 'z-10'}`}
                 onMouseDown={handleMouseDown}
                 onMouseUp={handleMouseUp}
                 onMouseLeave={handleMouseLeave}
@@ -126,28 +126,23 @@ export default function Home() {
                     )}
                 </AnimatePresence>
 
-                {/* AI Response Bubble */}
+                {/* AI Response Bubble - below avatar, pointer up toward avatar */}
                 <AnimatePresence>
                     {showBubble && displayVoiceText && (
                         <motion.div
                             initial={{ opacity: 0, x: -20, scale: 0.9 }}
                             animate={{ opacity: 1, x: 0, scale: 1 }}
                             exit={{ opacity: 0, scale: 0.9 }}
-                            className="absolute left-[90px] top-[-20px] w-[220px] bg-[var(--pixel-surface)] p-4 border-4 border-[var(--pixel-primary)] shadow-[6px_6px_0_0_rgba(0,0,0,0.5)] z-50 rounded-xl rounded-tl-none"
+                            className="absolute left-1/2 top-[150px] -translate-x-1/2 w-[220px] bg-[var(--pixel-surface)] p-4 border-4 border-[var(--pixel-primary)] shadow-[6px_6px_0_0_rgba(0,0,0,0.5)] z-50 rounded-xl"
                         >
+                            {/* Pointer arrow at top center pointing up to avatar */}
+                            <div className="absolute left-1/2 top-[-14px] -translate-x-1/2 w-0 h-0 border-l-[12px] border-l-transparent border-r-[12px] border-r-transparent border-b-[14px] border-b-[var(--pixel-primary)]" />
                             <p className="text-[var(--pixel-primary)] text-sm font-['VT323'] leading-tight break-words">
                                 {displayVoiceText}
                             </p>
-                            {/* Decorative pointer arrow (top left pointing to avatar) */}
-                            <div className="absolute left-[-14px] top-[-4px] w-0 h-0 border-r-[15px] border-r-[var(--pixel-primary)] border-b-[15px] border-b-transparent" />
                         </motion.div>
                     )}
                 </AnimatePresence>
-            </div>
-
-            {/* Title */}
-            <div className="text-center mb-6 z-10">
-                <h1 className="text-5xl text-[var(--pixel-primary)] mb-2 drop-shadow-[4px_4px_0_rgba(0,0,0,1)] tracking-widest font-['Press_Start_2P'] uppercase">POCKET</h1>
             </div>
 
             {/* Settings Button - Top Left */}

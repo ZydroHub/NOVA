@@ -20,6 +20,18 @@ LOCAL_DIR = "./models"
 MODEL_PATH = os.path.join(LOCAL_DIR, FILENAME)
 CONVERSATIONS_FILE = "conversations.json"
 
+def strip_think_for_ui(text: str) -> str:
+    """Remove <think>...</think> blocks and any trailing incomplete <think> for UI display. Never send think content to the UI."""
+    if not text or not text.strip():
+        return text
+    # Allow optional whitespace in tags (e.g. < think >, <think >, etc.)
+    out = re.sub(r'<\s*think\s*>.*?<\s*/\s*think\s*>', '', text, flags=re.DOTALL | re.IGNORECASE)
+    # Remove any trailing incomplete <think>... (no closing tag yet)
+    out = re.sub(r'<\s*think\s*>[\s\S]*$', '', out, flags=re.IGNORECASE)
+    # Fallback: remove any remaining literal tag fragments so they are never shown
+    out = out.replace('</think>', '').replace('<think>', '')
+    return out.strip()
+
 # --- Data Models ---
 class Message(BaseModel):
     role: str
@@ -179,7 +191,7 @@ class AIState:
                     if "content" in delta:
                         content = delta["content"]
                         full_response += content
-                        await websocket.send_json({"type": "ai_delta", "text": full_response})
+                        await websocket.send_json({"type": "ai_delta", "text": strip_think_for_ui(full_response)})
                 
                 await asyncio.sleep(0.01)
 
@@ -193,8 +205,8 @@ class AIState:
 
                 # Clean reply for TTS (remove thinking tags)
                 clean_reply = re.sub(r'<think>.*?</think>', '', full_response, flags=re.DOTALL).strip()
-                
-                await websocket.send_json({"type": "ai_final", "text": full_response})
+                # Send only non-think content to UI
+                await websocket.send_json({"type": "ai_final", "text": strip_think_for_ui(full_response)})
                 await websocket.send_json({"type": "voice_status", "status": "speaking"})
                 
                 if clean_reply:
@@ -308,12 +320,12 @@ async def chat_websocket_endpoint(websocket: WebSocket, conv_id: str):
                     if 'content' in delta:
                         content = delta['content']
                         full_reply += content
-                        await websocket.send_json({"type": "stream_delta", "text": full_reply})
+                        await websocket.send_json({"type": "stream_delta", "text": strip_think_for_ui(full_reply)})
                     
                     await asyncio.sleep(0.01)
 
                 if not abort_event.is_set():
-                    await websocket.send_json({"type": "stream_final", "text": full_reply})
+                    await websocket.send_json({"type": "stream_final", "text": strip_think_for_ui(full_reply)})
                     conv["messages"].append({"role": "assistant", "content": full_reply, "timestamp": time.time()})
                     ai.conv_manager.update_conversation(conv_id, conv["messages"])
             
