@@ -5,7 +5,7 @@ from huggingface_hub import hf_hub_download
 from llama_cpp import Llama
 
 # 1. Model configuration
-REPO_ID = "nazirlouis/functiongemma-pocket-q4_k_m"
+REPO_ID = "nlouis/functiongemma-pocket-q4_k_m"
 FILENAME = "functiongemma-pocket-q4_k_m.gguf"
 LOCAL_DIR = "./models"
 MODEL_PATH = os.path.join(LOCAL_DIR, FILENAME)

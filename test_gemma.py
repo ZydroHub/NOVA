@@ -4,7 +4,7 @@ import time
 from llama_cpp import Llama
 
 # 1. Model Configuration
-MODEL_PATH = "./functiongemma-pocket-q4_k_m.gguf"
+MODEL_PATH = "./models/functiongemma-pocket-q4_k_m.gguf"
 
 if not os.path.exists(MODEL_PATH):
     print(f"Error: Model not found at {MODEL_PATH}")
