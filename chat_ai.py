@@ -11,7 +11,16 @@ from typing import List, Optional
 import re
 from stt_whisper import STTEngine as WhisperEngine
 from stt_vosk import STTEngine as VoskEngine
-from tts_piper import PocketAudio
+from tts_piper import PocketAudio, split_sentences
+
+# Semantic router: route prompt to qwen_basic / qwen_thinking / function_gemma
+def _get_route(prompt: str) -> str:
+    try:
+        from semantic_router_ai import get_route
+        return get_route(prompt)
+    except Exception as e:
+        print(f"[chat_ai] semantic router failed: {e}")
+        return "qwen_basic"
 
 # --- Model Configuration ---
 REPO_ID = "Qwen/Qwen3-0.6B-GGUF"
@@ -61,12 +70,12 @@ class ConversationManager:
         with open(self.storage_path, 'w') as f:
             json.dump(list(self.conversations.values()), f, indent=2)
 
-    def create_conversation(self, title: str = "New Chat"):
+    def create_conversation(self, title: str = "New Chat", messages: Optional[List[dict]] = None):
         conv_id = str(uuid.uuid4())
         new_conv = {
             "id": conv_id,
             "title": title,
-            "messages": [],
+            "messages": list(messages) if messages else [],
             "updated_at": time.time()
         }
         self.conversations[conv_id] = new_conv
@@ -160,19 +169,58 @@ class AIState:
 
     async def ai_response_and_speak(self, websocket: WebSocket, text: str, abort_event: asyncio.Event, message_queue: asyncio.Queue):
         """
-        Takes text, generates AI response, streams it to websocket, and plays it via TTS.
+        Takes text, routes via semantic router, then either runs tool_ai (function_gemma)
+        or generates response with Qwen (qwen_basic / qwen_thinking).
         """
         print(f"Triggering AI response for: {text}")
         self.voice_messages.append({"role": "user", "content": text})
-        
-        # Notify frontend we are starting AI generation
+
+        route = _get_route(text)
+        print(f"[voice] route: {route}")
+
         await websocket.send_json({"type": "ai_start"})
         await websocket.send_json({"type": "voice_status", "status": "thinking"})
 
         full_response = ""
+        loop = asyncio.get_event_loop()
+
+        def on_tts_queue_drained():
+            async def send_idle():
+                await websocket.send_json({"type": "voice_status", "status": "idle"})
+            loop.call_soon_threadsafe(lambda: asyncio.ensure_future(send_idle()))
+
         try:
-            response = await self.generate_response(self.voice_messages, thinking=False)
-            
+            self.tts.set_queue_drained_callback(on_tts_queue_drained)
+            if route == "function_gemma":
+                # Run tool_ai in executor (blocking); tools print to terminal
+                import tool_ai
+                tool_call_raw, tool_result = await loop.run_in_executor(
+                    None, lambda: tool_ai.run_task_for_backend(text)
+                )
+                if tool_call_raw or tool_result is not None:
+                    full_response = (tool_call_raw or "") + ("\n[Result] " + str(tool_result) if tool_result else "")
+                else:
+                    full_response = "No tool call produced."
+                if not abort_event.is_set():
+                    self.voice_messages.append({"role": "assistant", "content": full_response})
+                    if len(self.voice_messages) > 11:
+                        self.voice_messages = [self.voice_messages[0]] + self.voice_messages[-10:]
+                    await websocket.send_json({"type": "ai_delta", "text": full_response})
+                    await websocket.send_json({"type": "ai_final", "text": full_response})
+                    await websocket.send_json({"type": "voice_status", "status": "speaking"})
+                    to_speak = str(tool_result) if tool_result else full_response
+                    if to_speak:
+                        self.tts.enqueue_text(to_speak)
+                    else:
+                        await websocket.send_json({"type": "voice_status", "status": "idle"})
+                return
+            # Qwen path: stream response and feed TTS sentence-by-sentence
+            thinking = route == "qwen_thinking"
+            response = await self.generate_response(self.voice_messages, thinking=thinking)
+
+            tts_flushed_len = 0  # index in clean_reply up to which we've flushed to TTS
+            speaking_status_sent = False
+
             for chunk in response:
                 # Check for abort messages in queue
                 while not message_queue.empty():
@@ -182,6 +230,8 @@ class AIState:
                         abort_event.set()
 
                 if abort_event.is_set():
+                    self.tts.clear_queue()
+                    self.tts.set_queue_drained_callback(None)
                     await websocket.send_json({"type": "ai_aborted"})
                     await websocket.send_json({"type": "voice_status", "status": "idle"})
                     return
@@ -192,29 +242,43 @@ class AIState:
                         content = delta["content"]
                         full_response += content
                         await websocket.send_json({"type": "ai_delta", "text": strip_think_for_ui(full_response)})
-                
+
+                        # Flush complete sentences to TTS (only non-thinking content; strip unclosed <think> too)
+                        clean_reply = strip_think_for_ui(full_response)
+                        last_end = max(
+                            clean_reply.rfind("."), clean_reply.rfind("!"),
+                            clean_reply.rfind("?"), clean_reply.rfind("\n")
+                        )
+                        if last_end >= tts_flushed_len:
+                            to_flush = clean_reply[tts_flushed_len : last_end + 1].strip()
+                            tts_flushed_len = last_end + 1
+                            for s in split_sentences(to_flush):
+                                if not speaking_status_sent:
+                                    speaking_status_sent = True
+                                    await websocket.send_json({"type": "voice_status", "status": "speaking"})
+                                self.tts.enqueue_sentence(s)
+
                 await asyncio.sleep(0.01)
 
             if not abort_event.is_set():
                 print(f"AI response complete: {full_response[:50]}...")
                 self.voice_messages.append({"role": "assistant", "content": full_response})
-                
-                # Keep context window manageable
                 if len(self.voice_messages) > 11:
                     self.voice_messages = [self.voice_messages[0]] + self.voice_messages[-10:]
 
-                # Clean reply for TTS (remove thinking tags)
-                clean_reply = re.sub(r'<think>.*?</think>', '', full_response, flags=re.DOTALL).strip()
-                # Send only non-think content to UI
+                clean_reply = strip_think_for_ui(full_response)
                 await websocket.send_json({"type": "ai_final", "text": strip_think_for_ui(full_response)})
-                await websocket.send_json({"type": "voice_status", "status": "speaking"})
-                
-                if clean_reply:
-                    print(f"Speaking: {clean_reply[:50]}...")
-                    self.tts.speak(clean_reply)
-                
-                # After speaking or if empty, go back to idle
-                await websocket.send_json({"type": "voice_status", "status": "idle"})
+
+                # Flush any remaining text to TTS (last sentence or fragment)
+                if clean_reply and tts_flushed_len < len(clean_reply):
+                    remainder = clean_reply[tts_flushed_len:].strip()
+                    if remainder:
+                        if not speaking_status_sent:
+                            await websocket.send_json({"type": "voice_status", "status": "speaking"})
+                        self.tts.enqueue_sentence(remainder)
+                if not speaking_status_sent:
+                    await websocket.send_json({"type": "voice_status", "status": "idle"})
+                # Otherwise "idle" is sent by on_tts_queue_drained when playback finishes
 
         except Exception as e:
             print(f"Error in AI response pipeline: {e}")
@@ -229,9 +293,15 @@ ai = AIState()
 async def list_conversations():
     return ai.conv_manager.list_conversations()
 
+class CreateConversationBody(BaseModel):
+    title: Optional[str] = None
+    messages: Optional[List[dict]] = None
+
 @router.post("/conversations")
-async def create_conversation():
-    return ai.conv_manager.create_conversation()
+async def create_conversation(body: Optional[CreateConversationBody] = None):
+    title = (body.title if body else None) or "New Chat"
+    messages = body.messages if body and body.messages is not None else None
+    return ai.conv_manager.create_conversation(title=title, messages=messages)
 
 @router.get("/conversations/{conv_id}")
 async def get_conversation(conv_id: str):
@@ -294,44 +364,62 @@ async def chat_websocket_endpoint(websocket: WebSocket, conv_id: str):
                     continue
 
                 conv["messages"].append({"role": "user", "content": user_text, "timestamp": time.time()})
-                
+
                 if len(conv["messages"]) == 1:
                     conv["title"] = user_text[:30] + ("..." if len(user_text) > 30 else "")
-                
+
                 ai.conv_manager.update_conversation(conv_id, conv["messages"])
 
+                route = _get_route(user_text)
+                print(f"[chat] route: {route}")
+
                 await websocket.send_json({"type": "stream_start"})
-                
-                full_reply = ""
-                thinking_mode = data.get("thinking", True)
-                response = await ai.generate_response(conv["messages"], thinking=thinking_mode)
 
-                for chunk in response:
-                    while not message_queue.empty():
-                        msg = await message_queue.get()
-                        if msg.get("type") == "abort":
-                            abort_event.set()
+                if route == "function_gemma":
+                    # Run tool_ai in executor; tools print to terminal
+                    import tool_ai
+                    loop = asyncio.get_event_loop()
+                    tool_call_raw, tool_result = await loop.run_in_executor(
+                        None, lambda: tool_ai.run_task_for_backend(user_text)
+                    )
+                    full_reply = (tool_call_raw or "") + ("\n[Result] " + str(tool_result) if tool_result else "")
+                    if not tool_call_raw and tool_result is None:
+                        full_reply = "No tool call produced."
+                    if not abort_event.is_set():
+                        await websocket.send_json({"type": "stream_delta", "text": full_reply})
+                        await websocket.send_json({"type": "stream_final", "text": full_reply})
+                        conv["messages"].append({"role": "assistant", "content": full_reply, "timestamp": time.time()})
+                        ai.conv_manager.update_conversation(conv_id, conv["messages"])
+                else:
+                    # Qwen path: use route to set thinking, not UI toggle
+                    thinking_mode = route == "qwen_thinking"
+                    full_reply = ""
+                    response = await ai.generate_response(conv["messages"], thinking=thinking_mode)
 
-                    if abort_event.is_set():
-                        await websocket.send_json({"type": "stream_aborted"})
-                        break
+                    for chunk in response:
+                        while not message_queue.empty():
+                            msg = await message_queue.get()
+                            if msg.get("type") == "abort":
+                                abort_event.set()
 
-                    delta = chunk['choices'][0]['delta']
-                    if 'content' in delta:
-                        content = delta['content']
-                        full_reply += content
-                        # If thinking mode is ON, send raw text to UI so it can render the think box.
-                        # If OFF, strip it.
+                        if abort_event.is_set():
+                            await websocket.send_json({"type": "stream_aborted"})
+                            break
+
+                        delta = chunk['choices'][0]['delta']
+                        if 'content' in delta:
+                            content = delta['content']
+                            full_reply += content
+                            display_text = full_reply if thinking_mode else strip_think_for_ui(full_reply)
+                            await websocket.send_json({"type": "stream_delta", "text": display_text})
+
+                        await asyncio.sleep(0.01)
+
+                    if not abort_event.is_set():
                         display_text = full_reply if thinking_mode else strip_think_for_ui(full_reply)
-                        await websocket.send_json({"type": "stream_delta", "text": display_text})
-                    
-                    await asyncio.sleep(0.01)
-
-                if not abort_event.is_set():
-                    display_text = full_reply if thinking_mode else strip_think_for_ui(full_reply)
-                    await websocket.send_json({"type": "stream_final", "text": display_text})
-                    conv["messages"].append({"role": "assistant", "content": full_reply, "timestamp": time.time()})
-                    ai.conv_manager.update_conversation(conv_id, conv["messages"])
+                        await websocket.send_json({"type": "stream_final", "text": display_text})
+                        conv["messages"].append({"role": "assistant", "content": full_reply, "timestamp": time.time()})
+                        ai.conv_manager.update_conversation(conv_id, conv["messages"])
             
             elif data["type"] == "abort":
                 abort_event.set()
@@ -384,7 +472,7 @@ async def voice_websocket(websocket: WebSocket):
                     print(f"Vosk Final Text: {text}")
                     if text:
                         await websocket.send_json({"type": "vosk_final", "text": text})
-                        # Trigger AI pipeline
+                        await websocket.send_json({"type": "voice_status", "status": "thinking"})
                         await ai.ai_response_and_speak(websocket, text, abort_event, message_queue)
                     else:
                         await websocket.send_json({"type": "voice_status", "status": "idle"})
@@ -413,6 +501,44 @@ async def voice_websocket(websocket: WebSocket):
             elif command == "abort":
                 print("Global Abort Requested")
                 abort_event.set()
+
+            elif command == "task.list":
+                try:
+                    from task_scheduler import list_jobs
+                    jobs = list_jobs()
+                    await websocket.send_json({"type": "task_list", "jobs": jobs})
+                except Exception as e:
+                    print(f"[task.list] {e}")
+                    await websocket.send_json({"type": "task_list", "jobs": []})
+
+            elif command == "task.add":
+                try:
+                    from task_scheduler import add_job
+                    name = data.get("name", "").strip() or "Task"
+                    description = (data.get("description") or "").strip()
+                    schedule = data.get("schedule")
+                    payload = data.get("payload") or {}
+                    if not schedule:
+                        await websocket.send_json({"type": "task_added", "result": False, "error": "Missing schedule"})
+                    else:
+                        job = add_job(name=name, description=description, schedule=schedule, payload=payload)
+                        await websocket.send_json({"type": "task_added", "result": True, "job": job})
+                except Exception as e:
+                    print(f"[task.add] {e}")
+                    import traceback
+                    traceback.print_exc()
+                    await websocket.send_json({"type": "task_added", "result": False, "error": str(e)})
+
+            elif command == "task.remove":
+                try:
+                    from task_scheduler import remove_job
+                    job_id = data.get("id")
+                    if job_id:
+                        remove_job(job_id)
+                    await websocket.send_json({"type": "task_removed"})
+                except Exception as e:
+                    print(f"[task.remove] {e}")
+                    await websocket.send_json({"type": "task_removed"})
 
     except WebSocketDisconnect:
         print("Voice client disconnected")

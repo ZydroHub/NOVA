@@ -1,5 +1,6 @@
 # Web & API
 fastapi==0.129.2
+apscheduler>=3.10.0
 uvicorn==0.41.0
 pydantic==2.12.5
 websockets==16.0
@@ -29,6 +30,9 @@ huggingface-hub==1.4.1
 
 # Optional: Raspberry Pi camera (install on device; often via apt or --system-site-packages)
 # picamera2==0.3.34
+
+# Semantic routing (semantic_router.py): pip install "semantic-router[local]"
+# semantic-router[local]
 
 # Hailo object detection (object_detection.py + hailo_od)
 lap

@@ -1,6 +1,10 @@
 import { app, shell, BrowserWindow, ipcMain } from 'electron'
 import { join } from 'path'
 
+// On Linux (e.g. Raspberry Pi), Chromium may log "GLib-GObject: instance has no handler with id"
+// when the UI updates (e.g. after deleting a task). These come from content/browser and are harmless.
+// To reduce stderr noise you can run with: ELECTRON_DISABLE_GPU=1 (may affect performance).
+
 function createWindow() {
     const mainWindow = new BrowserWindow({
         width: 480,

@@ -13,6 +13,7 @@ export default function ChatInterface({ layoutId }) {
     const location = useLocation();
     const {
         connStatus,
+        connect,
         chatConnStatus,
         messages,
         setMessages,
@@ -102,12 +103,12 @@ export default function ChatInterface({ layoutId }) {
             {/* Main Chat Area */}
             <div className="flex-1 flex flex-col h-full min-w-0">
                 <ChatHeader
-                    connected={chatConnStatus === 'connected'}
+                    connected={connStatus === 'connected'}
                     onReset={reset}
                     sidebarOpen={sidebarOpen}
                     onToggleSidebar={() => setSidebarOpen(!sidebarOpen)}
                 />
-                {chatConnStatus !== 'connected' && <ConnectionBar status={chatConnStatus} />}
+                {connStatus !== 'connected' && <ConnectionBar status={connStatus} onRetry={connect} />}
                 <MessageList
                     messages={messages}
                     streaming={streaming}
@@ -117,7 +118,7 @@ export default function ChatInterface({ layoutId }) {
                     onSend={send}
                     onAbort={abort}
                     streaming={streaming}
-                    disabled={chatConnStatus !== 'connected'}
+                    disabled={connStatus !== 'connected'}
                 />
             </div>
         </motion.div>

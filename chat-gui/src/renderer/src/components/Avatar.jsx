@@ -136,22 +136,11 @@ export default function Avatar({
                 repeat: Infinity,
                 ease: "easeInOut"
             }
-        }
+        },
     };
-
-    const haloVariants = {
-        thinking: {
-            scale: [1, 1.15, 1],
-            opacity: [0.3, 0.6, 0.3],
-            transition: {
-                duration: 0.8,
-                repeat: Infinity,
-                ease: "easeInOut"
-            }
-        }
-    };
-    // Sync thinking and processing
-    const isThinking = expression === 'thinking' || expression === 'processing';
+    // Use prop directly so thinking shows immediately (no state sync delay)
+    const effectiveExpression = externalExpression != null && externalExpression !== '' ? externalExpression : expression;
+    const isThinking = effectiveExpression === 'thinking' || effectiveExpression === 'processing';
 
     // Expression-based Eye Variants
     const getEyeScale = (side) => {
@@ -160,16 +149,6 @@ export default function Avatar({
         switch (expression) {
             case 'happy':
                 return { scaleY: 0.5, translateY: -5, borderRadius: '50%' }; // squinty/happy
-            case 'thinking':
-            case 'processing':
-                return {
-                    scale: [1, 1.2, 1],
-                    boxShadow: [
-                        '0 0 10px #00ffff',
-                        '0 0 30px #00ffff',
-                        '0 0 10px #00ffff'
-                    ]
-                };
             case 'listening':
                 return {
                     scale: [1, 1.1, 1],
@@ -205,7 +184,7 @@ export default function Avatar({
                     position: 'relative',
                 }}
                 variants={floatVariants}
-                animate={animate ? (expression === 'speaking' ? "speaking" : "animate") : "initial"}
+                animate={animate ? (expression === 'speaking' ? "speaking" : expression === 'thinking' || expression === 'processing' ? "animate" : "animate") : "initial"}
             >
                 {/* --- ROBOT HEAD CONSTRUCTION --- */}
                 <motion.div
@@ -214,35 +193,6 @@ export default function Avatar({
                     className="relative w-full h-full"
                 >
                     {/* Thinking Halo */}
-                    <AnimatePresence>
-                        {isThinking && (
-                            <motion.div
-                                className="absolute inset-4 bg-[#00ffff]/20 blur-xl"
-                                variants={haloVariants}
-                                animate="thinking"
-                                style={{ borderRadius: '20%' }}
-                            />
-                        )}
-                    </AnimatePresence>
-
-                    {/* Thinking Rings (Mental Waves) */}
-                    <AnimatePresence>
-                        {isThinking && [1, 2].map((i) => (
-                            <motion.div
-                                key={i}
-                                className="absolute inset-0 border-2 border-[#00ffff]/40"
-                                initial={{ scale: 0.8, opacity: 0 }}
-                                animate={{ scale: 1.5, opacity: 0 }}
-                                transition={{
-                                    duration: 1.5,
-                                    delay: i * 0.75,
-                                    repeat: Infinity,
-                                    ease: "easeOut"
-                                }}
-                                style={{ borderRadius: '20%' }}
-                            />
-                        ))}
-                    </AnimatePresence>
                     {/* Antenna */}
                     <motion.div
                         className="absolute left-1/2 top-0"
@@ -252,7 +202,11 @@ export default function Avatar({
                     >
                         <div className="w-1 h-6 bg-[var(--pixel-secondary)] mx-auto" />
                         <div
-                            className={`w-3 h-3 relative -top-1 rounded-none ${expression === 'listening' ? 'bg-[#ff0000] animate-pulse duration-75' : 'bg-[var(--pixel-accent)] animate-pulse'}`}
+                            className={`w-3 h-3 relative -top-1 rounded-none ${
+                                effectiveExpression === 'listening' ? 'bg-[#ff0000] animate-pulse duration-75' :
+                                isThinking ? 'bg-[#ffff00]' :
+                                'bg-[var(--pixel-accent)] animate-pulse'
+                            }`}
                         />
                     </motion.div>
 
@@ -275,30 +229,69 @@ export default function Avatar({
                             boxShadow: 'inset 2px 2px 4px rgba(0,0,0,0.5)'
                         }}>
 
-                        {/* Eyes Container - INCREASED GAP */}
-                        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full flex justify-center gap-4">
-                            {/* Left Eye */}
-                            <motion.div
-                                className="w-5 h-8 bg-[#00ffff] shadow-[0_0_10px_#00ffff]"
-                                animate={getEyeScale('left')}
-                                transition={{
-                                    type: "spring",
-                                    stiffness: 300,
-                                    damping: 20,
-                                    repeat: expression === 'listening' || expression === 'speaking' ? Infinity : 0
-                                }}
-                            />
-                            {/* Right Eye */}
-                            <motion.div
-                                className="w-5 h-8 bg-[#00ffff] shadow-[0_0_10px_#00ffff]"
-                                animate={getEyeScale('right')}
-                                transition={{
-                                    type: "spring",
-                                    stiffness: 300,
-                                    damping: 20,
-                                    repeat: expression === 'listening' || expression === 'speaking' ? Infinity : 0
-                                }}
-                            />
+                        {/* Eyes: circular loading bars when thinking, else normal eyes */}
+                        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full flex justify-center items-center gap-4">
+                            {isThinking ? (
+                                <>
+                                    <motion.div
+                                        className="flex items-center justify-center flex-shrink-0"
+                                        style={{ width: 24, height: 24, transformOrigin: 'center' }}
+                                        animate={{ rotate: 360 }}
+                                        transition={{ duration: 1.5, repeat: Infinity, ease: 'linear' }}
+                                    >
+                                        <svg width="24" height="24" viewBox="0 0 24 24" className="block">
+                                            <circle
+                                                cx="12" cy="12" r="10"
+                                                fill="none"
+                                                stroke="#00ffff"
+                                                strokeWidth="3"
+                                                strokeLinecap="round"
+                                                strokeDasharray="16 50"
+                                            />
+                                        </svg>
+                                    </motion.div>
+                                    <motion.div
+                                        className="flex items-center justify-center flex-shrink-0"
+                                        style={{ width: 24, height: 24, transformOrigin: 'center' }}
+                                        animate={{ rotate: 360 }}
+                                        transition={{ duration: 1.5, repeat: Infinity, ease: 'linear' }}
+                                    >
+                                        <svg width="24" height="24" viewBox="0 0 24 24" className="block">
+                                            <circle
+                                                cx="12" cy="12" r="10"
+                                                fill="none"
+                                                stroke="#00ffff"
+                                                strokeWidth="3"
+                                                strokeLinecap="round"
+                                                strokeDasharray="16 50"
+                                            />
+                                        </svg>
+                                    </motion.div>
+                                </>
+                            ) : (
+                                <>
+                                    <motion.div
+                                        className="w-5 h-8 bg-[#00ffff] shadow-[0_0_10px_#00ffff]"
+                                        animate={getEyeScale('left')}
+                                        transition={{
+                                            type: "spring",
+                                            stiffness: 300,
+                                            damping: 20,
+                                            repeat: expression === 'listening' || expression === 'speaking' ? Infinity : 0
+                                        }}
+                                    />
+                                    <motion.div
+                                        className="w-5 h-8 bg-[#00ffff] shadow-[0_0_10px_#00ffff]"
+                                        animate={getEyeScale('right')}
+                                        transition={{
+                                            type: "spring",
+                                            stiffness: 300,
+                                            damping: 20,
+                                            repeat: expression === 'listening' || expression === 'speaking' ? Infinity : 0
+                                        }}
+                                    />
+                                </>
+                            )}
                         </div>
 
                         {/* Mouth - Appears when happy/speaking */}

@@ -4,32 +4,25 @@ import { ArrowLeft, Plus, Trash2, Clock, Calendar, MessageSquare, Info, Zap } fr
 import { useNavigate } from 'react-router-dom';
 import { useWebSocket } from '../contexts/WebSocketContext.jsx';
 
-// Helper to format schedule text
+// Helper to format schedule text (interval or one-time at date/time)
 const formatSchedule = (schedule) => {
-    if (!schedule) return 'No schedule';
-    if (typeof schedule === 'string') {
-        return `Cron: ${schedule}`;
+    if (!schedule || typeof schedule !== 'object') return 'No schedule';
+    if (schedule.kind === 'every') {
+        const ms = schedule.everyMs;
+        const days = ms / (1000 * 60 * 60 * 24);
+        if (days >= 1 && Number.isInteger(days)) return `Every ${days} day${days > 1 ? 's' : ''}`;
+        const hours = ms / (1000 * 60 * 60);
+        if (hours >= 1 && Number.isInteger(hours)) return `Every ${hours} hour${hours > 1 ? 's' : ''}`;
+        const mins = ms / (1000 * 60);
+        return `Every ${Math.round(mins)} minute${Math.round(mins) !== 1 ? 's' : ''}`;
     }
-    if (typeof schedule === 'object') {
-        if (schedule.kind === 'every') {
-            const ms = schedule.everyMs;
-            // Convert to largest unit
-            const days = ms / (1000 * 60 * 60 * 24);
-            if (days >= 1 && Number.isInteger(days)) return `Every ${days} day${days > 1 ? 's' : ''}`;
-            const hours = ms / (1000 * 60 * 60);
-            if (hours >= 1 && Number.isInteger(hours)) return `Every ${hours} hour${hours > 1 ? 's' : ''}`;
-            const mins = ms / (1000 * 60);
-            return `Every ${Math.round(mins)} minute${Math.round(mins) !== 1 ? 's' : ''}`;
-        }
-        if (schedule.kind === 'at') {
-            return `At ${new Date(schedule.atMs).toLocaleString()}`;
-        }
-        return JSON.stringify(schedule);
+    if (schedule.kind === 'at') {
+        return `At ${new Date(schedule.atMs).toLocaleString()}`;
     }
-    return String(schedule);
+    return 'Scheduled';
 };
 
-export default function CronManager() {
+export default function TaskManager() {
     const navigate = useNavigate();
     const { sendMessage, addEventListener } = useWebSocket();
     const [jobs, setJobs] = useState([]);
@@ -38,38 +31,35 @@ export default function CronManager() {
     // Form state
     const [name, setName] = useState('');
     const [description, setDescription] = useState('');
-    const [scheduleType, setScheduleType] = useState('every'); // 'every', 'cron', 'at'
+    const [scheduleType, setScheduleType] = useState('every'); // 'every' = interval, 'at' = one-time date/time
 
     // Interval state
     const [intervalValue, setIntervalValue] = useState(30);
     const [intervalUnit, setIntervalUnit] = useState('minutes'); // 'minutes', 'hours', 'days'
 
-    // Cron state
-    const [cronExpression, setCronExpression] = useState('*/30 * * * *');
-
-    // Date state
+    // Date/time state (for "at" schedule)
     const [targetDate, setTargetDate] = useState('');
 
     // Payload state
     const [agentMessage, setAgentMessage] = useState('');
 
     useEffect(() => {
-        sendMessage("cron.list", {});
+        sendMessage("task.list", {});
 
-        const removeListListener = addEventListener("cron_list", (data) => {
+        const removeListListener = addEventListener("task_list", (data) => {
             setJobs(data.jobs || []);
         });
 
-        const removeAddListener = addEventListener("cron_added", (data) => {
+        const removeAddListener = addEventListener("task_added", (data) => {
             if (data.result) {
                 setShowAddForm(false);
                 resetForm();
-                sendMessage("cron.list", {});
+                sendMessage("task.list", {});
             }
         });
 
-        const removeRemoveListener = addEventListener("cron_removed", (data) => {
-            sendMessage("cron.list", {});
+        const removeRemoveListener = addEventListener("task_removed", (data) => {
+            sendMessage("task.list", {});
         });
 
         return () => {
@@ -85,7 +75,6 @@ export default function CronManager() {
         setScheduleType('every');
         setIntervalValue(30);
         setIntervalUnit('minutes');
-        setCronExpression('*/30 * * * *');
         setTargetDate('');
         setAgentMessage('');
     };
@@ -103,10 +92,7 @@ export default function CronManager() {
             schedule = {
                 kind: 'every',
                 everyMs: ms
-                // anchorMs is optional, defaults to now if omitted usually, or backend handles it
             };
-        } else if (scheduleType === 'cron') {
-            schedule = cronExpression;
         } else if (scheduleType === 'at') {
             const date = new Date(targetDate);
             schedule = {
@@ -116,18 +102,16 @@ export default function CronManager() {
         }
 
         // Construct payload
-        // Validated against existing jobs: requires 'message' string, kind 'agentTurn'
         const payload = agentMessage ? {
             kind: 'agentTurn',
             message: agentMessage
         } : {};
 
-        // Basic payload validation
         if (Object.keys(payload).length === 0 && !confirm("No agent message provided. Create job anyway?")) {
             return;
         }
 
-        sendMessage("cron.add", {
+        sendMessage("task.add", {
             name,
             description,
             schedule,
@@ -137,7 +121,7 @@ export default function CronManager() {
 
     const handleRemoveJob = (id) => {
         if (confirm("Delete this scheduled task?")) {
-            sendMessage("cron.remove", { id });
+            sendMessage("task.remove", { id });
         }
     };
 
@@ -152,7 +136,7 @@ export default function CronManager() {
                     >
                         <ArrowLeft size={20} />
                     </button>
-                    <h1 className="text-xl font-['Press_Start_2P'] text-[var(--pixel-primary)]">CRON JOBS</h1>
+                    <h1 className="text-xl font-['Press_Start_2P'] text-[var(--pixel-primary)]">TASK MANAGER</h1>
                 </div>
                 <button
                     onClick={() => setShowAddForm(!showAddForm)}
@@ -198,19 +182,26 @@ export default function CronManager() {
                                     <div>
                                         <label className="block text-xs font-['Press_Start_2P'] mb-2 text-[var(--pixel-secondary)]">SCHEDULE TYPE</label>
                                         <div className="flex bg-[var(--pixel-bg)] p-1 border-2 border-[var(--pixel-border)]">
-                                            {['every', 'cron', 'at'].map(type => (
-                                                <button
-                                                    key={type}
-                                                    type="button"
-                                                    onClick={() => setScheduleType(type)}
-                                                    className={`flex-1 py-3 text-center font-['VT323'] text-xl transition-colors ${scheduleType === type
-                                                        ? 'bg-[var(--pixel-primary)] text-black'
-                                                        : 'text-[var(--pixel-text)] hover:bg-[var(--pixel-surface)]'
-                                                        }`}
-                                                >
-                                                    {type.toUpperCase()}
-                                                </button>
-                                            ))}
+                                            <button
+                                                type="button"
+                                                onClick={() => setScheduleType('every')}
+                                                className={`flex-1 py-3 text-center font-['VT323'] text-xl transition-colors ${scheduleType === 'every'
+                                                    ? 'bg-[var(--pixel-primary)] text-black'
+                                                    : 'text-[var(--pixel-text)] hover:bg-[var(--pixel-surface)]'
+                                                    }`}
+                                            >
+                                                INTERVAL
+                                            </button>
+                                            <button
+                                                type="button"
+                                                onClick={() => setScheduleType('at')}
+                                                className={`flex-1 py-3 text-center font-['VT323'] text-xl transition-colors ${scheduleType === 'at'
+                                                    ? 'bg-[var(--pixel-primary)] text-black'
+                                                    : 'text-[var(--pixel-text)] hover:bg-[var(--pixel-surface)]'
+                                                    }`}
+                                            >
+                                                DATE & TIME
+                                            </button>
                                         </div>
                                     </div>
 
@@ -241,24 +232,14 @@ export default function CronManager() {
                                         </div>
                                     )}
 
-                                    {scheduleType === 'cron' && (
-                                        <div>
-                                            <label className="text-xs text-[var(--pixel-primary)] mb-1 block">EXPRESSION</label>
-                                            <input
-                                                value={cronExpression} onChange={e => setCronExpression(e.target.value)}
-                                                className="w-full p-2 bg-[var(--pixel-surface)] border-2 border-[var(--pixel-border)] text-[var(--pixel-text)] text-lg font-mono"
-                                                placeholder="* * * * *"
-                                            />
-                                        </div>
-                                    )}
-
                                     {scheduleType === 'at' && (
                                         <div>
-                                            <label className="text-xs text-[var(--pixel-primary)] mb-1 block">TIMESTAMP</label>
+                                            <label className="text-xs text-[var(--pixel-primary)] mb-1 block">DATE & TIME</label>
                                             <input
                                                 type="datetime-local"
                                                 value={targetDate} onChange={e => setTargetDate(e.target.value)}
                                                 className="w-full p-2 bg-[var(--pixel-surface)] border-2 border-[var(--pixel-border)] text-[var(--pixel-text)] text-lg"
+                                                required={scheduleType === 'at'}
                                             />
                                         </div>
                                     )}
@@ -298,7 +279,7 @@ export default function CronManager() {
                 {jobs.length === 0 && !showAddForm ? (
                     <div className="flex flex-col items-center justify-center py-20 text-[var(--pixel-border)]">
                         <Clock size={48} className="mb-4 opacity-50" />
-                        <p className="text-xl">NO ACTIVE SCHEDULES</p>
+                        <p className="text-xl">NO ACTIVE TASKS</p>
                     </div>
                 ) : (
                     jobs.map((job) => (

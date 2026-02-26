@@ -54,9 +54,9 @@ export default function ChatSidebar({ isOpen, onClose }) {
                 />
             )}
 
-            {/* Sidebar Overlay */}
+            {/* Sidebar Overlay - slides in from the right */}
             <aside
-                className={`fixed top-20 left-0 bottom-0 z-50 bg-[var(--pixel-surface)] border-r-4 border-[var(--pixel-border)] transition-transform duration-300 ease-in-out ${isOpen ? 'translate-x-0' : '-translate-x-full'} w-72 flex flex-col`}
+                className={`fixed top-20 right-0 bottom-0 z-50 bg-[var(--pixel-surface)] border-l-4 border-[var(--pixel-border)] transition-transform duration-300 ease-in-out ${isOpen ? 'translate-x-0' : 'translate-x-full'} w-72 flex flex-col`}
             >
                 <div className="p-4 border-b-4 border-[var(--pixel-border)] flex flex-col gap-2">
                     <button

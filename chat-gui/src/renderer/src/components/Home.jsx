@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MessageCircle, Settings, Camera, Image as GalleryIcon, Shield, Cpu, Code } from 'lucide-react';
+import { MessageCircle, Settings, Camera, Image as GalleryIcon, Code } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import Avatar from './Avatar';
 import { useWebSocket } from '../contexts/WebSocketContext.jsx';
@@ -11,11 +11,11 @@ const MenuButton = ({ icon: Icon, label, onClick, color }) => (
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
         onClick={onClick}
-        className="pixel-btn flex flex-col items-center justify-center gap-2 w-full h-32 aspect-square"
+        className="pixel-btn flex flex-col items-center justify-center gap-3 w-full min-h-[160px] aspect-square"
         style={{ borderColor: color, color: color }}
     >
-        <Icon size={32} />
-        <span className="text-xs">{label}</span>
+        <Icon size={44} />
+        <span className="text-sm">{label}</span>
     </motion.button>
 );
 
@@ -94,6 +94,18 @@ export default function Home() {
     return (
         <div className="relative w-full h-full overflow-hidden bg-[var(--pixel-bg)] flex flex-col items-center justify-center p-4">
 
+            {/* Settings button top left */}
+            <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => navigate('/settings')}
+                className="absolute top-3 left-3 z-30 p-4 rounded-lg border-2 border-[var(--pixel-border)] bg-[var(--pixel-surface)] shadow-[4px_4px_0_0_rgba(0,0,0,0.5)]"
+                style={{ color: '#7dcfff' }}
+                aria-label="Settings"
+            >
+                <Settings size={36} />
+            </motion.button>
+
             {/* Avatar - Centered (higher z when bubble visible so it's not covered by buttons) */}
             <div
                 className={`mb-12 relative ${showBubble ? 'z-20' : 'z-10'}`}
@@ -145,14 +157,12 @@ export default function Home() {
                 </AnimatePresence>
             </div>
 
-            {/* Main Menu Grid */}
-            <div className="grid grid-cols-2 gap-4 z-10 w-full max-w-[400px]">
+            {/* Main Menu Grid - 4 buttons: Chat, Vision, Agent, Gallery */}
+            <div className="grid grid-cols-2 gap-5 z-10 w-full max-w-[520px]">
                 <MenuButton icon={MessageCircle} label="CHAT" onClick={() => navigate('/chat')} color="var(--pixel-primary)" />
                 <MenuButton icon={Camera} label="VISION" onClick={() => navigate('/camera')} color="var(--pixel-accent)" />
+                <MenuButton icon={Code} label="AGENT" onClick={() => navigate('/tasks')} color="#f7768e" />
                 <MenuButton icon={GalleryIcon} label="GALLERY" onClick={() => navigate('/gallery')} color="var(--pixel-secondary)" />
-                <MenuButton icon={Code} label="AGENT" onClick={() => navigate('/agent')} color="#f7768e" />
-                <MenuButton icon={Shield} label="SECURITY" onClick={() => navigate('/cron')} color="#e0af68" />
-                <MenuButton icon={Settings} label="SETTINGS" onClick={() => navigate('/settings')} color="#7dcfff" />
             </div>
 
             {/* Decorative BG Elements */}

@@ -32,6 +32,12 @@ async def startup_event():
     # Initialize the AI models on startup
     print("Unified Backend starting up...")
     ai_state.load_model()
+    # Start task scheduler (interval + date/time tasks)
+    try:
+        from task_scheduler import init_scheduler
+        init_scheduler(ai_state.conv_manager)
+    except Exception as e:
+        print(f"Task scheduler not started: {e}")
     print("Unified Backend ready.")
 
 @app.post("/shutdown")

@@ -7,10 +7,9 @@ import CameraView from './components/CameraView';
 import Gallery from './components/Gallery';
 import Settings from './components/Settings';
 import StatusBar from './components/StatusBar';
-import CronManager from './components/CronManager';
+import TaskManager from './components/TaskManager';
 import HeartbeatManager from './components/HeartbeatManager';
 import GPIOControl from './components/GPIOControl';
-import AgenticCoding from './components/AgenticCoding';
 import { WebSocketProvider } from './contexts/WebSocketContext';
 
 
@@ -25,10 +24,9 @@ const AnimatedRoutes = () => {
           path="/chat"
           element={<ChatInterface layoutId="avatar-hero" />}
         />
-        <Route path="/agent" element={<AgenticCoding />} />
         <Route path="/camera" element={<CameraView />} />
         <Route path="/gallery" element={<Gallery />} />
-        <Route path="/cron" element={<CronManager />} />
+        <Route path="/tasks" element={<TaskManager />} />
         <Route path="/heartbeat" element={<HeartbeatManager />} />
         <Route path="/gpio" element={<GPIOControl />} />
         <Route path="/settings" element={<Settings />} />

@@ -140,6 +140,10 @@ export function WebSocketProvider({ children }) {
     }, []);
 
     const connect = useCallback(() => {
+        if (reconnectTimer.current) {
+            clearTimeout(reconnectTimer.current);
+            reconnectTimer.current = null;
+        }
         if (wsRef.current) {
             wsRef.current.onclose = null;
             wsRef.current.close();
@@ -219,18 +223,42 @@ export function WebSocketProvider({ children }) {
     }, [fetchConversations]);
 
     const chatWsRef = useRef(null);
+    const chatReconnectTimer = useRef(null);
+    const currentConvIdRef = useRef(currentConvId);
+    currentConvIdRef.current = currentConvId;
 
     const connectChat = useCallback((convId) => {
+        if (!convId) {
+            setChatConnStatus('disconnected');
+            return;
+        }
         if (chatWsRef.current) {
+            chatWsRef.current.onclose = null;
             chatWsRef.current.close();
+            chatWsRef.current = null;
         }
 
         setChatConnStatus('connecting');
         const ws = new WebSocket(`${CHAT_WS_URL}/${convId}`);
         chatWsRef.current = ws;
 
-        ws.onopen = () => setChatConnStatus('connected');
-        ws.onclose = () => setChatConnStatus('disconnected');
+        ws.onopen = () => {
+            setChatConnStatus('connected');
+            if (chatReconnectTimer.current) {
+                clearTimeout(chatReconnectTimer.current);
+                chatReconnectTimer.current = null;
+            }
+        };
+        ws.onclose = () => {
+            chatWsRef.current = null;
+            setChatConnStatus('disconnected');
+            chatReconnectTimer.current = setTimeout(() => {
+                chatReconnectTimer.current = null;
+                if (currentConvIdRef.current === convId) {
+                    connectChat(convId);
+                }
+            }, 2000);
+        };
         ws.onmessage = (event) => {
             try {
                 const data = JSON.parse(event.data);
@@ -246,6 +274,7 @@ export function WebSocketProvider({ children }) {
         fetchConversations();
         return () => {
             clearTimeout(reconnectTimer.current);
+            clearTimeout(chatReconnectTimer.current);
             if (wsRef.current) wsRef.current.close();
             if (chatWsRef.current) chatWsRef.current.close();
         };
@@ -303,6 +332,7 @@ export function WebSocketProvider({ children }) {
 
     const value = {
         connStatus,
+        connect,
         chatConnStatus,
         messages,
         setMessages,
