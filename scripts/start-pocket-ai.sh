@@ -2,35 +2,76 @@
 # Start Pocket AI: backend (FastAPI) then Electron GUI.
 # When you close the GUI, the backend is stopped too.
 
-set -e
+# When run from desktop, PATH may not include node/npm — load your shell profile
+if [ -f "$HOME/.profile" ]; then
+    source "$HOME/.profile"
+fi
+if [ -f "$HOME/.bashrc" ]; then
+    source "$HOME/.bashrc"
+fi
+
+# Still no npm? Add common locations and try nvm
+if ! command -v npm &>/dev/null; then
+    export PATH="/usr/local/bin:/usr/bin:$HOME/.local/bin:$PATH"
+    # NVM (Node Version Manager)
+    if [ -s "$HOME/.nvm/nvm.sh" ]; then
+        source "$HOME/.nvm/nvm.sh"
+    fi
+    # NVM puts node in versions/node/*/bin
+    for nvm_dir in "$HOME/.nvm/versions/node"/*/bin; do
+        [ -d "$nvm_dir" ] && PATH="$nvm_dir:$PATH"
+    done
+fi
+
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 cd "$PROJECT_ROOT"
 
+echo "=== Pocket AI launcher ==="
+echo "Project: $PROJECT_ROOT"
+
 # Activate venv if present
 if [ -f ".venv/bin/activate" ]; then
+    echo "Activating Python venv..."
     source .venv/bin/activate
 fi
 
 # Start backend in background
+echo "Starting backend..."
 python app.py &
 BACKEND_PID=$!
 
-# Wait for backend to be ready (health check or timeout)
-for i in 1 2 3 4 5 6 7 8 9 10; do
+# Wait for backend to be ready
+echo "Waiting for backend (up to 30s)..."
+for i in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30; do
     if curl -s -o /dev/null -w "%{http_code}" http://127.0.0.1:8000/health 2>/dev/null | grep -q 200; then
+        echo "Backend is ready."
         break
     fi
     sleep 1
 done
 
-# Start Electron GUI (blocks until user closes the window)
+# Start Electron GUI
 cd "$PROJECT_ROOT/chat-gui"
+if ! command -v npm &>/dev/null; then
+    echo ""
+    echo "ERROR: npm not found. Add Node/npm to your PATH or run this script from a terminal."
+    echo "Backend is still running (PID $BACKEND_PID). Close this window to stop it, or run: kill $BACKEND_PID"
+    echo "Press Enter to close..."
+    read -r
+    kill $BACKEND_PID 2>/dev/null || true
+    exit 1
+fi
+
+echo "Starting Pocket AI window..."
 if [ -f "out/main/index.js" ]; then
     npx electron . 2>/dev/null || npm run dev
 else
     npm run dev
 fi
+GUI_EXIT=$?
 
 # When GUI exits, stop the backend
+echo "Stopping backend..."
 kill $BACKEND_PID 2>/dev/null || true
+exit $GUI_EXIT

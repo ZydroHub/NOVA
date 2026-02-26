@@ -2,7 +2,7 @@
 Type=Application
 Name=Pocket AI
 Comment=Start Pocket AI (backend + chat GUI)
-Exec=bash /home/pocket-ai/Documents/pocket-ai/scripts/start-pocket-ai.sh
+Exec=bash -l -c "/home/pocket-ai/Documents/pocket-ai/scripts/start-pocket-ai.sh"
 Path=/home/pocket-ai/Documents/pocket-ai
 Terminal=true
 Icon=applications-internet

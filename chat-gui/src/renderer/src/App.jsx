@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
+import { HashRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 import Home from './components/Home';
 import ChatInterface from './components/ChatInterface';
@@ -13,6 +13,7 @@ import GPIOControl from './components/GPIOControl';
 import ErrorBoundary from './components/ErrorBoundary';
 import { WebSocketProvider } from './contexts/WebSocketContext';
 
+// HashRouter so routes work when the app is loaded from file:// (built Electron app)
 
 const AnimatedRoutes = () => {
   const location = useLocation();
@@ -38,7 +39,7 @@ const AnimatedRoutes = () => {
 
 export default function App() {
   return (
-    <BrowserRouter>
+    <HashRouter>
       <WebSocketProvider>
         <div className="flex flex-col h-screen w-screen overflow-hidden bg-[var(--pixel-bg)] text-[var(--pixel-text)]">
           <StatusBar />
@@ -49,6 +50,6 @@ export default function App() {
           </div>
         </div>
       </WebSocketProvider>
-    </BrowserRouter>
+    </HashRouter>
   );
 }
