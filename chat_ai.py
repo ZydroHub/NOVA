@@ -134,9 +134,11 @@ class AIState:
         print("Chat AI Ready.")
 
     async def generate_response(self, messages, thinking=True):
-        # Prepare messages
+        # Prepare messages (skip hidden tool-call entries so the model only sees user/result text)
         llm_messages = []
         for m in messages:
+            if m.get("hidden"):
+                continue
             content = m["content"]
             # Append mode flag
             if thinking:
@@ -198,17 +200,21 @@ class AIState:
                     None, lambda: tool_ai.run_task_for_backend(text)
                 )
                 if tool_call_raw or tool_result is not None:
-                    full_response = (tool_call_raw or "") + ("\n[Result] " + str(tool_result) if tool_result else "")
+                    display_text = str(tool_result) if tool_result else "No tool call produced."
+                    if tool_call_raw:
+                        self.voice_messages.append({"role": "assistant", "content": tool_call_raw, "hidden": True})
+                    if tool_result is not None:
+                        self.voice_messages.append({"role": "assistant", "content": display_text})
                 else:
-                    full_response = "No tool call produced."
+                    display_text = "No tool call produced."
+                    self.voice_messages.append({"role": "assistant", "content": display_text})
                 if not abort_event.is_set():
-                    self.voice_messages.append({"role": "assistant", "content": full_response})
                     if len(self.voice_messages) > 11:
                         self.voice_messages = [self.voice_messages[0]] + self.voice_messages[-10:]
-                    await websocket.send_json({"type": "ai_delta", "text": full_response})
-                    await websocket.send_json({"type": "ai_final", "text": full_response})
+                    await websocket.send_json({"type": "ai_delta", "text": display_text})
+                    await websocket.send_json({"type": "ai_final", "text": display_text})
                     await websocket.send_json({"type": "voice_status", "status": "speaking"})
-                    to_speak = str(tool_result) if tool_result else full_response
+                    to_speak = display_text
                     if to_speak:
                         self.tts.enqueue_text(to_speak)
                     else:
@@ -336,8 +342,8 @@ async def chat_websocket_endpoint(websocket: WebSocket, conv_id: str):
         return
 
     await websocket.send_json({
-        "type": "history", 
-        "messages": [{"role": m["role"], "text": m["content"]} for m in conv["messages"]]
+        "type": "history",
+        "messages": [{"role": m["role"], "text": m["content"], "hidden": m.get("hidden", False)} for m in conv["messages"]]
     })
 
     abort_event = asyncio.Event()
@@ -382,13 +388,13 @@ async def chat_websocket_endpoint(websocket: WebSocket, conv_id: str):
                     tool_call_raw, tool_result = await loop.run_in_executor(
                         None, lambda: tool_ai.run_task_for_backend(user_text)
                     )
-                    full_reply = (tool_call_raw or "") + ("\n[Result] " + str(tool_result) if tool_result else "")
-                    if not tool_call_raw and tool_result is None:
-                        full_reply = "No tool call produced."
+                    display_reply = str(tool_result) if tool_result is not None else "No tool call produced."
                     if not abort_event.is_set():
-                        await websocket.send_json({"type": "stream_delta", "text": full_reply})
-                        await websocket.send_json({"type": "stream_final", "text": full_reply})
-                        conv["messages"].append({"role": "assistant", "content": full_reply, "timestamp": time.time()})
+                        await websocket.send_json({"type": "stream_delta", "text": display_reply})
+                        await websocket.send_json({"type": "stream_final", "text": display_reply})
+                        if tool_call_raw:
+                            conv["messages"].append({"role": "assistant", "content": tool_call_raw, "timestamp": time.time(), "hidden": True})
+                        conv["messages"].append({"role": "assistant", "content": display_reply, "timestamp": time.time()})
                         ai.conv_manager.update_conversation(conv_id, conv["messages"])
                 else:
                     # Qwen path: use route to set thinking, not UI toggle

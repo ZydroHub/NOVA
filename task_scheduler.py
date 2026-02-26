@@ -55,21 +55,22 @@ def _run_job(job_id: str) -> None:
     except Exception as e:
         print(f"[task_scheduler] tool_ai failed for job {job_id}: {e}")
         return
-    full_reply = (tool_call_raw or "") + ("\n[Result] " + str(tool_result) if tool_result else "")
-    if not tool_call_raw and tool_result is None:
-        full_reply = "No tool call produced."
     user_msg = {"role": "user", "content": prompt}
-    assistant_msg = {"role": "assistant", "content": full_reply}
+    result_text = str(tool_result) if tool_result is not None else "No tool call produced."
+    assistant_msgs = []
+    if tool_call_raw:
+        assistant_msgs.append({"role": "assistant", "content": tool_call_raw, "hidden": True})
+    assistant_msgs.append({"role": "assistant", "content": result_text})
     conv_id = job.get("conversation_id")
     if conv_id:
         conv = _conv_manager.get_conversation(conv_id)
         if conv:
             conv["messages"].append(user_msg)
-            conv["messages"].append(assistant_msg)
+            conv["messages"].extend(assistant_msgs)
             _conv_manager.update_conversation(conv_id, conv["messages"])
             print(f"[task_scheduler] Appended to conversation {conv_id} for job {job_id}")
         else:
-            conv = _conv_manager.create_conversation(title=job.get("name", "Task"), messages=[user_msg, assistant_msg])
+            conv = _conv_manager.create_conversation(title=job.get("name", "Task"), messages=[user_msg] + assistant_msgs)
             job["conversation_id"] = conv["id"]
             for i, j in enumerate(jobs):
                 if j.get("id") == job_id:
@@ -81,7 +82,7 @@ def _run_job(job_id: str) -> None:
         title = (job.get("name") or prompt[:30] or "Task").strip()
         if len(title) > 30:
             title = title[:30] + "…"
-        conv = _conv_manager.create_conversation(title=title, messages=[user_msg, assistant_msg])
+        conv = _conv_manager.create_conversation(title=title, messages=[user_msg] + assistant_msgs)
         if _is_recurring(job.get("schedule")):
             job["conversation_id"] = conv["id"]
             for i, j in enumerate(jobs):

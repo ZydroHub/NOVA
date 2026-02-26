@@ -24,6 +24,9 @@ STREAM_FPS = 30
 DETECTION_FRAME_INTERVAL = 3
 
 # --- Camera Process Logic ---
+CAMERA_RESTART_DELAY = 2.0   # seconds to wait before reinit after timeout
+CAMERA_MAX_CAPTURE_RETRIES = 5   # retries per frame before considering it a timeout
+
 def run_stream_process(
     stream_queue: multiprocessing.Queue,
     stop_event: multiprocessing.Event,
@@ -32,8 +35,9 @@ def run_stream_process(
     width: int = STREAM_WIDTH,
     height: int = STREAM_HEIGHT,
 ):
-    try:
-        from picamera2 import Picamera2
+    from picamera2 import Picamera2
+
+    def init_camera():
         picam2 = Picamera2()
         main = {"size": (1280, 720), "format": "RGB888"}
         lores = {"size": (width, height), "format": "RGB888"}
@@ -41,6 +45,21 @@ def run_stream_process(
         config = picam2.create_preview_configuration(main=main, lores=lores, controls=controls)
         picam2.configure(config)
         picam2.start()
+        return picam2
+
+    def stop_camera_safe(picam2):
+        try:
+            picam2.stop()
+        except Exception:
+            pass
+        try:
+            picam2.close()
+        except Exception:
+            pass
+
+    picam2 = None
+    try:
+        picam2 = init_camera()
     except Exception as e:
         print(f"Camera init failed: {e}")
         return
@@ -48,12 +67,29 @@ def run_stream_process(
     frame_count = 0
     try:
         while not stop_event.is_set():
-            try:
-                frame_data = picam2.capture_array("lores")
-            except Exception:
-                break
+            frame_data = None
+            for attempt in range(CAMERA_MAX_CAPTURE_RETRIES):
+                try:
+                    frame_data = picam2.capture_array("lores")
+                    break
+                except Exception as e:
+                    if attempt + 1 >= CAMERA_MAX_CAPTURE_RETRIES:
+                        print(f"ERROR: Device timeout detected, attempting a restart!!! ({e})")
+                        stop_camera_safe(picam2)
+                        picam2 = None
+                        time.sleep(CAMERA_RESTART_DELAY)
+                        if stop_event.is_set():
+                            return
+                        try:
+                            picam2 = init_camera()
+                        except Exception as e2:
+                            print(f"Camera restart failed: {e2}")
+                            return
+                        break
+                    time.sleep(0.1)
+
             if frame_data is None:
-                break
+                continue
 
             import cv2
             if len(frame_data.shape) == 2:
@@ -76,8 +112,8 @@ def run_stream_process(
                         pass
             frame_count += 1
     finally:
-        picam2.stop()
-        picam2.close()
+        if picam2 is not None:
+            stop_camera_safe(picam2)
 
 # --- Router Logic ---
 router = APIRouter()

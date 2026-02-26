@@ -7,6 +7,11 @@ import { useNavigate } from 'react-router-dom';
 const pendingStopTimeoutRef = { current: null };
 const STOP_DELAY_MS = 500;
 
+// Stream image size after backend rotate + resize (camera_stream.py)
+const STREAM_IMAGE_WIDTH = 480;
+const STREAM_IMAGE_HEIGHT = 800;
+const STREAM_ASPECT = STREAM_IMAGE_WIDTH / STREAM_IMAGE_HEIGHT;
+
 export default function CameraView() {
     const navigate = useNavigate();
     const [status, setStatus] = useState('connecting'); // connecting, connected, error
@@ -15,6 +20,8 @@ export default function CameraView() {
     const [detectionError, setDetectionError] = useState(null);
     const [flash, setFlash] = useState(false);
     const wsRef = useRef(null);
+    const videoContainerRef = useRef(null);
+    const [containerSize, setContainerSize] = useState({ width: 1, height: 1 });
 
     const videoFeedUrl = `http://${window.location.hostname}:8000/video_feed`;
     const wsUrl = `ws://${window.location.hostname}:8000/ws/detections`;
@@ -123,6 +130,24 @@ export default function CameraView() {
         };
     }, []);
 
+    // Measure video container for object-cover bbox mapping (rotation + crop)
+    useEffect(() => {
+        const el = videoContainerRef.current;
+        if (!el) return;
+        const updateSize = () => {
+            const { width, height } = el.getBoundingClientRect();
+            setContainerSize({ width, height });
+        };
+        updateSize(); // initial measure
+        const ro = new ResizeObserver((entries) => {
+            if (!entries.length) return;
+            const { width, height } = entries[0].contentRect;
+            setContainerSize({ width, height });
+        });
+        ro.observe(el);
+        return () => ro.disconnect();
+    }, []);
+
     const toggleDetection = async () => {
         setDetectionError(null);
         if (detectionActive) {
@@ -184,24 +209,47 @@ export default function CameraView() {
         }
     };
 
-    // Video is rotated 90° clockwise for portrait; transform bbox to match
-    const transformBboxForRotation = ([xmin, ymin, xmax, ymax]) => {
-        const left = ymin, top = 1 - xmax, right = ymax, bottom = 1 - xmin;
-        return [1 - right, top, 1 - left, bottom]; // flip x only so left/right match display
+    // Detection bbox is in original camera frame (640×384) normalized. Video feed is that frame
+    // rotated 90° CW then resized to 480×800, and displayed with object-cover (may be cropped).
+    const imageNormToContainerNorm = (xImgNorm, yImgNorm) => {
+        const { width: cw, height: ch } = containerSize;
+        if (cw <= 0 || ch <= 0) return { x: xImgNorm, y: yImgNorm };
+        const scale = Math.max(cw / STREAM_IMAGE_WIDTH, ch / STREAM_IMAGE_HEIGHT);
+        const displayedW = STREAM_IMAGE_WIDTH * scale;
+        const displayedH = STREAM_IMAGE_HEIGHT * scale;
+        const offsetLeft = (cw - displayedW) / 2;
+        const offsetTop = (ch - displayedH) / 2;
+        const xContainer = (offsetLeft + xImgNorm * displayedW) / cw;
+        const yContainer = (offsetTop + yImgNorm * displayedH) / ch;
+        return { x: xContainer, y: yContainer };
     };
 
     const renderBoundingBoxes = () => {
+        const { width: cw, height: ch } = containerSize;
+        if (cw < 10 || ch < 10) return null; // wait for container measure
+
         return detections.map((det, index) => {
-            const [xmin, ymin, xmax, ymax] = transformBboxForRotation(det.bbox);
+            // Original bbox: normalized in 640×384 (unrotated) as [xmin, ymin, xmax, ymax]
+            const [oxMin, oyMin, oxMax, oyMax] = det.bbox;
+            // OpenCV ROTATE_90_CLOCKWISE: (x,y) -> (1-y, x) in normalized; so stream coords:
+            const sxMin = 1 - oyMax;
+            const syMin = oxMin;
+            const sxMax = 1 - oyMin;
+            const syMax = oxMax;
 
-            const left = `${xmin * 100}%`;
-            const top = `${ymin * 100}%`;
-            const width = `${(xmax - xmin) * 100}%`;
-            const height = `${(ymax - ymin) * 100}%`;
+            // Map from stream-image normalized to container normalized (object-cover)
+            const tl = imageNormToContainerNorm(sxMin, syMin);
+            const br = imageNormToContainerNorm(sxMax, syMax);
+            const left = Math.max(0, Math.min(1, tl.x));
+            const top = Math.max(0, Math.min(1, tl.y));
+            const right = Math.max(0, Math.min(1, br.x));
+            const bottom = Math.max(0, Math.min(1, br.y));
 
-            // Color based on label or confidence? Let's use a nice accent color
-            // You can add a map for colors based on label if desired
-            const color = 'rgba(0, 255, 255, 0.6)'; // Cyan
+            const leftPct = `${left * 100}%`;
+            const topPct = `${top * 100}%`;
+            const widthPct = `${Math.max(0, (right - left) * 100)}%`;
+            const heightPct = `${Math.max(0, (bottom - top) * 100)}%`;
+
             const borderColor = 'rgba(0, 255, 255, 1)';
 
             return (
@@ -209,11 +257,11 @@ export default function CameraView() {
                     key={index}
                     className="absolute border-2 flex flex-col items-start justify-start pointer-events-none"
                     style={{
-                        left,
-                        top,
-                        width,
-                        height,
-                        borderColor: borderColor,
+                        left: leftPct,
+                        top: topPct,
+                        width: widthPct,
+                        height: heightPct,
+                        borderColor,
                         boxShadow: '0 0 10px rgba(0,255,255,0.3)'
                     }}
                 >
@@ -275,7 +323,7 @@ export default function CameraView() {
             </div>
 
             {/* Main Content: Video & Status */}
-            <div className="absolute inset-0 z-0 flex items-center justify-center bg-black">
+            <div ref={videoContainerRef} className="absolute inset-0 z-0 flex items-center justify-center bg-black">
                 {/* Video Feed */}
                 <img
                     src={videoFeedUrl}

@@ -51,10 +51,12 @@ export function WebSocketProvider({ children }) {
         // 2. Handle core chat messages locally (or we could move this out too, but keeping it here for simplicity of migration)
         switch (data.type) {
             case 'history': {
-                const history = (data.messages || []).map((m) => ({
-                    role: m.role,
-                    text: m.text,
-                }));
+                const history = (data.messages || [])
+                    .filter((m) => !m.hidden)
+                    .map((m) => ({
+                        role: m.role,
+                        text: m.text,
+                    }));
                 setMessages(history);
                 break;
             }

@@ -28,6 +28,9 @@ onnxruntime==1.24.2
 llama-cpp-python==0.3.16
 huggingface-hub==1.4.1
 
+# Web search (tool_ai)
+ddgs>=9.0.0
+
 # Optional: Raspberry Pi camera (install on device; often via apt or --system-site-packages)
 # picamera2==0.3.34
 
