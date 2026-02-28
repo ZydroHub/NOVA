@@ -22628,7 +22628,7 @@ const createLucideIcon = (iconName, iconNode) => {
   Component.displayName = toPascalCase(iconName);
   return Component;
 };
-const __iconNode$m = [
+const __iconNode$n = [
   [
     "path",
     {
@@ -22637,13 +22637,13 @@ const __iconNode$m = [
     }
   ]
 ];
-const Activity = createLucideIcon("activity", __iconNode$m);
-const __iconNode$l = [
+const Activity = createLucideIcon("activity", __iconNode$n);
+const __iconNode$m = [
   ["path", { d: "m12 19-7-7 7-7", key: "1l729n" }],
   ["path", { d: "M19 12H5", key: "x3x0zl" }]
 ];
-const ArrowLeft = createLucideIcon("arrow-left", __iconNode$l);
-const __iconNode$k = [
+const ArrowLeft = createLucideIcon("arrow-left", __iconNode$m);
+const __iconNode$l = [
   [
     "path",
     {
@@ -22653,35 +22653,47 @@ const __iconNode$k = [
   ],
   ["circle", { cx: "12", cy: "13", r: "3", key: "1vg3eu" }]
 ];
-const Camera = createLucideIcon("camera", __iconNode$k);
-const __iconNode$j = [["path", { d: "M20 6 9 17l-5-5", key: "1gmf2c" }]];
-const Check = createLucideIcon("check", __iconNode$j);
-const __iconNode$i = [["path", { d: "m15 18-6-6 6-6", key: "1wnfg3" }]];
-const ChevronLeft = createLucideIcon("chevron-left", __iconNode$i);
-const __iconNode$h = [["path", { d: "m9 18 6-6-6-6", key: "mthhwq" }]];
-const ChevronRight = createLucideIcon("chevron-right", __iconNode$h);
-const __iconNode$g = [
+const Camera = createLucideIcon("camera", __iconNode$l);
+const __iconNode$k = [["path", { d: "M20 6 9 17l-5-5", key: "1gmf2c" }]];
+const Check = createLucideIcon("check", __iconNode$k);
+const __iconNode$j = [["path", { d: "m15 18-6-6 6-6", key: "1wnfg3" }]];
+const ChevronLeft = createLucideIcon("chevron-left", __iconNode$j);
+const __iconNode$i = [["path", { d: "m9 18 6-6-6-6", key: "mthhwq" }]];
+const ChevronRight = createLucideIcon("chevron-right", __iconNode$i);
+const __iconNode$h = [
   ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }],
   ["line", { x1: "12", x2: "12", y1: "8", y2: "12", key: "1pkeuh" }],
   ["line", { x1: "12", x2: "12.01", y1: "16", y2: "16", key: "4dfq90" }]
 ];
-const CircleAlert = createLucideIcon("circle-alert", __iconNode$g);
-const __iconNode$f = [
+const CircleAlert = createLucideIcon("circle-alert", __iconNode$h);
+const __iconNode$g = [
   ["path", { d: "M12 6v6l4 2", key: "mmk7yg" }],
   ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }]
 ];
-const Clock = createLucideIcon("clock", __iconNode$f);
-const __iconNode$e = [
+const Clock = createLucideIcon("clock", __iconNode$g);
+const __iconNode$f = [
   ["path", { d: "m16 18 6-6-6-6", key: "eg8j8" }],
   ["path", { d: "m8 6-6 6 6 6", key: "ppft3o" }]
 ];
-const Code = createLucideIcon("code", __iconNode$e);
-const __iconNode$d = [
+const Code = createLucideIcon("code", __iconNode$f);
+const __iconNode$e = [
   ["rect", { width: "18", height: "18", x: "3", y: "3", rx: "2", ry: "2", key: "1m3agn" }],
   ["circle", { cx: "9", cy: "9", r: "2", key: "af1f0g" }],
   ["path", { d: "m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21", key: "1xmnt7" }]
 ];
-const Image = createLucideIcon("image", __iconNode$d);
+const Image = createLucideIcon("image", __iconNode$e);
+const __iconNode$d = [
+  ["path", { d: "M10 8h.01", key: "1r9ogq" }],
+  ["path", { d: "M12 12h.01", key: "1mp3jc" }],
+  ["path", { d: "M14 8h.01", key: "1primd" }],
+  ["path", { d: "M16 12h.01", key: "1l6xoz" }],
+  ["path", { d: "M18 8h.01", key: "emo2bl" }],
+  ["path", { d: "M6 8h.01", key: "x9i8wu" }],
+  ["path", { d: "M7 16h10", key: "wp8him" }],
+  ["path", { d: "M8 12h.01", key: "czm47f" }],
+  ["rect", { width: "20", height: "16", x: "2", y: "4", rx: "2", key: "18n3k1" }]
+];
+const Keyboard = createLucideIcon("keyboard", __iconNode$d);
 const __iconNode$c = [
   ["path", { d: "M4 5h16", key: "1tepv9" }],
   ["path", { d: "M4 12h16", key: "1lakjw" }],
@@ -23504,11 +23516,11 @@ const MenuButton = ({ icon: Icon2, label, onClick, color: color2 }) => /* @__PUR
     whileHover: { scale: 1.05 },
     whileTap: { scale: 0.95 },
     onClick,
-    className: "pixel-btn flex flex-col items-center justify-center gap-3 w-full min-h-[160px] aspect-square",
+    className: "pixel-btn flex flex-col items-center justify-center gap-2 w-full min-h-[72px] min-w-0",
     style: { borderColor: color2, color: color2 },
     children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx(Icon2, { size: 44 }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-sm", children: label })
+      /* @__PURE__ */ jsxRuntimeExports.jsx(Icon2, { size: 32 }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-xs", children: label })
     ]
   }
 );
@@ -23611,7 +23623,7 @@ function Home() {
               exit: { opacity: 0, scale: 0.8 },
               className: "absolute left-[90px] top-[70px] w-[180px] bg-black/80 backdrop-blur-md p-3 border-2 border-[var(--pixel-accent)] shadow-[4px_4px_0_0_rgba(0,0,0,0.5)] z-50 rounded-lg rounded-tl-none",
               children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-[var(--pixel-accent)] text-[10px] leading-relaxed break-words whitespace-pre-wrap max-h-[120px] overflow-y-auto", children: voskText }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-[var(--pixel-accent)] text-[10px] leading-relaxed break-words whitespace-pre-wrap max-h-[120px] overflow-y-auto touch-scroll-y", children: voskText }),
                 /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute left-[-10px] top-[-2px] w-0 h-0 border-r-[10px] border-r-[var(--pixel-accent)] border-b-[10px] border-b-transparent" })
               ]
             }
@@ -23632,7 +23644,7 @@ function Home() {
         ]
       }
     ),
-    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid grid-cols-2 gap-5 z-10 w-full max-w-[520px]", children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid grid-cols-2 gap-3 z-10 w-full max-w-[520px]", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsx(MenuButton, { icon: MessageCircle, label: "CHAT", onClick: () => navigate("/chat"), color: "var(--pixel-primary)" }),
       /* @__PURE__ */ jsxRuntimeExports.jsx(MenuButton, { icon: Camera, label: "VISION", onClick: () => navigate("/camera"), color: "var(--pixel-accent)" }),
       /* @__PURE__ */ jsxRuntimeExports.jsx(MenuButton, { icon: Code, label: "AGENT", onClick: () => navigate("/tasks"), color: "#f7768e" }),
@@ -23650,29 +23662,33 @@ function Home() {
     )
   ] });
 }
-function ChatHeader({ connected, onToggleSidebar }) {
+function ChatHeader({ connected, onToggleSidebar, onCloseKeyboard }) {
   const navigate = useNavigate();
-  return /* @__PURE__ */ jsxRuntimeExports.jsxs("header", { className: "h-20 min-h-[80px] grid grid-cols-3 items-center px-4 bg-[var(--pixel-surface)] border-b-4 border-[var(--pixel-border)] z-10", children: [
+  const handleBack = () => {
+    onCloseKeyboard?.();
+    navigate("/");
+  };
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs("header", { className: "h-16 min-h-[64px] grid grid-cols-3 items-center px-3 bg-[var(--pixel-surface)] border-b-4 border-[var(--pixel-border)] z-10", children: [
     /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex justify-start", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
       "button",
       {
-        onClick: () => navigate("/"),
-        className: "pixel-btn p-3 flex items-center justify-center",
+        onClick: handleBack,
+        className: "pixel-btn p-2 flex items-center justify-center min-h-[44px] min-w-[44px]",
         "aria-label": "Go back",
-        children: /* @__PURE__ */ jsxRuntimeExports.jsx(ArrowLeft, { size: 24 })
+        children: /* @__PURE__ */ jsxRuntimeExports.jsx(ArrowLeft, { size: 22 })
       }
     ) }),
     /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col items-center justify-center text-center", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-2xl font-['Press_Start_2P'] tracking-tight text-[var(--pixel-primary)] leading-none mb-2", children: "POCKET" }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-sm text-[var(--pixel-secondary)] font-['VT323'] leading-none tracking-widest uppercase", children: connected ? "Chat Engine Online" : "Connecting to AI..." })
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-xl font-['Press_Start_2P'] tracking-tight text-[var(--pixel-primary)] leading-none mb-1", children: "POCKET" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-xs text-[var(--pixel-secondary)] font-['VT323'] leading-none tracking-widest uppercase", children: connected ? "Chat Engine Online" : "Connecting to AI..." })
     ] }),
     /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex justify-end", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
       "button",
       {
         onClick: onToggleSidebar,
-        className: "pixel-btn p-3 flex items-center justify-center",
+        className: "pixel-btn p-2 flex items-center justify-center min-h-[44px] min-w-[44px]",
         "aria-label": "Toggle sidebar",
-        children: /* @__PURE__ */ jsxRuntimeExports.jsx(Menu, { size: 24 })
+        children: /* @__PURE__ */ jsxRuntimeExports.jsx(Menu, { size: 22 })
       }
     ) })
   ] });
@@ -36372,36 +36388,134 @@ function MessageList({ messages, streaming, streamText }) {
     }
   }
   const isEmpty = messages.length === 0 && !streaming;
-  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex-1 overflow-y-auto overflow-x-hidden p-4 flex flex-col gap-4 scroll-smooth touch-pan-y scroller-pixel", children: [
-    isEmpty && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex-1 flex flex-col items-center justify-center gap-4 text-center p-10 opacity-50", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-6xl font-['Press_Start_2P'] text-[var(--pixel-secondary)] animate-pulse", children: "?" }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-xl font-['VT323'] text-[var(--pixel-text)]", children: "INITIALIZE CHAT PROTOCOL" }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-sm font-['VT323'] text-[var(--pixel-border)]", children: "WAITING FOR INPUT..." })
-    ] }),
-    messages.map((msg, i) => /* @__PURE__ */ jsxRuntimeExports.jsx(MessageBubble, { role: msg.role, text: msg.text }, i)),
-    streaming && streamText && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex justify-start animate-message-in", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "max-w-[85%] px-4 py-3 text-[16px] leading-relaxed break-words border-2 font-['VT323'] shadow-[4px_4px_0_0_rgba(0,0,0,0.3)] bg-[var(--pixel-bg)] border-[var(--pixel-secondary)] text-[var(--pixel-text)]", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-[12px] font-['Press_Start_2P'] uppercase tracking-wider mb-2 opacity-80 text-[var(--pixel-secondary)]", children: "> SYSTEM" }),
-      thoughtText && /* @__PURE__ */ jsxRuntimeExports.jsxs(ThoughtBlock, { children: [
-        thoughtText,
-        !hasCompleteThink && /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "animate-blink", children: "_" })
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "markdown-content", children: [
-        mainContent,
-        " ",
-        (!thoughtText || hasCompleteThink) && /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "animate-blink", children: "_" })
-      ] })
-    ] }) }),
-    streaming && !streamText && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex justify-start animate-message-in", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex gap-2 px-4 py-4 bg-[var(--pixel-bg)] border-2 border-[var(--pixel-secondary)] shadow-[4px_4px_0_0_rgba(0,0,0,0.3)]", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-3 h-3 bg-[var(--pixel-secondary)] animate-bounce [animation-delay:0s]" }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-3 h-3 bg-[var(--pixel-secondary)] animate-bounce [animation-delay:0.2s]" }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-3 h-3 bg-[var(--pixel-secondary)] animate-bounce [animation-delay:0.4s]" })
-    ] }) }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { ref: bottomRef })
-  ] });
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+    "div",
+    {
+      className: "flex-1 min-h-0 overflow-x-hidden p-3 flex flex-col gap-3 scroller-pixel touch-scroll-y",
+      "data-chat-messages": true,
+      children: [
+        isEmpty && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex-1 flex flex-col items-center justify-center gap-4 text-center p-10 opacity-50", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-6xl font-['Press_Start_2P'] text-[var(--pixel-secondary)] animate-pulse", children: "?" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-xl font-['VT323'] text-[var(--pixel-text)]", children: "INITIALIZE CHAT PROTOCOL" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-sm font-['VT323'] text-[var(--pixel-border)]", children: "WAITING FOR INPUT..." })
+        ] }),
+        messages.map((msg, i) => /* @__PURE__ */ jsxRuntimeExports.jsx(MessageBubble, { role: msg.role, text: msg.text }, i)),
+        streaming && streamText && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex justify-start animate-message-in", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "max-w-[85%] px-4 py-3 text-[16px] leading-relaxed break-words border-2 font-['VT323'] shadow-[4px_4px_0_0_rgba(0,0,0,0.3)] bg-[var(--pixel-bg)] border-[var(--pixel-secondary)] text-[var(--pixel-text)]", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-[12px] font-['Press_Start_2P'] uppercase tracking-wider mb-2 opacity-80 text-[var(--pixel-secondary)]", children: "> SYSTEM" }),
+          thoughtText && /* @__PURE__ */ jsxRuntimeExports.jsxs(ThoughtBlock, { children: [
+            thoughtText,
+            !hasCompleteThink && /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "animate-blink", children: "_" })
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "markdown-content", children: [
+            mainContent,
+            " ",
+            (!thoughtText || hasCompleteThink) && /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "animate-blink", children: "_" })
+          ] })
+        ] }) }),
+        streaming && !streamText && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex justify-start animate-message-in", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex gap-2 px-4 py-4 bg-[var(--pixel-bg)] border-2 border-[var(--pixel-secondary)] shadow-[4px_4px_0_0_rgba(0,0,0,0.3)]", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-3 h-3 bg-[var(--pixel-secondary)] animate-bounce [animation-delay:0s]" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-3 h-3 bg-[var(--pixel-secondary)] animate-bounce [animation-delay:0.2s]" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-3 h-3 bg-[var(--pixel-secondary)] animate-bounce [animation-delay:0.4s]" })
+        ] }) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { ref: bottomRef })
+      ]
+    }
+  );
+}
+const STORAGE_KEY = "pocket-ai.popupKeyboard";
+const KeyboardContext = reactExports.createContext(null);
+function readStored() {
+  try {
+    const v = localStorage.getItem(STORAGE_KEY);
+    if (v === null) return true;
+    return v === "true";
+  } catch {
+    return true;
+  }
+}
+function writeStored(enabled) {
+  try {
+    localStorage.setItem(STORAGE_KEY, String(enabled));
+  } catch (_) {
+  }
+}
+function KeyboardProvider({ children }) {
+  const [keyboardEnabled, setKeyboardEnabledState] = reactExports.useState(readStored);
+  const [focusState, setFocusState] = reactExports.useState(null);
+  const focusedElementRef = reactExports.useRef(null);
+  const syncInputValueRef = reactExports.useRef(null);
+  reactExports.useEffect(() => {
+    writeStored(keyboardEnabled);
+  }, [keyboardEnabled]);
+  const setKeyboardEnabled = reactExports.useCallback((enabled) => {
+    setKeyboardEnabledState(Boolean(enabled));
+  }, []);
+  const value = {
+    keyboardEnabled,
+    setKeyboardEnabled,
+    focusState,
+    setFocusState,
+    focusedElementRef,
+    syncInputValueRef
+  };
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(KeyboardContext.Provider, { value, children });
+}
+function useKeyboardSettings() {
+  const ctx = reactExports.useContext(KeyboardContext);
+  if (!ctx) throw new Error("useKeyboardSettings must be used within KeyboardProvider");
+  return ctx;
+}
+function useFocusableInput(isChatInput) {
+  const { setFocusState, focusedElementRef } = useKeyboardSettings();
+  const onFocus = reactExports.useCallback(
+    (e) => {
+      const el = e?.target;
+      if (el && (el.tagName === "INPUT" || el.tagName === "TEXTAREA")) {
+        focusedElementRef.current = el;
+      }
+      setFocusState({ isChatInput: Boolean(isChatInput) });
+    },
+    [setFocusState, isChatInput, focusedElementRef]
+  );
+  const onBlur = reactExports.useCallback(
+    (e) => {
+      const next = e?.relatedTarget;
+      if (next?.closest?.("[data-virtual-keyboard]")) return;
+      if (next?.closest?.("[data-chat-input-bar]")) return;
+      focusedElementRef.current = null;
+      setFocusState(null);
+    },
+    [setFocusState, focusedElementRef]
+  );
+  return { onFocus, onBlur };
 }
 function ChatInput({ onSend, onAbort, streaming, disabled }) {
   const [text2, setText] = reactExports.useState("");
   const textareaRef = reactExports.useRef(null);
+  const { onFocus: onKeyboardFocus, onBlur: onKeyboardBlur } = useFocusableInput(true);
+  const { syncInputValueRef } = useKeyboardSettings();
+  reactExports.useEffect(() => {
+    if (!syncInputValueRef) return;
+    return () => {
+      syncInputValueRef.current = null;
+    };
+  }, [syncInputValueRef]);
+  const onFocus = reactExports.useCallback(
+    (e) => {
+      onKeyboardFocus(e);
+      syncInputValueRef.current = (value) => setText(value ?? "");
+      const domValue = textareaRef.current?.value;
+      if (domValue !== void 0) setText(domValue);
+    },
+    [onKeyboardFocus, syncInputValueRef]
+  );
+  const onBlur = reactExports.useCallback(
+    (e) => {
+      onKeyboardBlur(e);
+      syncInputValueRef.current = null;
+    },
+    [onKeyboardBlur, syncInputValueRef]
+  );
   const handleSend = reactExports.useCallback(() => {
     const trimmed = text2.trim();
     if (!trimmed || streaming || disabled) return;
@@ -36426,7 +36540,7 @@ function ChatInput({ onSend, onAbort, streaming, disabled }) {
     el.style.height = "auto";
     el.style.height = Math.min(el.scrollHeight, 120) + "px";
   }, []);
-  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "min-h-[80px] px-4 py-3 bg-[var(--pixel-surface)] border-t-4 border-[var(--pixel-border)] flex items-end gap-2 pb-[max(12px,env(safe-area-inset-bottom,12px))]", children: [
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "min-h-[64px] px-3 py-2 bg-[var(--pixel-surface)] border-t-4 border-[var(--pixel-border)] flex items-end gap-2 pb-[max(12px,env(safe-area-inset-bottom,12px))]", "data-chat-input-bar": true, children: [
     /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex-1 flex items-end bg-[var(--pixel-bg)] border-2 border-[var(--pixel-border)] px-4 py-2 focus-within:border-[var(--pixel-primary)]", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
       "textarea",
       {
@@ -36435,6 +36549,8 @@ function ChatInput({ onSend, onAbort, streaming, disabled }) {
         value: text2,
         onChange: handleInput,
         onKeyDown: handleKeyDown,
+        onFocus,
+        onBlur,
         placeholder: "INSERT COINTOS...",
         rows: 1,
         disabled,
@@ -36453,7 +36569,8 @@ function ChatInput({ onSend, onAbort, streaming, disabled }) {
     ) : /* @__PURE__ */ jsxRuntimeExports.jsx(
       "button",
       {
-        className: "w-14 h-14 border-4 border-[var(--pixel-text)] bg-[var(--pixel-primary)] text-black flex items-center justify-center cursor-pointer shadow-[2px_2px_0_0_rgba(0,0,0,1)] active:translate-y-1 active:shadow-none transition-all disabled:opacity-50 disabled:cursor-not-allowed",
+        type: "button",
+        className: "w-14 h-14 border-4 border-[var(--pixel-text)] bg-[var(--pixel-primary)] text-black flex items-center justify-center cursor-pointer shadow-[2px_2px_0_0_rgba(0,0,0,1)] active:translate-y-1 active:shadow-none transition-all disabled:opacity-50 disabled:cursor-not-allowed touch-manipulation",
         onClick: handleSend,
         disabled: !text2.trim() || disabled,
         "aria-label": "Send message",
@@ -36463,6 +36580,7 @@ function ChatInput({ onSend, onAbort, streaming, disabled }) {
   ] });
 }
 function ChatSidebar({ isOpen, onClose }) {
+  const { onFocus: onKeyboardFocus, onBlur: onKeyboardBlur } = useFocusableInput(false);
   const {
     conversations,
     currentConvId,
@@ -36511,7 +36629,7 @@ function ChatSidebar({ isOpen, onClose }) {
     /* @__PURE__ */ jsxRuntimeExports.jsxs(
       "aside",
       {
-        className: `fixed top-20 right-0 bottom-0 z-50 bg-[var(--pixel-surface)] border-l-4 border-[var(--pixel-border)] transition-transform duration-300 ease-in-out ${isOpen ? "translate-x-0" : "translate-x-full"} w-72 flex flex-col`,
+        className: `fixed top-16 right-0 bottom-0 z-50 bg-[var(--pixel-surface)] border-l-4 border-[var(--pixel-border)] transition-transform duration-300 ease-in-out ${isOpen ? "translate-x-0" : "translate-x-full"} w-72 max-w-[85vw] flex flex-col`,
         children: [
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "p-4 border-b-4 border-[var(--pixel-border)] flex flex-col gap-2", children: [
             lastApiError && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between gap-2 p-2 bg-red-500/20 border-2 border-red-500 text-red-200 text-[10px] font-['Press_Start_2P']", children: [
@@ -36522,7 +36640,7 @@ function ChatSidebar({ isOpen, onClose }) {
               "button",
               {
                 onClick: handleNewChat,
-                className: "pixel-btn w-full py-3 bg-[var(--pixel-primary)] text-white text-[10px] font-['Press_Start_2P'] flex items-center justify-center gap-2",
+                className: "pixel-btn w-full py-3 min-h-[44px] bg-[var(--pixel-primary)] text-white text-[10px] font-['Press_Start_2P'] flex items-center justify-center gap-2",
                 children: [
                   /* @__PURE__ */ jsxRuntimeExports.jsx(Plus, { size: 16 }),
                   " NEW CHAT"
@@ -36530,10 +36648,10 @@ function ChatSidebar({ isOpen, onClose }) {
               }
             )
           ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex-1 overflow-y-auto p-2 flex flex-col gap-2 custom-scrollbar", children: conversations.map((conv) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex-1 min-h-0 overflow-y-auto p-2 flex flex-col gap-2 custom-scrollbar touch-scroll-y", children: conversations.map((conv) => /* @__PURE__ */ jsxRuntimeExports.jsx(
             "div",
             {
-              className: `p-3 border-2 border-[var(--pixel-border)] cursor-pointer hover:bg-[var(--pixel-bg-alt)] relative group flex items-center justify-between gap-2 ${currentConvId === conv.id ? "bg-[var(--pixel-bg-alt)] border-[var(--pixel-primary)]" : ""}`,
+              className: `p-3 min-h-[44px] border-2 border-[var(--pixel-border)] cursor-pointer hover:bg-[var(--pixel-bg-alt)] relative group flex items-center justify-between gap-2 ${currentConvId === conv.id ? "bg-[var(--pixel-bg-alt)] border-[var(--pixel-primary)]" : ""}`,
               onClick: () => {
                 setCurrentConvId(conv.id);
               },
@@ -36545,6 +36663,8 @@ function ChatSidebar({ isOpen, onClose }) {
                     className: "bg-[var(--pixel-bg)] text-xs font-['VT323'] border-2 border-[var(--pixel-border)] px-1 py-0.5 w-full focus:outline-none",
                     value: editTitle,
                     onChange: (e) => setEditTitle(e.target.value),
+                    onFocus: onKeyboardFocus,
+                    onBlur: onKeyboardBlur,
                     onKeyDown: (e) => {
                       if (e.key === "Enter") saveRename(e, conv.id);
                       if (e.key === "Escape") cancelEditing(e);
@@ -36600,6 +36720,242 @@ function ChatSidebar({ isOpen, onClose }) {
             ` })
   ] });
 }
+const ROW_NUM = "1234567890".split("");
+const ROW1 = "QWERTYUIOP".split("");
+const ROW2 = "ASDFGHJKL".split("");
+const ROW3 = "ZXCVBNM".split("");
+const KEY_STYLE = 'flex-1 min-w-0 h-14 px-1 flex items-center justify-center font-["VT323"] text-2xl border-2 border-[var(--pixel-border)] bg-[var(--pixel-surface)] text-[var(--pixel-text)] active:translate-y-0.5 active:shadow-none shadow-[2px_2px_0_0_var(--pixel-border)] transition-all select-none touch-manipulation';
+const KEY_SPECIAL = 'flex-[1.2] min-w-0 h-14 px-2 flex items-center justify-center font-["Press_Start_2P"] text-xs border-2 border-[var(--pixel-border)] bg-[var(--pixel-surface)] text-[var(--pixel-text)] active:translate-y-0.5 active:shadow-none shadow-[2px_2px_0_0_var(--pixel-border)] transition-all select-none touch-manipulation';
+const KEY_ACCENT = 'h-14 px-2 flex items-center justify-center font-["Press_Start_2P"] text-xs border-2 border-[var(--pixel-primary)] bg-[var(--pixel-primary)] text-black active:translate-y-0.5 active:shadow-none shadow-[2px_2px_0_0_var(--pixel-border)] transition-all select-none touch-manipulation';
+const KEY_SPACE = "flex-[3] min-w-0 " + KEY_ACCENT;
+const KEY_ENTER = "flex-1 min-w-[72px] " + KEY_ACCENT;
+function insertAtCursor(el, text2) {
+  if (!el || typeof el.value === "undefined") return;
+  const start = el.selectionStart ?? el.value.length;
+  const end = el.selectionEnd ?? start;
+  const before = el.value.slice(0, start);
+  const after = el.value.slice(end);
+  const newValue = before + text2 + after;
+  el.value = newValue;
+  const newPos = start + text2.length;
+  el.setSelectionRange(newPos, newPos);
+  el.dispatchEvent(new Event("input", { bubbles: true }));
+}
+function backspace(el) {
+  if (!el || typeof el.value === "undefined") return;
+  const start = el.selectionStart ?? el.value.length;
+  const end = el.selectionEnd ?? start;
+  if (start === 0 && end === 0) return;
+  const delStart = start === end ? start - 1 : start;
+  const delEnd = end;
+  const before = el.value.slice(0, delStart);
+  const after = el.value.slice(delEnd);
+  el.value = before + after;
+  el.setSelectionRange(delStart, delStart);
+  el.dispatchEvent(new Event("input", { bubbles: true }));
+}
+function keyEnter(el) {
+  if (!el) return;
+  el.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", shiftKey: false, bubbles: true }));
+}
+function syncStateAfterChange(el, syncRef) {
+  if (el && typeof el.value !== "undefined" && syncRef?.current) {
+    syncRef.current(el.value);
+  }
+}
+function VirtualKeyboard({ visible, mode = "inline", focusedElementRef = null, syncInputValueRef = null }) {
+  const [shift, setShift] = reactExports.useState(false);
+  const getTarget = reactExports.useCallback(() => {
+    if (focusedElementRef?.current) return focusedElementRef.current;
+    const el = document.activeElement;
+    if (el && (el.tagName === "INPUT" || el.tagName === "TEXTAREA")) return el;
+    return null;
+  }, [focusedElementRef]);
+  const handleKey = reactExports.useCallback(
+    (char) => (e) => {
+      e.preventDefault();
+      const el = getTarget();
+      if (!el) return;
+      insertAtCursor(el, shift ? char : char.toLowerCase());
+      syncStateAfterChange(el, syncInputValueRef);
+      setShift(false);
+    },
+    [getTarget, shift, syncInputValueRef]
+  );
+  const handleNumberKey = reactExports.useCallback(
+    (char) => (e) => {
+      e.preventDefault();
+      const el = getTarget();
+      if (!el) return;
+      insertAtCursor(el, char);
+      syncStateAfterChange(el, syncInputValueRef);
+    },
+    [getTarget, syncInputValueRef]
+  );
+  const handleBackspace = reactExports.useCallback(
+    (e) => {
+      e.preventDefault();
+      const el = getTarget();
+      backspace(el);
+      syncStateAfterChange(el, syncInputValueRef);
+    },
+    [getTarget, syncInputValueRef]
+  );
+  const handleSpace = reactExports.useCallback(
+    (e) => {
+      e.preventDefault();
+      const el = getTarget();
+      insertAtCursor(el, " ");
+      syncStateAfterChange(el, syncInputValueRef);
+    },
+    [getTarget, syncInputValueRef]
+  );
+  const handleEnter = reactExports.useCallback(
+    (e) => {
+      e.preventDefault();
+      keyEnter(getTarget());
+    },
+    [getTarget]
+  );
+  const handleShift = reactExports.useCallback((e) => {
+    e.preventDefault();
+    setShift((s) => !s);
+  }, []);
+  if (!visible) {
+    if (mode === "inline") return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "h-0 overflow-hidden", "aria-hidden": true });
+    return null;
+  }
+  const containerClass = mode === "overlay" ? "fixed bottom-0 left-0 right-0 z-50 border-t-4 border-[var(--pixel-border)] bg-[var(--pixel-surface)] p-2 pb-[max(12px,env(safe-area-inset-bottom))] shadow-[0_-4px_0_0_var(--pixel-border)]" : "flex-shrink-0 border-t-4 border-[var(--pixel-border)] bg-[var(--pixel-surface)] p-2 pb-[max(8px,env(safe-area-inset-bottom))]";
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(
+    "div",
+    {
+      className: containerClass,
+      role: "group",
+      "aria-label": "On-screen keyboard",
+      "data-virtual-keyboard": true,
+      children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "w-full max-w-[100%] px-2 flex flex-col gap-2", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex w-full gap-1", children: ROW_NUM.map((char) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "button",
+          {
+            type: "button",
+            className: KEY_STYLE,
+            onMouseDown: (e) => {
+              e.preventDefault();
+              handleNumberKey(char)(e);
+            },
+            onTouchEnd: (e) => {
+              e.preventDefault();
+              handleNumberKey(char)(e);
+            },
+            children: char
+          },
+          char
+        )) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex w-full gap-1", children: (shift ? ROW1 : ROW1.map((c) => c.toLowerCase())).map((char) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "button",
+          {
+            type: "button",
+            className: KEY_STYLE,
+            onMouseDown: (e) => {
+              e.preventDefault();
+              handleKey(char)(e);
+            },
+            onTouchEnd: (e) => {
+              e.preventDefault();
+              handleKey(char)(e);
+            },
+            children: char
+          },
+          char
+        )) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex w-full gap-1", children: (shift ? ROW2 : ROW2.map((c) => c.toLowerCase())).map((char) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "button",
+          {
+            type: "button",
+            className: KEY_STYLE,
+            onMouseDown: (e) => handleKey(char)(e),
+            onTouchEnd: (e) => {
+              e.preventDefault();
+              handleKey(char)(e);
+            },
+            children: char
+          },
+          char
+        )) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex w-full gap-1", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "button",
+            {
+              type: "button",
+              className: KEY_SPECIAL,
+              onMouseDown: handleShift,
+              onTouchEnd: (e) => {
+                e.preventDefault();
+                handleShift(e);
+              },
+              children: shift ? "CAPS" : "shift"
+            }
+          ),
+          (shift ? ROW3 : ROW3.map((c) => c.toLowerCase())).map((char) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "button",
+            {
+              type: "button",
+              className: KEY_STYLE,
+              onMouseDown: (e) => handleKey(char)(e),
+              onTouchEnd: (e) => {
+                e.preventDefault();
+                handleKey(char)(e);
+              },
+              children: char
+            },
+            char
+          )),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "button",
+            {
+              type: "button",
+              className: KEY_SPECIAL,
+              onMouseDown: handleBackspace,
+              onTouchEnd: (e) => {
+                e.preventDefault();
+                handleBackspace(e);
+              },
+              children: "⌫"
+            }
+          )
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex w-full gap-2", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "button",
+            {
+              type: "button",
+              className: KEY_SPACE,
+              onMouseDown: handleSpace,
+              onTouchEnd: (e) => {
+                e.preventDefault();
+                handleSpace(e);
+              },
+              children: "SPACE"
+            }
+          ),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "button",
+            {
+              type: "button",
+              className: KEY_ENTER,
+              onMouseDown: handleEnter,
+              onTouchEnd: (e) => {
+                e.preventDefault();
+                handleEnter(e);
+              },
+              children: "ENTER"
+            }
+          )
+        ] })
+      ] })
+    }
+  );
+}
 function ChatInterface({ layoutId }) {
   const location = useLocation();
   const {
@@ -36619,6 +36975,23 @@ function ChatInterface({ layoutId }) {
     thinking
   } = useWebSocket();
   const [sidebarOpen, setSidebarOpen] = reactExports.useState(false);
+  const { keyboardEnabled, focusState, setFocusState, focusedElementRef, syncInputValueRef } = useKeyboardSettings();
+  const showInlineKeyboard = keyboardEnabled && focusState?.isChatInput === true;
+  const closeKeyboard = reactExports.useCallback(() => {
+    setFocusState(null);
+    focusedElementRef.current = null;
+  }, [setFocusState, focusedElementRef]);
+  const handleChatAreaPointerDown = reactExports.useCallback(
+    (e) => {
+      if (!focusState?.isChatInput) return;
+      const target = e.target;
+      if (target?.closest?.("[data-virtual-keyboard]")) return;
+      if (target?.closest?.("[data-chat-input-bar]")) return;
+      if (target?.closest?.("[data-chat-messages]")) return;
+      closeKeyboard();
+    },
+    [focusState?.isChatInput, closeKeyboard]
+  );
   const send = reactExports.useCallback(
     async (text2, images = []) => {
       let activeConvId = currentConvId;
@@ -36677,35 +37050,44 @@ function ChatInterface({ layoutId }) {
             deleteConversation
           }
         ),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex-1 flex flex-col h-full min-w-0", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx(
-            ChatHeader,
-            {
-              connected: connStatus === "connected",
-              onReset: reset,
-              sidebarOpen,
-              onToggleSidebar: () => setSidebarOpen(!sidebarOpen)
-            }
-          ),
-          connStatus !== "connected" && /* @__PURE__ */ jsxRuntimeExports.jsx(ConnectionBar, { status: connStatus, onRetry: connect }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(
-            MessageList,
-            {
-              messages,
-              streaming,
-              streamText
-            }
-          ),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(
-            ChatInput,
-            {
-              onSend: send,
-              onAbort: abort,
-              streaming,
-              disabled: connStatus !== "connected"
-            }
-          )
-        ] })
+        /* @__PURE__ */ jsxRuntimeExports.jsxs(
+          "div",
+          {
+            className: "flex-1 flex flex-col h-full min-w-0 min-h-0 touch-pan-y",
+            onPointerDown: handleChatAreaPointerDown,
+            children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                ChatHeader,
+                {
+                  connected: connStatus === "connected",
+                  onReset: reset,
+                  sidebarOpen,
+                  onToggleSidebar: () => setSidebarOpen(!sidebarOpen),
+                  onCloseKeyboard: closeKeyboard
+                }
+              ),
+              connStatus !== "connected" && /* @__PURE__ */ jsxRuntimeExports.jsx(ConnectionBar, { status: connStatus, onRetry: connect }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                MessageList,
+                {
+                  messages,
+                  streaming,
+                  streamText
+                }
+              ),
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                ChatInput,
+                {
+                  onSend: send,
+                  onAbort: abort,
+                  streaming,
+                  disabled: connStatus !== "connected"
+                }
+              ),
+              /* @__PURE__ */ jsxRuntimeExports.jsx(VirtualKeyboard, { visible: showInlineKeyboard, mode: "inline", focusedElementRef, syncInputValueRef })
+            ]
+          }
+        )
       ]
     }
   );
@@ -37095,6 +37477,7 @@ function ErrorMessage({ message, onRetry, className = "" }) {
   );
 }
 function Gallery() {
+  const { onFocus: onKeyboardFocus, onBlur: onKeyboardBlur } = useFocusableInput(false);
   const navigate = useNavigate();
   const [images, setImages] = reactExports.useState([]);
   const [loading, setLoading] = reactExports.useState(true);
@@ -37206,7 +37589,7 @@ function Gallery() {
           setError(null);
           fetchImages();
         } }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex-1 overflow-y-auto p-4 scroller-pixel", children: loading ? /* @__PURE__ */ jsxRuntimeExports.jsx(LoadingSpinner, { label: "LOADING...", className: "h-full" }) : images.length === 0 ? /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex flex-col items-center justify-center h-full text-[var(--pixel-secondary)] font-['VT323'] text-xl", children: /* @__PURE__ */ jsxRuntimeExports.jsx("p", { children: "NO IMAGES FOUND_" }) }) : /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "grid grid-cols-3 gap-3", children: images.map((img, index2) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex-1 min-h-0 overflow-y-auto p-4 scroller-pixel touch-scroll-y", children: loading ? /* @__PURE__ */ jsxRuntimeExports.jsx(LoadingSpinner, { label: "LOADING...", className: "h-full" }) : images.length === 0 ? /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex flex-col items-center justify-center h-full text-[var(--pixel-secondary)] font-['VT323'] text-xl", children: /* @__PURE__ */ jsxRuntimeExports.jsx("p", { children: "NO IMAGES FOUND_" }) }) : /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "grid grid-cols-3 gap-3", children: images.map((img, index2) => /* @__PURE__ */ jsxRuntimeExports.jsx(
           "div",
           {
             onClick: () => handleImageClick(index2),
@@ -37329,6 +37712,8 @@ function Gallery() {
                       placeholder: "INPUT QUERY...",
                       value: chatPrompt,
                       onChange: (e) => setChatPrompt(e.target.value),
+                      onFocus: onKeyboardFocus,
+                      onBlur: onKeyboardBlur,
                       autoFocus: true
                     }
                   ),
@@ -37362,6 +37747,7 @@ function Gallery() {
 }
 function Settings() {
   const navigate = useNavigate();
+  const { keyboardEnabled, setKeyboardEnabled } = useKeyboardSettings();
   const handleCloseApp = async () => {
     try {
       await fetch(`${API_BASE_URL}/shutdown`, { method: "POST" });
@@ -37399,17 +37785,41 @@ function Settings() {
             /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "text-2xl font-['VT323'] text-[var(--pixel-text)] mb-2 uppercase tracking-widest", children: "System Configuration" }),
             /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-[var(--pixel-secondary)] font-['VT323'] text-lg", children: "MANAGE TERMINAL PREFERENCES" })
           ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-full max-w-xs p-6 border-4 border-[var(--pixel-border)] bg-[var(--pixel-surface)] shadow-[8px_8px_0_0_rgba(0,0,0,0.3)]", children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
-            "button",
-            {
-              onClick: handleCloseApp,
-              className: "w-full py-6 px-8 bg-red-500 text-white font-['Press_Start_2P'] text-sm border-4 border-white shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:bg-red-600 active:translate-y-1 active:shadow-none transition-all flex items-center justify-center gap-4",
-              children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx(Power, { size: 24 }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: "SHUTDOWN" })
-              ]
-            }
-          ) }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "w-full max-w-xs space-y-4 p-6 border-4 border-[var(--pixel-border)] bg-[var(--pixel-surface)] shadow-[8px_8px_0_0_rgba(0,0,0,0.3)]", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between gap-4 py-3 border-b-2 border-[var(--pixel-border)]", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "font-['VT323'] text-xl text-[var(--pixel-text)] flex items-center gap-2", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(Keyboard, { size: 22, className: "text-[var(--pixel-primary)]" }),
+                "Popup keyboard"
+              ] }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                "button",
+                {
+                  type: "button",
+                  role: "switch",
+                  "aria-checked": keyboardEnabled,
+                  onClick: () => setKeyboardEnabled(!keyboardEnabled),
+                  className: `relative w-14 h-8 border-4 flex-shrink-0 transition-colors ${keyboardEnabled ? "bg-[var(--pixel-accent)] border-[var(--pixel-accent)]" : "bg-[var(--pixel-bg)] border-[var(--pixel-border)]"}`,
+                  children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+                    "span",
+                    {
+                      className: `absolute top-0.5 left-0.5 w-6 h-6 border-2 border-[var(--pixel-border)] bg-[var(--pixel-text)] transition-transform ${keyboardEnabled ? "translate-x-7" : "translate-x-0"}`
+                    }
+                  )
+                }
+              )
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs(
+              "button",
+              {
+                onClick: handleCloseApp,
+                className: "w-full py-6 px-8 bg-red-500 text-white font-['Press_Start_2P'] text-sm border-4 border-white shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:bg-red-600 active:translate-y-1 active:shadow-none transition-all flex items-center justify-center gap-4",
+                children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(Power, { size: 24 }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: "SHUTDOWN" })
+                ]
+              }
+            )
+          ] }),
           /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-xs font-['Press_Start_2P'] text-[var(--pixel-border)] mt-auto pt-12", children: "VER 1.0.0" })
         ] })
       ]
@@ -37446,7 +37856,7 @@ const StatusBar = () => {
     if (value > 50) return "text-yellow-500";
     return "text-green-500";
   };
-  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "w-full h-8 bg-[var(--pixel-surface)] z-50 flex items-center justify-between px-2 text-[10px] uppercase font-['Press_Start_2P'] border-b-4 border-[var(--pixel-border)] select-none", children: [
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "w-full h-7 bg-[var(--pixel-surface)] z-50 flex items-center justify-between px-2 text-[10px] uppercase font-['Press_Start_2P'] border-b-4 border-[var(--pixel-border)] select-none", children: [
     /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2 text-[var(--pixel-primary)]", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsx(Clock, { size: 12 }),
       /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "tracking-widest", children: stats.time })
@@ -37494,9 +37904,13 @@ const formatSchedule = (schedule) => {
 };
 function TaskManager() {
   const navigate = useNavigate();
+  const formRef = reactExports.useRef(null);
   const { sendMessage, addEventListener } = useWebSocket();
+  const { onFocus: onKeyboardFocus, onBlur: onKeyboardBlur } = useFocusableInput(false);
+  const { keyboardEnabled, focusState, setFocusState, focusedElementRef, syncInputValueRef } = useKeyboardSettings();
   const [jobs, setJobs] = reactExports.useState([]);
   const [showAddForm, setShowAddForm] = reactExports.useState(false);
+  const showInlineKeyboard = keyboardEnabled && !!focusState;
   const [name2, setName] = reactExports.useState("");
   const [description, setDescription] = reactExports.useState("");
   const [scheduleType, setScheduleType] = reactExports.useState("every");
@@ -37571,217 +37985,275 @@ function TaskManager() {
       sendMessage("task.remove", { id: id2 });
     }
   };
-  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "w-full h-full mx-auto flex flex-col bg-[var(--pixel-bg)] text-[var(--pixel-text)] font-['VT323'] relative overflow-hidden", children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between p-4 bg-[var(--pixel-surface)] border-b-4 border-[var(--pixel-border)] z-10", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "button",
-          {
-            onClick: () => navigate("/"),
-            className: "pixel-btn p-2 mr-4",
-            children: /* @__PURE__ */ jsxRuntimeExports.jsx(ArrowLeft, { size: 20 })
-          }
-        ),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("h1", { className: "text-xl font-['Press_Start_2P'] text-[var(--pixel-primary)]", children: "TASK MANAGER" })
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx(
-        "button",
-        {
-          onClick: () => setShowAddForm(!showAddForm),
-          className: `pixel-btn p-2 transition-transform ${showAddForm ? "bg-[var(--pixel-text)] text-black" : "bg-[var(--pixel-accent)] text-black"}`,
-          children: /* @__PURE__ */ jsxRuntimeExports.jsx(Plus, { size: 20, className: showAddForm ? "rotate-45" : "" })
-        }
-      )
-    ] }),
-    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex-1 overflow-y-auto p-4 space-y-4 scroller-pixel", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx(AnimatePresence, { children: showAddForm && /* @__PURE__ */ jsxRuntimeExports.jsxs(
-        motion.div,
-        {
-          initial: { opacity: 0, height: 0 },
-          animate: { opacity: 1, height: "auto" },
-          exit: { opacity: 0, height: 0 },
-          className: "bg-[var(--pixel-surface)] border-4 border-[var(--pixel-border)] p-4 mb-4 shadow-[8px_8px_0_0_rgba(0,0,0,0.5)]",
-          children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "p-2 border-b-2 border-[var(--pixel-border)] mb-4", children: /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "font-['Press_Start_2P'] text-xs text-[var(--pixel-secondary)] uppercase", children: "NEW TASK" }) }),
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("form", { onSubmit: handleAddJob, className: "space-y-4", children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid grid-cols-2 gap-4", children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-1", children: [
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "text-sm font-medium text-gray-400 uppercase", children: "Name" }),
-                  /* @__PURE__ */ jsxRuntimeExports.jsx(
-                    "input",
-                    {
-                      value: name2,
-                      onChange: (e) => setName(e.target.value),
-                      className: "w-full p-2 bg-[var(--pixel-bg)] border-2 border-[var(--pixel-border)] text-[var(--pixel-text)] text-lg placeholder-[var(--pixel-border)] focus:border-[var(--pixel-primary)] outline-none",
-                      placeholder: "TASK NAME...",
-                      required: true
-                    }
-                  )
-                ] }),
-                /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-1", children: [
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "text-sm font-medium text-gray-400 uppercase", children: "Description" }),
-                  /* @__PURE__ */ jsxRuntimeExports.jsx(
-                    "input",
-                    {
-                      value: description,
-                      onChange: (e) => setDescription(e.target.value),
-                      className: "w-full p-2 bg-[var(--pixel-bg)] border-2 border-[var(--pixel-border)] text-[var(--pixel-text)] text-lg placeholder-[var(--pixel-border)] focus:border-[var(--pixel-primary)] outline-none",
-                      placeholder: "OPTIONAL..."
-                    }
-                  )
-                ] })
-              ] }),
-              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-4", children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-xs font-['Press_Start_2P'] mb-2 text-[var(--pixel-secondary)]", children: "SCHEDULE TYPE" }),
-                  /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex bg-[var(--pixel-bg)] p-1 border-2 border-[var(--pixel-border)]", children: [
-                    /* @__PURE__ */ jsxRuntimeExports.jsx(
-                      "button",
-                      {
-                        type: "button",
-                        onClick: () => setScheduleType("every"),
-                        className: `flex-1 py-3 text-center font-['VT323'] text-xl transition-colors ${scheduleType === "every" ? "bg-[var(--pixel-primary)] text-black" : "text-[var(--pixel-text)] hover:bg-[var(--pixel-surface)]"}`,
-                        children: "INTERVAL"
-                      }
-                    ),
-                    /* @__PURE__ */ jsxRuntimeExports.jsx(
-                      "button",
-                      {
-                        type: "button",
-                        onClick: () => setScheduleType("at"),
-                        className: `flex-1 py-3 text-center font-['VT323'] text-xl transition-colors ${scheduleType === "at" ? "bg-[var(--pixel-primary)] text-black" : "text-[var(--pixel-text)] hover:bg-[var(--pixel-surface)]"}`,
-                        children: "DATE & TIME"
-                      }
-                    )
-                  ] })
-                ] }),
-                scheduleType === "every" && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex gap-4", children: [
-                  /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex-1", children: [
-                    /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-xs font-['Press_Start_2P'] mb-2 text-[var(--pixel-secondary)]", children: "INTERVAL" }),
-                    /* @__PURE__ */ jsxRuntimeExports.jsx(
-                      "input",
-                      {
-                        type: "number",
-                        min: "1",
-                        value: intervalValue,
-                        onChange: (e) => setIntervalValue(parseInt(e.target.value) || 1),
-                        className: "pixel-input w-full"
-                      }
-                    )
+  const handleFormKeyDown = reactExports.useCallback((e) => {
+    if (e.key !== "Enter") return;
+    const target = e.target;
+    if (target?.tagName !== "INPUT" && target?.tagName !== "TEXTAREA") return;
+    if (target?.type === "datetime-local") return;
+    e.preventDefault();
+    formRef.current?.requestSubmit();
+  }, []);
+  const handleTaskAreaPointerDown = reactExports.useCallback(
+    (e) => {
+      if (!focusState) return;
+      const target = e.target;
+      if (target?.closest?.("[data-virtual-keyboard]")) return;
+      if (target?.closest?.("[data-task-form]")) return;
+      setFocusState(null);
+      focusedElementRef.current = null;
+    },
+    [focusState, setFocusState, focusedElementRef]
+  );
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+    "div",
+    {
+      className: "w-full h-full mx-auto flex flex-col bg-[var(--pixel-bg)] text-[var(--pixel-text)] font-['VT323'] relative overflow-hidden min-h-0",
+      onPointerDown: handleTaskAreaPointerDown,
+      children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between px-4 py-4 bg-[var(--pixel-surface)] border-b-4 border-[var(--pixel-border)] z-10 flex-shrink-0", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-3", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "button",
+              {
+                type: "button",
+                onClick: () => navigate("/"),
+                className: "pixel-btn p-3 min-h-[48px] min-w-[48px] touch-manipulation",
+                "aria-label": "Back",
+                children: /* @__PURE__ */ jsxRuntimeExports.jsx(ArrowLeft, { size: 24 })
+              }
+            ),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("h1", { className: "text-lg font-['Press_Start_2P'] text-[var(--pixel-primary)] leading-tight", children: "TASKS" })
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "button",
+            {
+              type: "button",
+              onClick: () => setShowAddForm(!showAddForm),
+              className: `pixel-btn p-3 min-h-[48px] min-w-[48px] touch-manipulation transition-colors ${showAddForm ? "bg-[var(--pixel-text)] text-black" : "bg-[var(--pixel-accent)] text-black"}`,
+              "aria-label": showAddForm ? "Close form" : "New task",
+              children: /* @__PURE__ */ jsxRuntimeExports.jsx(Plus, { size: 24, className: showAddForm ? "rotate-45" : "" })
+            }
+          )
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex-1 min-h-0 overflow-y-auto p-4 space-y-4 scroller-pixel touch-scroll-y", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(AnimatePresence, { children: showAddForm && /* @__PURE__ */ jsxRuntimeExports.jsxs(
+            motion.div,
+            {
+              initial: { opacity: 0, height: 0 },
+              animate: { opacity: 1, height: "auto" },
+              exit: { opacity: 0, height: 0 },
+              className: "bg-[var(--pixel-surface)] border-4 border-[var(--pixel-border)] p-5 mb-4 shadow-[8px_8px_0_0_rgba(0,0,0,0.5)]",
+              "data-task-form": true,
+              children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "pb-4 border-b-2 border-[var(--pixel-border)] mb-5", children: /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "font-['Press_Start_2P'] text-xs text-[var(--pixel-secondary)] uppercase", children: "NEW TASK" }) }),
+                /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                  "form",
+                  {
+                    ref: formRef,
+                    onSubmit: handleAddJob,
+                    onKeyDown: handleFormKeyDown,
+                    className: "space-y-5",
+                    children: [
+                      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-2", children: [
+                        /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-sm font-['Press_Start_2P'] text-[var(--pixel-border)] uppercase", children: "Name" }),
+                        /* @__PURE__ */ jsxRuntimeExports.jsx(
+                          "input",
+                          {
+                            value: name2,
+                            onChange: (e) => setName(e.target.value),
+                            onFocus: onKeyboardFocus,
+                            onBlur: onKeyboardBlur,
+                            className: "w-full p-4 min-h-[48px] text-xl bg-[var(--pixel-bg)] border-2 border-[var(--pixel-border)] text-[var(--pixel-text)] placeholder-[var(--pixel-border)] focus:border-[var(--pixel-primary)] outline-none touch-manipulation",
+                            placeholder: "TASK NAME...",
+                            required: true
+                          }
+                        )
+                      ] }),
+                      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-2", children: [
+                        /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-sm font-['Press_Start_2P'] text-[var(--pixel-border)] uppercase", children: "Description (optional)" }),
+                        /* @__PURE__ */ jsxRuntimeExports.jsx(
+                          "input",
+                          {
+                            value: description,
+                            onChange: (e) => setDescription(e.target.value),
+                            onFocus: onKeyboardFocus,
+                            onBlur: onKeyboardBlur,
+                            className: "w-full p-4 min-h-[48px] text-xl bg-[var(--pixel-bg)] border-2 border-[var(--pixel-border)] text-[var(--pixel-text)] placeholder-[var(--pixel-border)] focus:border-[var(--pixel-primary)] outline-none touch-manipulation",
+                            placeholder: "OPTIONAL..."
+                          }
+                        )
+                      ] }),
+                      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-3", children: [
+                        /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-xs font-['Press_Start_2P'] text-[var(--pixel-secondary)]", children: "SCHEDULE TYPE" }),
+                        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex bg-[var(--pixel-bg)] p-1.5 border-2 border-[var(--pixel-border)] gap-1", children: [
+                          /* @__PURE__ */ jsxRuntimeExports.jsx(
+                            "button",
+                            {
+                              type: "button",
+                              onClick: () => setScheduleType("every"),
+                              className: `flex-1 py-4 text-center font-['VT323'] text-xl min-h-[48px] touch-manipulation transition-colors border-2 ${scheduleType === "every" ? "bg-[var(--pixel-primary)] text-black border-[var(--pixel-primary)]" : "border-transparent text-[var(--pixel-text)] hover:bg-[var(--pixel-surface)]"}`,
+                              children: "INTERVAL"
+                            }
+                          ),
+                          /* @__PURE__ */ jsxRuntimeExports.jsx(
+                            "button",
+                            {
+                              type: "button",
+                              onClick: () => setScheduleType("at"),
+                              className: `flex-1 py-4 text-center font-['VT323'] text-xl min-h-[48px] touch-manipulation transition-colors border-2 ${scheduleType === "at" ? "bg-[var(--pixel-primary)] text-black border-[var(--pixel-primary)]" : "border-transparent text-[var(--pixel-text)] hover:bg-[var(--pixel-surface)]"}`,
+                              children: "DATE & TIME"
+                            }
+                          )
+                        ] })
+                      ] }),
+                      scheduleType === "every" && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col sm:flex-row gap-4", children: [
+                        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex-1 space-y-2", children: [
+                          /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-xs font-['Press_Start_2P'] text-[var(--pixel-secondary)]", children: "INTERVAL" }),
+                          /* @__PURE__ */ jsxRuntimeExports.jsx(
+                            "input",
+                            {
+                              type: "number",
+                              min: "1",
+                              value: intervalValue,
+                              onChange: (e) => setIntervalValue(parseInt(e.target.value) || 1),
+                              onFocus: onKeyboardFocus,
+                              onBlur: onKeyboardBlur,
+                              className: "pixel-input w-full min-h-[48px] text-xl p-4 touch-manipulation"
+                            }
+                          )
+                        ] }),
+                        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex-1 space-y-2", children: [
+                          /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-xs font-['Press_Start_2P'] text-[var(--pixel-secondary)]", children: "UNIT" }),
+                          /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                            "select",
+                            {
+                              value: intervalUnit,
+                              onChange: (e) => setIntervalUnit(e.target.value),
+                              className: "pixel-select w-full min-h-[48px] text-xl p-4 touch-manipulation",
+                              children: [
+                                /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "minutes", children: "MINUTES" }),
+                                /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "hours", children: "HOURS" }),
+                                /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "days", children: "DAYS" })
+                              ]
+                            }
+                          )
+                        ] })
+                      ] }),
+                      scheduleType === "at" && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-2", children: [
+                        /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-xs font-['Press_Start_2P'] text-[var(--pixel-secondary)]", children: "DATE & TIME" }),
+                        /* @__PURE__ */ jsxRuntimeExports.jsx(
+                          "input",
+                          {
+                            type: "datetime-local",
+                            value: targetDate,
+                            onChange: (e) => setTargetDate(e.target.value),
+                            onFocus: onKeyboardFocus,
+                            onBlur: onKeyboardBlur,
+                            className: "w-full p-4 min-h-[48px] text-xl bg-[var(--pixel-surface)] border-2 border-[var(--pixel-border)] text-[var(--pixel-text)] touch-manipulation",
+                            required: scheduleType === "at"
+                          }
+                        )
+                      ] }),
+                      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-2", children: [
+                        /* @__PURE__ */ jsxRuntimeExports.jsxs("label", { className: "block text-xs font-['Press_Start_2P'] text-[var(--pixel-secondary)] flex items-center gap-2", children: [
+                          /* @__PURE__ */ jsxRuntimeExports.jsx(MessageSquare, { size: 14 }),
+                          " Agent Instruction"
+                        ] }),
+                        /* @__PURE__ */ jsxRuntimeExports.jsx(
+                          "textarea",
+                          {
+                            value: agentMessage,
+                            onChange: (e) => setAgentMessage(e.target.value),
+                            onFocus: onKeyboardFocus,
+                            onBlur: onKeyboardBlur,
+                            className: "w-full p-4 bg-[var(--pixel-bg)] border-2 border-[var(--pixel-border)] text-[var(--pixel-text)] text-xl focus:border-[var(--pixel-primary)] outline-none min-h-[100px] resize-none touch-manipulation",
+                            placeholder: "INSTRUCTIONS FOR AGENT..."
+                          }
+                        )
+                      ] }),
+                      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col-reverse sm:flex-row gap-3 pt-2", children: [
+                        /* @__PURE__ */ jsxRuntimeExports.jsx(
+                          "button",
+                          {
+                            type: "button",
+                            onClick: () => setShowAddForm(false),
+                            className: "pixel-btn flex-1 py-4 min-h-[52px] text-sm touch-manipulation bg-[var(--pixel-bg)] text-[var(--pixel-text)]",
+                            children: "CANCEL"
+                          }
+                        ),
+                        /* @__PURE__ */ jsxRuntimeExports.jsx(
+                          "button",
+                          {
+                            type: "submit",
+                            className: "pixel-btn flex-1 py-4 min-h-[52px] text-sm touch-manipulation bg-[var(--pixel-primary)] text-black",
+                            children: "ADD TASK"
+                          }
+                        )
+                      ] })
+                    ]
+                  }
+                )
+              ]
+            }
+          ) }),
+          jobs.length === 0 && !showAddForm ? /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col items-center justify-center py-20 text-[var(--pixel-border)]", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(Clock, { size: 48, className: "mb-4 opacity-50" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xl", children: "NO ACTIVE TASKS" })
+          ] }) : jobs.map((job) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
+            motion.div,
+            {
+              initial: { opacity: 0, y: 10 },
+              animate: { opacity: 1, y: 0 },
+              className: "bg-[var(--pixel-surface)] p-5 border-4 border-[var(--pixel-border)] shadow-[4px_4px_0_0_rgba(0,0,0,0.5)] group",
+              children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex justify-between items-start gap-3 mb-3", children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "min-w-0 flex-1", children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "font-['Press_Start_2P'] text-[var(--pixel-text)] text-xs mb-1 uppercase leading-relaxed", children: job.name }),
+                    job.description && /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-lg text-gray-500 mt-0.5", children: job.description })
                   ] }),
-                  /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex-1", children: [
-                    /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-xs font-['Press_Start_2P'] mb-2 text-[var(--pixel-secondary)]", children: "UNIT" }),
-                    /* @__PURE__ */ jsxRuntimeExports.jsxs(
-                      "select",
-                      {
-                        value: intervalUnit,
-                        onChange: (e) => setIntervalUnit(e.target.value),
-                        className: "pixel-select w-full h-full",
-                        children: [
-                          /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "minutes", children: "MINUTES" }),
-                          /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "hours", children: "HOURS" }),
-                          /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "days", children: "DAYS" })
-                        ]
-                      }
-                    )
-                  ] })
-                ] }),
-                scheduleType === "at" && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "text-xs text-[var(--pixel-primary)] mb-1 block", children: "DATE & TIME" }),
                   /* @__PURE__ */ jsxRuntimeExports.jsx(
-                    "input",
+                    "button",
                     {
-                      type: "datetime-local",
-                      value: targetDate,
-                      onChange: (e) => setTargetDate(e.target.value),
-                      className: "w-full p-2 bg-[var(--pixel-surface)] border-2 border-[var(--pixel-border)] text-[var(--pixel-text)] text-lg",
-                      required: scheduleType === "at"
+                      type: "button",
+                      onClick: () => handleRemoveJob(job.id),
+                      className: "p-3 min-h-[44px] min-w-[44px] flex items-center justify-center text-red-500 hover:bg-red-900/30 border-2 border-transparent hover:border-red-500 transition-all touch-manipulation",
+                      "aria-label": "Delete task",
+                      children: /* @__PURE__ */ jsxRuntimeExports.jsx(Trash2, { size: 20 })
                     }
                   )
-                ] })
-              ] }),
-              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-1", children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsxs("label", { className: "text-xs font-medium text-gray-400 uppercase flex items-center gap-1", children: [
-                  /* @__PURE__ */ jsxRuntimeExports.jsx(MessageSquare, { size: 12 }),
-                  " Agent Instruction"
                 ] }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx(
-                  "textarea",
-                  {
-                    value: agentMessage,
-                    onChange: (e) => setAgentMessage(e.target.value),
-                    className: "w-full p-3 bg-[var(--pixel-bg)] border-2 border-[var(--pixel-border)] text-[var(--pixel-text)] text-lg focus:border-[var(--pixel-primary)] outline-none min-h-[80px] resize-none",
-                    placeholder: "INSTRUCTIONS FOR AGENT..."
-                  }
-                )
-              ] }),
-              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex justify-end pt-2 gap-4", children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx(
-                  "button",
-                  {
-                    type: "button",
-                    onClick: () => setShowAddForm(false),
-                    className: "pixel-btn bg-[var(--pixel-bg)] text-[var(--pixel-text)]",
-                    children: "CANCEL"
-                  }
-                ),
-                /* @__PURE__ */ jsxRuntimeExports.jsx(
-                  "button",
-                  {
-                    type: "submit",
-                    className: "pixel-btn bg-[var(--pixel-primary)] text-black",
-                    children: "ADD TASK"
-                  }
-                )
-              ] })
-            ] })
-          ]
-        }
-      ) }),
-      jobs.length === 0 && !showAddForm ? /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col items-center justify-center py-20 text-[var(--pixel-border)]", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(Clock, { size: 48, className: "mb-4 opacity-50" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xl", children: "NO ACTIVE TASKS" })
-      ] }) : jobs.map((job) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
-        motion.div,
-        {
-          initial: { opacity: 0, y: 10 },
-          animate: { opacity: 1, y: 0 },
-          className: "bg-[var(--pixel-surface)] p-5 border-4 border-[var(--pixel-border)] shadow-[4px_4px_0_0_rgba(0,0,0,0.5)] group",
-          children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex justify-between items-start mb-3", children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "font-['Press_Start_2P'] text-[var(--pixel-text)] text-xs mb-1 uppercase leading-relaxed text-[#c0caf5]", children: job.name }),
-                job.description && /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-lg text-gray-500 mt-0.5", children: job.description })
-              ] }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx(
-                "button",
-                {
-                  onClick: () => handleRemoveJob(job.id),
-                  className: "p-2 text-red-500 hover:bg-red-900/30 border-2 border-transparent hover:border-red-500 transition-all opacity-0 group-hover:opacity-100",
-                  children: /* @__PURE__ */ jsxRuntimeExports.jsx(Trash2, { size: 16 })
-                }
-              )
-            ] }),
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col gap-2", children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center text-sm text-[var(--pixel-secondary)]", children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-6 flex justify-center mr-2 opacity-70", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Clock, { size: 16 }) }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-medium bg-[var(--pixel-bg)] px-2 py-0.5 border border-[var(--pixel-border)]", children: formatSchedule(job.schedule) })
-              ] }),
-              job.payload && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-start text-sm text-gray-400 mt-1", children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-6 flex justify-center mr-2 opacity-70 mt-0.5", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Zap, { size: 16 }) }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex-1 bg-[var(--pixel-bg)] p-2 border border-[var(--pixel-border)] text-[var(--pixel-primary)] text-sm font-['VT323']", children: job.payload.text || job.payload.message || JSON.stringify(job.payload) })
-              ] })
-            ] })
-          ]
-        },
-        job.id
-      ))
-    ] })
-  ] });
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col gap-2", children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center text-sm text-[var(--pixel-secondary)]", children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-6 flex justify-center mr-2 opacity-70", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Clock, { size: 16 }) }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-medium bg-[var(--pixel-bg)] px-2 py-1 border border-[var(--pixel-border)]", children: formatSchedule(job.schedule) })
+                  ] }),
+                  job.payload && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-start text-sm text-gray-400 mt-1", children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-6 flex justify-center mr-2 opacity-70 mt-0.5", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Zap, { size: 16 }) }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex-1 bg-[var(--pixel-bg)] p-2 border border-[var(--pixel-border)] text-[var(--pixel-primary)] text-sm font-['VT323']", children: job.payload.text || job.payload.message || JSON.stringify(job.payload) })
+                  ] })
+                ] })
+              ]
+            },
+            job.id
+          ))
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          VirtualKeyboard,
+          {
+            visible: showInlineKeyboard,
+            mode: "inline",
+            focusedElementRef,
+            syncInputValueRef
+          }
+        )
+      ]
+    }
+  );
 }
 function HeartbeatManager() {
   const navigate = useNavigate();
   const { sendMessage, addEventListener } = useWebSocket();
+  const { onFocus: onKeyboardFocus, onBlur: onKeyboardBlur } = useFocusableInput(false);
   const [status, setStatus] = reactExports.useState({ active: false, schedule: null });
   const [intervalStart, setIntervalStart] = reactExports.useState(30);
   const checkStatus = () => sendMessage("heartbeat.get", {});
@@ -37873,6 +38345,8 @@ function HeartbeatManager() {
                         max: "1440",
                         value: intervalStart,
                         onChange: (e) => setIntervalStart(parseInt(e.target.value)),
+                        onFocus: onKeyboardFocus,
+                        onBlur: onKeyboardBlur,
                         className: "flex-1 p-3 bg-[var(--pixel-bg)] border-2 border-[var(--pixel-border)] text-center text-xl text-[var(--pixel-text)] focus:border-[var(--pixel-primary)] outline-none font-bold"
                       }
                     ),
@@ -37977,7 +38451,7 @@ const GPIOControl = () => {
       /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-10" })
     ] }),
     /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex-1 flex gap-4 overflow-hidden z-10 h-full p-4 pt-4", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex-1 flex items-center justify-center h-full overflow-y-auto pb-20 scroller-pixel", children: loading && pins.length === 0 ? /* @__PURE__ */ jsxRuntimeExports.jsx(LoadingSpinner, { label: "CONNECTING...", className: "h-full" }) : /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-[var(--pixel-surface)] p-6 border-4 border-[var(--pixel-border)] shadow-[8px_8px_0_0_rgba(0,0,0,0.5)] relative", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex-1 flex items-center justify-center h-full min-h-0 overflow-y-auto pb-20 scroller-pixel touch-scroll-y", children: loading && pins.length === 0 ? /* @__PURE__ */ jsxRuntimeExports.jsx(LoadingSpinner, { label: "CONNECTING...", className: "h-full" }) : /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-[var(--pixel-surface)] p-6 border-4 border-[var(--pixel-border)] shadow-[8px_8px_0_0_rgba(0,0,0,0.5)] relative", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute -top-4 left-1/2 -translate-x-1/2 bg-[var(--pixel-bg)] px-4 py-1 border-2 border-[var(--pixel-border)] text-[10px] font-['Press_Start_2P'] text-[var(--pixel-secondary)] uppercase tracking-wider", children: "RPI HEADER" }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex gap-8 mt-4", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex flex-col gap-3", children: leftColumn.map((pin) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-end gap-3 h-8", children: [
@@ -38110,6 +38584,14 @@ class ErrorBoundary extends React.Component {
     return this.props.children;
   }
 }
+function OverlayKeyboard() {
+  const location = useLocation();
+  const { keyboardEnabled, focusState, focusedElementRef, syncInputValueRef } = useKeyboardSettings();
+  const isOnChatRoute = location.pathname === "/chat";
+  const isOnTasksRoute = location.pathname === "/tasks";
+  const show = keyboardEnabled && focusState && (!isOnChatRoute || !focusState.isChatInput) && !isOnTasksRoute;
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(VirtualKeyboard, { visible: show, mode: "overlay", focusedElementRef, syncInputValueRef });
+}
 const AnimatedRoutes = () => {
   const location = useLocation();
   return /* @__PURE__ */ jsxRuntimeExports.jsx(AnimatePresence, { mode: "wait", children: /* @__PURE__ */ jsxRuntimeExports.jsxs(Routes, { location, children: [
@@ -38130,10 +38612,11 @@ const AnimatedRoutes = () => {
   ] }, location.pathname) });
 };
 function App() {
-  return /* @__PURE__ */ jsxRuntimeExports.jsx(HashRouter, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(WebSocketProvider, { children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col h-screen w-screen overflow-hidden bg-[var(--pixel-bg)] text-[var(--pixel-text)]", children: [
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(HashRouter, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(WebSocketProvider, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(KeyboardProvider, { children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col h-screen w-screen overflow-hidden bg-[var(--pixel-bg)] text-[var(--pixel-text)]", children: [
     /* @__PURE__ */ jsxRuntimeExports.jsx(StatusBar, {}),
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex-1 overflow-hidden relative w-full", children: /* @__PURE__ */ jsxRuntimeExports.jsx(ErrorBoundary, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(AnimatedRoutes, {}) }) })
-  ] }) }) });
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex-1 overflow-hidden relative w-full", children: /* @__PURE__ */ jsxRuntimeExports.jsx(ErrorBoundary, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(AnimatedRoutes, {}) }) }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx(OverlayKeyboard, {})
+  ] }) }) }) });
 }
 clientExports.createRoot(document.getElementById("root")).render(
   /* @__PURE__ */ jsxRuntimeExports.jsx(reactExports.StrictMode, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(App, {}) })

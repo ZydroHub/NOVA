@@ -110,7 +110,7 @@ const GPIOControl = () => {
             <div className="flex-1 flex gap-4 overflow-hidden z-10 h-full p-4 pt-4">
 
                 {/* Pin Header Visualization */}
-                <div className="flex-1 flex items-center justify-center h-full overflow-y-auto pb-20 scroller-pixel">
+                <div className="flex-1 flex items-center justify-center h-full min-h-0 overflow-y-auto pb-20 scroller-pixel touch-scroll-y">
                     {loading && pins.length === 0 ? (
                         <LoadingSpinner label="CONNECTING..." className="h-full" />
                     ) : (

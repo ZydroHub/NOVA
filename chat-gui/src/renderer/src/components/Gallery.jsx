@@ -4,10 +4,12 @@ import { ArrowLeft, X, ChevronLeft, ChevronRight, MessageSquare } from 'lucide-r
 import { useNavigate } from 'react-router-dom';
 import { API_BASE_URL } from '../config.js';
 import { apiFetch } from '../apiClient.js';
+import { useFocusableInput } from '../contexts/KeyboardContext.jsx';
 import LoadingSpinner from './LoadingSpinner';
 import ErrorMessage from './ErrorMessage';
 
 export default function Gallery() {
+    const { onFocus: onKeyboardFocus, onBlur: onKeyboardBlur } = useFocusableInput(false);
     const navigate = useNavigate();
     const [images, setImages] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -133,7 +135,7 @@ export default function Gallery() {
             )}
 
             {/* Grid */}
-            <div className="flex-1 overflow-y-auto p-4 scroller-pixel">
+            <div className="flex-1 min-h-0 overflow-y-auto p-4 scroller-pixel touch-scroll-y">
                 {loading ? (
                     <LoadingSpinner label="LOADING..." className="h-full" />
                 ) : images.length === 0 ? (
@@ -271,6 +273,8 @@ export default function Gallery() {
                                 placeholder="INPUT QUERY..."
                                 value={chatPrompt}
                                 onChange={(e) => setChatPrompt(e.target.value)}
+                                onFocus={onKeyboardFocus}
+                                onBlur={onKeyboardBlur}
                                 autoFocus
                             />
                             <div className="flex justify-end gap-4 mt-6">

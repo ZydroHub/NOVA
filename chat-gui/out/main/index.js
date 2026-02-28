@@ -4,13 +4,13 @@ import __cjs_mod__ from "node:module";
 const __filename = import.meta.filename;
 const __dirname = import.meta.dirname;
 const require2 = __cjs_mod__.createRequire(import.meta.url);
+app.commandLine.appendSwitch("enable-touch-events");
 function createWindow() {
   const mainWindow = new BrowserWindow({
     width: 480,
     height: 800,
-    fullscreen: false,
+    fullscreen: true,
     frame: false,
-    // User wanted to remove fullscreen code, but didn't explicitly say add frame. Keeping false to match design.
     show: false,
     autoHideMenuBar: true,
     webPreferences: {

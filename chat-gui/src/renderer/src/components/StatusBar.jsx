@@ -40,7 +40,7 @@ const StatusBar = () => {
     };
 
     return (
-        <div className="w-full h-8 bg-[var(--pixel-surface)] z-50 flex items-center justify-between px-2 text-[10px] uppercase font-['Press_Start_2P'] border-b-4 border-[var(--pixel-border)] select-none">
+        <div className="w-full h-7 bg-[var(--pixel-surface)] z-50 flex items-center justify-between px-2 text-[10px] uppercase font-['Press_Start_2P'] border-b-4 border-[var(--pixel-border)] select-none">
 
             {/* Time */}
             <div className="flex items-center gap-2 text-[var(--pixel-primary)]">

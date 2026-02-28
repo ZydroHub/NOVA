@@ -5,11 +5,13 @@ import ConnectionBar from './ConnectionBar';
 import MessageList from './MessageList';
 import ChatInput from './ChatInput';
 import ChatSidebar from './ChatSidebar';
+import VirtualKeyboard from './VirtualKeyboard';
 import { motion } from 'framer-motion';
 
 import { useWebSocket } from '../contexts/WebSocketContext.jsx';
+import { useKeyboardSettings } from '../contexts/KeyboardContext.jsx';
 
-export default function ChatInterface({ layoutId }) {
+export default function ChatInterface() {
     const location = useLocation();
     const {
         connStatus,
@@ -25,10 +27,32 @@ export default function ChatInterface({ layoutId }) {
         setCurrentConvId,
         createConversation,
         deleteConversation,
-        thinking
+        thinking,
+        toggleVoice,
+        isRecording,
+        addEventListener,
     } = useWebSocket();
 
     const [sidebarOpen, setSidebarOpen] = useState(false);
+    const { keyboardEnabled, focusState, setFocusState, focusedElementRef, syncInputValueRef } = useKeyboardSettings();
+    const showInlineKeyboard = keyboardEnabled && focusState?.isChatInput === true;
+
+    const closeKeyboard = useCallback(() => {
+        setFocusState(null);
+        focusedElementRef.current = null;
+    }, [setFocusState, focusedElementRef]);
+
+    const handleChatAreaPointerDown = useCallback(
+        (e) => {
+            if (!focusState?.isChatInput) return;
+            const target = e.target;
+            if (target?.closest?.('[data-virtual-keyboard]')) return;
+            if (target?.closest?.('[data-chat-input-bar]')) return;
+            if (target?.closest?.('[data-chat-messages]')) return;
+            closeKeyboard();
+        },
+        [focusState?.isChatInput, closeKeyboard]
+    );
 
     // ─── Actions ───────────────────────────────────────────────────────
     const send = useCallback(
@@ -67,6 +91,25 @@ export default function ChatInterface({ layoutId }) {
         }
     }, [chatConnStatus, location.state, send, currentConvId]);
 
+    // When Whisper transcription is received in chat, send it to the backend so the AI responds
+    useEffect(() => {
+        const remove = addEventListener('voice_transcription', async (data) => {
+            const text = (data.text || '').trim();
+            if (!text) return;
+            let convId = currentConvId;
+            if (!convId && conversations.length > 0) convId = conversations[0].id;
+            if (!convId) {
+                const conv = await createConversation();
+                if (conv) {
+                    setCurrentConvId(conv.id);
+                    convId = conv.id;
+                }
+            }
+            if (convId) sendMessage('send', { message: text, conv_id: convId, thinking });
+        });
+        return remove;
+    }, [addEventListener, currentConvId, conversations, createConversation, setCurrentConvId, sendMessage, thinking]);
+
     const abort = useCallback(() => {
         sendMessage('abort');
     }, [sendMessage]);
@@ -83,7 +126,6 @@ export default function ChatInterface({ layoutId }) {
     // ─── Render ────────────────────────────────────────────────────────
     return (
         <motion.div
-            layoutId={layoutId}
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.8 }}
@@ -100,13 +142,17 @@ export default function ChatInterface({ layoutId }) {
                 deleteConversation={deleteConversation}
             />
 
-            {/* Main Chat Area */}
-            <div className="flex-1 flex flex-col h-full min-w-0">
+            {/* Main Chat Area: keyboard in flow so it pushes content up (phone-style); tap outside input/keyboard closes keyboard */}
+            <div
+                className="flex-1 flex flex-col h-full min-w-0 min-h-0 touch-pan-y"
+                onPointerDown={handleChatAreaPointerDown}
+            >
                 <ChatHeader
                     connected={connStatus === 'connected'}
                     onReset={reset}
                     sidebarOpen={sidebarOpen}
                     onToggleSidebar={() => setSidebarOpen(!sidebarOpen)}
+                    onCloseKeyboard={closeKeyboard}
                 />
                 {connStatus !== 'connected' && <ConnectionBar status={connStatus} onRetry={connect} />}
                 <MessageList
@@ -117,9 +163,12 @@ export default function ChatInterface({ layoutId }) {
                 <ChatInput
                     onSend={send}
                     onAbort={abort}
+                    onMicPress={toggleVoice}
+                    isRecording={isRecording}
                     streaming={streaming}
                     disabled={connStatus !== 'connected'}
                 />
+                <VirtualKeyboard visible={showInlineKeyboard} mode="inline" focusedElementRef={focusedElementRef} syncInputValueRef={syncInputValueRef} />
             </div>
         </motion.div>
     );

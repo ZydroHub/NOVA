@@ -11,11 +11,11 @@ const MenuButton = ({ icon: Icon, label, onClick, color }) => (
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
         onClick={onClick}
-        className="pixel-btn flex flex-col items-center justify-center gap-3 w-full min-h-[160px] aspect-square"
+        className="pixel-btn flex flex-col items-center justify-center gap-2 w-full min-h-[72px] min-w-0"
         style={{ borderColor: color, color: color }}
     >
-        <Icon size={44} />
-        <span className="text-sm">{label}</span>
+        <Icon size={32} />
+        <span className="text-xs">{label}</span>
     </motion.button>
 );
 
@@ -129,7 +129,7 @@ export default function Home() {
                             exit={{ opacity: 0, scale: 0.8 }}
                             className="absolute left-[90px] top-[70px] w-[180px] bg-black/80 backdrop-blur-md p-3 border-2 border-[var(--pixel-accent)] shadow-[4px_4px_0_0_rgba(0,0,0,0.5)] z-50 rounded-lg rounded-tl-none"
                         >
-                            <p className="text-[var(--pixel-accent)] text-[10px] leading-relaxed break-words whitespace-pre-wrap max-h-[120px] overflow-y-auto">
+                            <p className="text-[var(--pixel-accent)] text-[10px] leading-relaxed break-words whitespace-pre-wrap max-h-[120px] overflow-y-auto touch-scroll-y">
                                 {voskText}
                             </p>
                             {/* Decorative pointer arrow (top left pointing to avatar) */}
@@ -158,7 +158,7 @@ export default function Home() {
             </div>
 
             {/* Main Menu Grid - 4 buttons: Chat, Vision, Agent, Gallery */}
-            <div className="grid grid-cols-2 gap-5 z-10 w-full max-w-[520px]">
+            <div className="grid grid-cols-2 gap-3 z-10 w-full max-w-[520px]">
                 <MenuButton icon={MessageCircle} label="CHAT" onClick={() => navigate('/chat')} color="var(--pixel-primary)" />
                 <MenuButton icon={Camera} label="VISION" onClick={() => navigate('/camera')} color="var(--pixel-accent)" />
                 <MenuButton icon={Code} label="AGENT" onClick={() => navigate('/tasks')} color="#f7768e" />

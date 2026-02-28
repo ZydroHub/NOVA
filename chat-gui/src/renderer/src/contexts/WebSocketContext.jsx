@@ -108,7 +108,6 @@ export function WebSocketProvider({ children }) {
                 }
                 break;
             case 'voice_transcription':
-                // Whisper transcription (final)
                 setMessages((prev) => [...prev, { role: 'user', text: data.text }]);
                 setVoskText('');
                 break;

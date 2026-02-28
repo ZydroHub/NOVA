@@ -1,11 +1,13 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Power } from 'lucide-react';
+import { ArrowLeft, Power, Keyboard } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { API_BASE_URL } from '../config.js';
+import { useKeyboardSettings } from '../contexts/KeyboardContext.jsx';
 
 export default function Settings() {
     const navigate = useNavigate();
+    const { keyboardEnabled, setKeyboardEnabled } = useKeyboardSettings();
 
     const handleCloseApp = async () => {
         try {
@@ -47,7 +49,30 @@ export default function Settings() {
                     <p className="text-[var(--pixel-secondary)] font-['VT323'] text-lg">MANAGE TERMINAL PREFERENCES</p>
                 </div>
 
-                <div className="w-full max-w-xs p-6 border-4 border-[var(--pixel-border)] bg-[var(--pixel-surface)] shadow-[8px_8px_0_0_rgba(0,0,0,0.3)]">
+                <div className="w-full max-w-xs space-y-4 p-6 border-4 border-[var(--pixel-border)] bg-[var(--pixel-surface)] shadow-[8px_8px_0_0_rgba(0,0,0,0.3)]">
+                    <div className="flex items-center justify-between gap-4 py-3 border-b-2 border-[var(--pixel-border)]">
+                        <span className="font-['VT323'] text-xl text-[var(--pixel-text)] flex items-center gap-2">
+                            <Keyboard size={22} className="text-[var(--pixel-primary)]" />
+                            Popup keyboard
+                        </span>
+                        <button
+                            type="button"
+                            role="switch"
+                            aria-checked={keyboardEnabled}
+                            onClick={() => setKeyboardEnabled(!keyboardEnabled)}
+                            className={`relative w-14 h-8 border-4 flex-shrink-0 transition-colors ${
+                                keyboardEnabled
+                                    ? 'bg-[var(--pixel-accent)] border-[var(--pixel-accent)]'
+                                    : 'bg-[var(--pixel-bg)] border-[var(--pixel-border)]'
+                            }`}
+                        >
+                            <span
+                                className={`absolute top-0.5 left-0.5 w-6 h-6 border-2 border-[var(--pixel-border)] bg-[var(--pixel-text)] transition-transform ${
+                                    keyboardEnabled ? 'translate-x-7' : 'translate-x-0'
+                                }`}
+                            />
+                        </button>
+                    </div>
                     <button
                         onClick={handleCloseApp}
                         className="w-full py-6 px-8 bg-red-500 text-white font-['Press_Start_2P'] text-sm border-4 border-white shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:bg-red-600 active:translate-y-1 active:shadow-none transition-all flex items-center justify-center gap-4"

@@ -20,6 +20,35 @@ function ThoughtBlock({ children }) {
 
 export default function MessageList({ messages, streaming, streamText }) {
     const bottomRef = useRef(null);
+    const scrollContainerRef = useRef(null);
+    const dragScrollRef = useRef(null); // { clientY, scrollTop } when pointer-drag scrolling
+
+    // Pointer-drag scroll: touch screens often send touch as mouse/pointer, so native touch scroll never runs. Manually scroll on pointer move.
+    const onPointerDown = (e) => {
+        if (e.target.closest?.('button, a, input, select, textarea, [role="button"]')) return;
+        const el = scrollContainerRef.current;
+        if (!el || el.scrollHeight <= el.clientHeight) return;
+        dragScrollRef.current = { clientY: e.clientY, scrollTop: el.scrollTop };
+        el.setPointerCapture(e.pointerId);
+    };
+    const onPointerMove = (e) => {
+        const state = dragScrollRef.current;
+        if (!state) return;
+        const el = scrollContainerRef.current;
+        if (!el) return;
+        const deltaY = e.clientY - state.clientY;
+        const newTop = Math.max(0, Math.min(el.scrollHeight - el.clientHeight, state.scrollTop - deltaY));
+        el.scrollTop = newTop;
+        state.scrollTop = newTop;
+        state.clientY = e.clientY;
+        e.preventDefault();
+    };
+    const onPointerUp = (e) => {
+        if (dragScrollRef.current) {
+            scrollContainerRef.current?.releasePointerCapture(e.pointerId);
+            dragScrollRef.current = null;
+        }
+    };
 
     // Auto-scroll when messages change or stream updates
     useEffect(() => {
@@ -48,7 +77,16 @@ export default function MessageList({ messages, streaming, streamText }) {
     const isEmpty = messages.length === 0 && !streaming;
 
     return (
-        <div className="flex-1 overflow-y-auto overflow-x-hidden p-4 flex flex-col gap-4 scroll-smooth touch-pan-y scroller-pixel">
+        <div
+            ref={scrollContainerRef}
+            className="flex-1 min-h-0 overflow-x-hidden p-3 flex flex-col gap-3 scroller-pixel touch-scroll-y"
+            data-chat-messages
+            onPointerDown={onPointerDown}
+            onPointerMove={onPointerMove}
+            onPointerUp={onPointerUp}
+            onPointerCancel={onPointerUp}
+            onPointerLeave={onPointerUp}
+        >
             {isEmpty && (
                 <div className="flex-1 flex flex-col items-center justify-center gap-4 text-center p-10 opacity-50">
                     <div className="text-6xl font-['Press_Start_2P'] text-[var(--pixel-secondary)] animate-pulse">?</div>

@@ -24,6 +24,10 @@
     image-rendering: pixelated;
   }
 
+  body {
+    touch-action: manipulation;
+  }
+
   h1, h2, h3, h4, h5, h6 {
     font-family: 'Press Start 2P', cursive;
   }
@@ -34,9 +38,9 @@
     @apply border-4 border-slate-700 bg-slate-800 shadow-[4px_4px_0_0_rgba(0,0,0,0.5)];
   }
 
-  /* Interactive Elements - Larger Touch Targets */
+  /* Interactive Elements - Larger Touch Targets (min 44px for 4.3" touch) */
   .pixel-btn {
-    @apply px-6 py-4 font-['Press_Start_2P'] text-sm border-4 border-[var(--pixel-text)] 
+    @apply px-6 py-4 min-h-[44px] font-['Press_Start_2P'] text-sm border-4 border-[var(--pixel-text)] 
     bg-[var(--pixel-surface)] hover:bg-[var(--pixel-primary)] hover:text-black 
     active:translate-y-1 active:shadow-none transition-all shadow-[4px_4px_0_0_var(--pixel-text)]
     flex items-center justify-center gap-2;
@@ -119,4 +123,50 @@
 
 .thought-expanded .thought-icon {
   transform: rotate(180deg);
+}
+
+/* Parent of scroll area: allow vertical pan so browser treats column as scroll target */
+.touch-pan-y {
+  touch-action: pan-y;
+}
+
+/* Touch scroll: no selection/highlight, only vertical pan (finger scroll) */
+.touch-scroll-y {
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+.touch-scroll-y * {
+  user-select: none;
+  -webkit-user-select: none;
+}
+.touch-scroll-y::selection,
+.touch-scroll-y *::selection {
+  background: transparent;
+}
+
+/* Thin scrollbar for 4.3" touch screens (used with scroller-pixel class) */
+.scroller-pixel {
+  scrollbar-width: thin;
+  scrollbar-color: var(--pixel-border) transparent;
+}
+.scroller-pixel::-webkit-scrollbar {
+  width: 6px;
+}
+.scroller-pixel::-webkit-scrollbar-track {
+  background: transparent;
+}
+.scroller-pixel::-webkit-scrollbar-thumb {
+  background: var(--pixel-border);
+  border-radius: 3px;
+}
+
+/* Small-screen typography: slightly tighter for 4.3" / low height */
+@media (max-width: 480px), (max-height: 800px) {
+  html {
+    font-size: 15px;
+  }
 }

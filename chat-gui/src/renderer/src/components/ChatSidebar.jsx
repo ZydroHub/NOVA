@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { Pencil, Trash2, Check, X, Plus } from 'lucide-react';
 import { useWebSocket } from '../contexts/WebSocketContext.jsx';
+import { useFocusableInput } from '../contexts/KeyboardContext.jsx';
 
 export default function ChatSidebar({ isOpen, onClose }) {
+    const { onFocus: onKeyboardFocus, onBlur: onKeyboardBlur } = useFocusableInput(false);
     const {
         conversations,
         currentConvId,
@@ -58,7 +60,7 @@ export default function ChatSidebar({ isOpen, onClose }) {
 
             {/* Sidebar Overlay - slides in from the right */}
             <aside
-                className={`fixed top-20 right-0 bottom-0 z-50 bg-[var(--pixel-surface)] border-l-4 border-[var(--pixel-border)] transition-transform duration-300 ease-in-out ${isOpen ? 'translate-x-0' : 'translate-x-full'} w-72 flex flex-col`}
+                className={`fixed top-16 right-0 bottom-0 z-50 bg-[var(--pixel-surface)] border-l-4 border-[var(--pixel-border)] transition-transform duration-300 ease-in-out ${isOpen ? 'translate-x-0' : 'translate-x-full'} w-72 max-w-[85vw] flex flex-col`}
             >
                 <div className="p-4 border-b-4 border-[var(--pixel-border)] flex flex-col gap-2">
                     {lastApiError && (
@@ -69,17 +71,17 @@ export default function ChatSidebar({ isOpen, onClose }) {
                     )}
                     <button
                         onClick={handleNewChat}
-                        className="pixel-btn w-full py-3 bg-[var(--pixel-primary)] text-white text-[10px] font-['Press_Start_2P'] flex items-center justify-center gap-2"
+                        className="pixel-btn w-full py-3 min-h-[44px] bg-[var(--pixel-primary)] text-white text-[10px] font-['Press_Start_2P'] flex items-center justify-center gap-2"
                     >
                         <Plus size={16} /> NEW CHAT
                     </button>
                 </div>
 
-                <div className="flex-1 overflow-y-auto p-2 flex flex-col gap-2 custom-scrollbar">
+                <div className="flex-1 min-h-0 overflow-y-auto p-2 flex flex-col gap-2 custom-scrollbar touch-scroll-y">
                     {conversations.map(conv => (
                         <div
                             key={conv.id}
-                            className={`p-3 border-2 border-[var(--pixel-border)] cursor-pointer hover:bg-[var(--pixel-bg-alt)] relative group flex items-center justify-between gap-2 ${currentConvId === conv.id ? 'bg-[var(--pixel-bg-alt)] border-[var(--pixel-primary)]' : ''}`}
+                            className={`p-3 min-h-[44px] border-2 border-[var(--pixel-border)] cursor-pointer hover:bg-[var(--pixel-bg-alt)] relative group flex items-center justify-between gap-2 ${currentConvId === conv.id ? 'bg-[var(--pixel-bg-alt)] border-[var(--pixel-primary)]' : ''}`}
                             onClick={() => { setCurrentConvId(conv.id); }}
                         >
                             {editingId === conv.id ? (
@@ -89,6 +91,8 @@ export default function ChatSidebar({ isOpen, onClose }) {
                                         className="bg-[var(--pixel-bg)] text-xs font-['VT323'] border-2 border-[var(--pixel-border)] px-1 py-0.5 w-full focus:outline-none"
                                         value={editTitle}
                                         onChange={e => setEditTitle(e.target.value)}
+                                        onFocus={onKeyboardFocus}
+                                        onBlur={onKeyboardBlur}
                                         onKeyDown={e => {
                                             if (e.key === 'Enter') saveRename(e, conv.id);
                                             if (e.key === 'Escape') cancelEditing(e);

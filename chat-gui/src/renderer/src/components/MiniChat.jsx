@@ -66,7 +66,7 @@ export default function MiniChat({ onClose, className }) {
             </div>
 
             {/* Messages Area */}
-            <div className="flex-1 overflow-y-auto min-h-0 bg-[var(--pixel-bg)] p-2 scroller-pixel">
+            <div className="flex-1 overflow-y-auto min-h-0 bg-[var(--pixel-bg)] p-2 scroller-pixel touch-scroll-y">
                 <MessageList
                     messages={messages}
                     streaming={streaming}

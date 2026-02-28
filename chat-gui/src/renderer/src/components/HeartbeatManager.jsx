@@ -3,10 +3,12 @@ import { motion } from 'framer-motion';
 import { ArrowLeft, Clock, Activity, Power, Save } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useWebSocket } from '../contexts/WebSocketContext.jsx';
+import { useFocusableInput } from '../contexts/KeyboardContext.jsx';
 
 export default function HeartbeatManager() {
     const navigate = useNavigate();
     const { sendMessage, addEventListener } = useWebSocket();
+    const { onFocus: onKeyboardFocus, onBlur: onKeyboardBlur } = useFocusableInput(false);
     const [status, setStatus] = useState({ active: false, schedule: null });
     const [intervalStart, setIntervalStart] = useState(30);
 
@@ -127,6 +129,8 @@ export default function HeartbeatManager() {
                                         max="1440"
                                         value={intervalStart}
                                         onChange={(e) => setIntervalStart(parseInt(e.target.value))}
+                                        onFocus={onKeyboardFocus}
+                                        onBlur={onKeyboardBlur}
                                         className="flex-1 p-3 bg-[var(--pixel-bg)] border-2 border-[var(--pixel-border)] text-center text-xl text-[var(--pixel-text)] focus:border-[var(--pixel-primary)] outline-none font-bold"
                                     />
                                     <button

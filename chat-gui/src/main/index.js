@@ -5,12 +5,15 @@ import { join } from 'path'
 // when the UI updates (e.g. after deleting a task). These come from content/browser and are harmless.
 // To reduce stderr noise you can run with: ELECTRON_DISABLE_GPU=1 (may affect performance).
 
+// Enable touch events so finger scroll works on touchscreens (e.g. 4.3" display)
+app.commandLine.appendSwitch('enable-touch-events')
+
 function createWindow() {
     const mainWindow = new BrowserWindow({
         width: 480,
         height: 800,
-        fullscreen: false,
-        frame: false, // User wanted to remove fullscreen code, but didn't explicitly say add frame. Keeping false to match design.
+        fullscreen: true,
+        frame: false,
         show: false,
         autoHideMenuBar: true,
         webPreferences: {
