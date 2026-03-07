@@ -9,6 +9,7 @@ import logging
 import os
 import re
 import subprocess
+import sys
 import time
 import urllib.error
 import urllib.parse
@@ -501,12 +502,37 @@ def create_chat_via_api(title: str, messages: list, api_base: str = "http://127.
         return None
 
 
+def run_backend_mode(prompt: str) -> None:
+    """
+    Run tool task and print a single JSON line to stdout for chat_ai subprocess.
+    Used when invoked as: python tool_ai.py --backend-mode < prompt.txt
+    """
+    try:
+        tool_call_raw, tool_result = run_task_for_backend(prompt)
+        out = {"tool_call_raw": tool_call_raw, "tool_result": tool_result}
+        print(json.dumps(out), flush=True)
+    except Exception as e:
+        logger.exception("Backend mode error: %s", e)
+        out = {"error": str(e), "tool_call_raw": None, "tool_result": None}
+        print(json.dumps(out), flush=True)
+        sys.exit(1)
+
+
 def main():
     parser = argparse.ArgumentParser(description="Run Gemma with tools; create a chat with the tool call response.")
     parser.add_argument("prompt", nargs="?", help="User prompt (e.g. task message)")
     parser.add_argument("--no-create-chat", action="store_true", help="Do not POST to create a conversation")
     parser.add_argument("--api-base", default="http://127.0.0.1:8000", help="Backend API base URL")
+    parser.add_argument("--backend-mode", action="store_true", help="Read prompt from stdin, print JSON result to stdout (for chat backend subprocess)")
     args = parser.parse_args()
+
+    if args.backend_mode:
+        prompt = sys.stdin.read().strip()
+        if not prompt:
+            print(json.dumps({"error": "No prompt on stdin", "tool_call_raw": None, "tool_result": None}), flush=True)
+            return 1
+        run_backend_mode(prompt)
+        return 0
 
     prompt = args.prompt
     if not prompt:

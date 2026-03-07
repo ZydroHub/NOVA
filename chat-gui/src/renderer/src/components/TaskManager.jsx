@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Plus, Trash2, Clock, Zap } from 'lucide-react';
+import { ArrowLeft, Plus, Trash2, Clock, Zap, Pencil } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useWebSocket } from '../contexts/WebSocketContext.jsx';
 
@@ -63,12 +63,20 @@ export default function TaskManager() {
         const removeRemoved = addEventListener('task_removed', () => {
             sendMessage('task.list', {});
         });
+        const removeUpdated = addEventListener('task_updated', () => {
+            sendMessage('task.list', {});
+        });
 
         return () => {
             removeList();
             removeRemoved();
+            removeUpdated();
         };
     }, [sendMessage, addEventListener]);
+
+    const handleEditJob = (job) => {
+        navigate('/tasks/edit', { state: { job } });
+    };
 
     const handleRemoveJob = (id) => {
         if (confirm('Delete this scheduled task?')) {
@@ -129,14 +137,24 @@ export default function TaskManager() {
                                         <p className="text-lg text-gray-500 mt-0.5">{job.description}</p>
                                     )}
                                 </div>
-                                <button
-                                    type="button"
-                                    onClick={() => handleRemoveJob(job.id)}
-                                    className="p-3 min-h-[44px] min-w-[44px] flex items-center justify-center text-red-500 hover:bg-red-900/30 border-2 border-transparent hover:border-red-500 transition-all touch-manipulation"
-                                    aria-label="Delete task"
-                                >
-                                    <Trash2 size={20} />
-                                </button>
+                                <div className="flex items-center gap-1">
+                                    <button
+                                        type="button"
+                                        onClick={() => handleEditJob(job)}
+                                        className="p-3 min-h-[44px] min-w-[44px] flex items-center justify-center text-[var(--pixel-primary)] hover:bg-[var(--pixel-primary)]/20 border-2 border-transparent hover:border-[var(--pixel-primary)] transition-all touch-manipulation"
+                                        aria-label="Edit task"
+                                    >
+                                        <Pencil size={20} />
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => handleRemoveJob(job.id)}
+                                        className="p-3 min-h-[44px] min-w-[44px] flex items-center justify-center text-red-500 hover:bg-red-900/30 border-2 border-transparent hover:border-red-500 transition-all touch-manipulation"
+                                        aria-label="Delete task"
+                                    >
+                                        <Trash2 size={20} />
+                                    </button>
+                                </div>
                             </div>
 
                             <div className="flex flex-col gap-2">

@@ -2567,6 +2567,16 @@
       background-color: var(--pixel-bg-alt);
     }
 
+    .hover\:bg-\[var\(--pixel-primary\)\]\/20:hover {
+      background-color: var(--pixel-primary);
+    }
+
+    @supports (color: color-mix(in lab, red, red)) {
+      .hover\:bg-\[var\(--pixel-primary\)\]\/20:hover {
+        background-color: color-mix(in oklab, var(--pixel-primary) 20%, transparent);
+      }
+    }
+
     .hover\:bg-\[var\(--pixel-surface\)\]:hover {
       background-color: var(--pixel-surface);
     }

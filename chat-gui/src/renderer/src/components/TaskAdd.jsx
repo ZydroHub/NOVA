@@ -1,12 +1,54 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { ArrowLeft, MessageSquare } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useWebSocket } from '../contexts/WebSocketContext.jsx';
 import { useFocusableInput, useKeyboardSettings } from '../contexts/KeyboardContext.jsx';
 import VirtualKeyboard from './VirtualKeyboard.jsx';
 
+function jobToFormState(job) {
+    if (!job) return { name: '', description: '', scheduleType: 'every', intervalValue: 30, intervalUnit: 'minutes', targetDate: '', agentMessage: '' };
+    const s = job.schedule || {};
+    const payload = job.payload || {};
+    let scheduleType = 'every';
+    let intervalValue = 30;
+    let intervalUnit = 'minutes';
+    let targetDate = '';
+    if (s.kind === 'at' && s.atMs != null) {
+        scheduleType = 'at';
+        const d = new Date(s.atMs);
+        targetDate = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}T${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+    } else if (s.kind === 'every' && s.everyMs != null) {
+        const ms = s.everyMs;
+        const days = ms / (1000 * 60 * 60 * 24);
+        const hours = ms / (1000 * 60 * 60);
+        const mins = ms / (1000 * 60);
+        if (days >= 1 && Math.abs(days - Math.round(days)) < 0.01) {
+            intervalValue = Math.round(days);
+            intervalUnit = 'days';
+        } else if (hours >= 1 && Math.abs(hours - Math.round(hours)) < 0.01) {
+            intervalValue = Math.round(hours);
+            intervalUnit = 'hours';
+        } else {
+            intervalValue = Math.max(1, Math.round(mins));
+            intervalUnit = 'minutes';
+        }
+    }
+    const agentMessage = (payload && (payload.message || payload.text)) || '';
+    return { name: job.name || '', description: job.description || '', scheduleType, intervalValue, intervalUnit, targetDate, agentMessage };
+}
+
 export default function TaskAdd() {
     const navigate = useNavigate();
+    const location = useLocation();
+    const editJob = location.state?.job;
+    const isEdit = !!editJob;
+    const initial = jobToFormState(editJob);
+
+    useEffect(() => {
+        if (location.pathname === '/tasks/edit' && !editJob) {
+            navigate('/tasks', { replace: true });
+        }
+    }, [location.pathname, editJob, navigate]);
     const formRef = useRef(null);
     const scrollContainerRef = useRef(null);
     const dragScrollRef = useRef(null);
@@ -47,21 +89,25 @@ export default function TaskAdd() {
         },
     });
 
-    const [name, setName] = useState('');
-    const [description, setDescription] = useState('');
-    const [scheduleType, setScheduleType] = useState('every');
-    const [intervalValue, setIntervalValue] = useState(30);
-    const [intervalUnit, setIntervalUnit] = useState('minutes');
-    const [targetDate, setTargetDate] = useState('');
-    const [agentMessage, setAgentMessage] = useState('');
+    const [name, setName] = useState(initial.name);
+    const [description, setDescription] = useState(initial.description);
+    const [scheduleType, setScheduleType] = useState(initial.scheduleType);
+    const [intervalValue, setIntervalValue] = useState(initial.intervalValue);
+    const [intervalUnit, setIntervalUnit] = useState(initial.intervalUnit);
+    const [targetDate, setTargetDate] = useState(initial.targetDate);
+    const [agentMessage, setAgentMessage] = useState(initial.agentMessage);
 
     useEffect(() => {
-        const remove = addEventListener('task_added', (data) => {
-            if (data.result) {
-                navigate('/tasks', { replace: true });
-            }
+        const removeAdded = addEventListener('task_added', (data) => {
+            if (data.result) navigate('/tasks', { replace: true });
         });
-        return remove;
+        const removeUpdated = addEventListener('task_updated', (data) => {
+            if (data.result) navigate('/tasks', { replace: true });
+        });
+        return () => {
+            removeAdded();
+            removeUpdated();
+        };
     }, [addEventListener, navigate]);
 
     const handleSubmit = (e) => {
@@ -76,8 +122,12 @@ export default function TaskAdd() {
             schedule = { kind: 'at', atMs: new Date(targetDate).getTime() };
         }
         const payload = agentMessage ? { kind: 'agentTurn', message: agentMessage } : {};
-        if (Object.keys(payload).length === 0 && !confirm('No agent message provided. Create job anyway?')) return;
-        sendMessage('task.add', { name, description, schedule, payload });
+        if (Object.keys(payload).length === 0 && !confirm('No agent message provided. Save anyway?')) return;
+        if (isEdit) {
+            sendMessage('task.update', { id: editJob.id, name, description, schedule, payload });
+        } else {
+            sendMessage('task.add', { name, description, schedule, payload });
+        }
     };
 
     const handleFormKeyDown = useCallback((e) => {
@@ -146,7 +196,7 @@ export default function TaskAdd() {
                 >
                     <ArrowLeft size={24} />
                 </button>
-                <h1 className="text-lg font-['Press_Start_2P'] text-[var(--pixel-primary)] leading-tight">NEW TASK</h1>
+                <h1 className="text-lg font-['Press_Start_2P'] text-[var(--pixel-primary)] leading-tight">{isEdit ? 'EDIT TASK' : 'NEW TASK'}</h1>
                 <div className="w-12" />
             </header>
 
@@ -263,7 +313,7 @@ export default function TaskAdd() {
                                 CANCEL
                             </button>
                             <button type="submit" className="pixel-btn flex-1 py-4 min-h-[52px] text-sm touch-manipulation bg-[var(--pixel-primary)] text-black">
-                                ADD TASK
+                                {isEdit ? 'SAVE TASK' : 'ADD TASK'}
                             </button>
                         </div>
                     </form>

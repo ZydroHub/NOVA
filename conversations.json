@@ -1,615 +1,202 @@
 [
   {
-    "id": "fc2e762a-ec8d-4d42-afbc-3fd163a253d5",
-    "title": "Get weather",
+    "id": "37bc0f35-a1c6-4bee-99a0-b52112815940",
+    "title": "get weather atl",
     "messages": [
       {
         "role": "user",
-        "content": "What is the weather in NY"
-      },
-      {
-        "role": "assistant",
-        "content": "<start_function_call>call:get_weather{location:<escape>NY<escape>}<end_function_call>"
-      }
-    ],
-    "updated_at": 1772062348.096271
-  },
-  {
-    "id": "9c7254e5-8a56-4238-8853-7d6f3a266c9b",
-    "title": "hello",
-    "messages": [
-      {
-        "role": "user",
-        "content": "hello",
-        "timestamp": 1772075323.8267646
-      },
-      {
-        "role": "assistant",
-        "content": "<think>\n\n</think>\n\nHello! How can I assist you today?",
-        "timestamp": 1772075339.9218476
-      },
-      {
-        "role": "user",
-        "content": "what is the weather in NY",
-        "timestamp": 1772075357.488146
-      },
-      {
-        "role": "assistant",
-        "content": "<start_function_call>call:get_weather{location:<escape>NY<escape>}<end_function_call>",
-        "timestamp": 1772075363.9825013
-      },
-      {
-        "role": "user",
-        "content": "activate secruity mode",
-        "timestamp": 1772075393.8709886
-      },
-      {
-        "role": "assistant",
-        "content": "<start_function_call>call:activate_security_mode{}<end_function_call>",
-        "timestamp": 1772075394.865436
-      },
-      {
-        "role": "user",
-        "content": "hello",
-        "timestamp": 1772075461.688164
-      },
-      {
-        "role": "assistant",
-        "content": "<think>\n\n</think>\n\nHello! How can I assist you today?",
-        "timestamp": 1772075466.6038928
-      },
-      {
-        "role": "user",
-        "content": "what is the weather in NY",
-        "timestamp": 1772075473.476654
-      },
-      {
-        "role": "assistant",
-        "content": "<start_function_call>call:get_weather{location:<escape>NY<escape>}<end_function_call>",
-        "timestamp": 1772075474.7072232
-      },
-      {
-        "role": "user",
-        "content": "get weather in NY",
-        "timestamp": 1772075655.7287045
-      },
-      {
-        "role": "assistant",
-        "content": "<start_function_call>call:get_weather{location:<escape>NY<escape>}<end_function_call>",
-        "timestamp": 1772075656.8193986
-      }
-    ],
-    "updated_at": 1772075656.8194041
-  },
-  {
-    "id": "d0578cf7-2a76-4e73-8e0b-9923c086d88a",
-    "title": "hello",
-    "messages": [
-      {
-        "role": "user",
-        "content": "hello",
-        "timestamp": 1772075694.8572102
-      },
-      {
-        "role": "assistant",
-        "content": "<think>\n\n</think>\n\nHello! How can I assist you today?",
-        "timestamp": 1772075701.4460464
-      },
-      {
-        "role": "user",
-        "content": "get weather in NY",
-        "timestamp": 1772075702.0573127
-      },
-      {
-        "role": "assistant",
-        "content": "<start_function_call>call:get_weather{location:<escape>NY<escape>}<end_function_call>\n[Result] Weather for Ny: Clear, 9.2\u00b0C, humidity 93%, wind 13.0 km/h.",
-        "timestamp": 1772075707.0850666
-      },
-      {
-        "role": "user",
-        "content": "activate secruity mode",
-        "timestamp": 1772075763.7088382
-      },
-      {
-        "role": "assistant",
-        "content": "<start_function_call>call:activate_security_mode{}<end_function_call>\n[Result] Security mode activated",
-        "timestamp": 1772075764.7915134
-      },
-      {
-        "role": "user",
-        "content": "what is the stock price for GOOG",
-        "timestamp": 1772075774.849143
-      },
-      {
-        "role": "assistant",
-        "content": "<start_function_call>call:get_stock_price{symbol:<escape>GOOG<escape>}<end_function_call>\n[Result] Stock GOOG: USD 313.03 (regular market).",
-        "timestamp": 1772075776.4486024
-      },
-      {
-        "role": "user",
-        "content": "search most recent ai news",
-        "timestamp": 1772075787.13278
-      },
-      {
-        "role": "assistant",
-        "content": "<start_function_call>call:web_search{query:<escape>most recent AI news<escape>}<end_function_call>\n[Result] Web search for 'most recent AI news': no snippets returned (try rephrasing).",
-        "timestamp": 1772075789.295589
-      },
-      {
-        "role": "user",
-        "content": "search local atlanta news",
-        "timestamp": 1772075807.023836
-      },
-      {
-        "role": "assistant",
-        "content": "<start_function_call>call:web_search{query:<escape>local  ATL<escape>}<end_function_call>\n[Result] Web search for 'local  ATL': no snippets returned (try rephrasing).",
-        "timestamp": 1772075808.4636767
-      },
-      {
-        "role": "user",
-        "content": "Hello",
-        "timestamp": 1772076108.1880524
-      },
-      {
-        "role": "assistant",
-        "content": "<think>\n\n</think>\n\nHello! How can I assist you today?",
-        "timestamp": 1772076124.32373
-      },
-      {
-        "role": "user",
-        "content": "what is the weather in ATL",
-        "timestamp": 1772076128.6174212
-      },
-      {
-        "role": "assistant",
-        "content": "<start_function_call>call:get_weather{location:<escape>ATL<escape>}<end_function_call>",
-        "timestamp": 1772076133.8749595,
-        "hidden": true
-      },
-      {
-        "role": "assistant",
-        "content": "Weather for Atlanta: Cloudy, 12.3\u00b0C, humidity 69%, wind 9.1 km/h.",
-        "timestamp": 1772076133.8749619
-      },
-      {
-        "role": "user",
-        "content": "thank you",
-        "timestamp": 1772076142.7251925
-      },
-      {
-        "role": "assistant",
-        "content": "<think>\n\n</think>\n\nYou're welcome! Let me know if you need anything else. \ud83d\ude0a",
-        "timestamp": 1772076148.3934553
-      },
-      {
-        "role": "user",
-        "content": "can you search ai news",
-        "timestamp": 1772076149.340134
-      },
-      {
-        "role": "assistant",
-        "content": "<start_function_call>call:web_search{query:<escape>AI news<escape>}<end_function_call>",
-        "timestamp": 1772076151.422688,
-        "hidden": true
-      },
-      {
-        "role": "assistant",
-        "content": "Web search for 'AI news': no results found.",
-        "timestamp": 1772076151.4226916
-      },
-      {
-        "role": "user",
-        "content": "search the meaning of the word kinematics",
-        "timestamp": 1772076165.427868
-      },
-      {
-        "role": "assistant",
-        "content": "<start_function_call>call:web_search{query:<escape>kinematics<escape>}<end_function_call>",
-        "timestamp": 1772076172.273958,
-        "hidden": true
-      },
-      {
-        "role": "assistant",
-        "content": "Web search for 'kinematics': no results found.",
-        "timestamp": 1772076172.2739623
-      },
-      {
-        "role": "user",
-        "content": "search the meaning of the word kinematics",
-        "timestamp": 1772076267.3849716
-      },
-      {
-        "role": "assistant",
-        "content": "<start_function_call>call:web_search{query:<escape>kinematics<escape>}<end_function_call>",
-        "timestamp": 1772076277.9176369,
-        "hidden": true
-      },
-      {
-        "role": "assistant",
-        "content": "Web search:\n\u2022 Kinematics \u2014 Kinematics is a subfield of physics and a branch of geometry. In physics, kinematics studies the geometrical aspects of motion of physical objects independent of forces that set them in motion. Constr\u2026 (https://en.wikipedia.org/wiki/Kinematics)\n\u2022 Kinematics \u2014 Kinematics is the branch of classical mechanics in physics that describes the motion of points, objects, and systems of objects without regard to the forces or causes producing that... (https://grokipedia.com/page/Kinematics)\n\u2022 Kinematics | Definition, Formula, Derivation, Problems \u2014 Jul 23, 2025 \u00b7 The study of moving objects and their interactions is known as kinematics. Kinematics is also a branch of classical mechanics that describes and explains the motion of points, objects, \u2026 (https://www.geeksforgeeks.org/physics/what-is-kinematics/)\n\u2022 Kinematics | Definition & Facts | Britannica 2.1: Basics of Kinematics - Physics LibreTexts Introduction to Kinematics - The Physics Classroom Learn Kinematics In Physics With Simple Concepts And Examples Kinematics - Physics Book Kinematics | Definition & Facts | Britannica Kinematics - Physics Book Kinematics - Wikipedia Kinematics - Physics Book \u2014 Kinematics , branch of physics and a subdivision of classical mechanics concerned with the geometrically possible motion of a body or system of bodies without consideration of the forces involved. To \u2026 (https://www.britannica.com/science/kinematics)\n\u2022 2.1: Basics of Kinematics - Physics LibreTexts \u2014 To describe motion, kinematics studies the trajectories of points, lines and other geometric objects , as well as their differential properties (such as velocity and acceleration). (https://phys.libretexts.org/Bookshelves/University_Physics/Physics_(Boundless)/2:_Kinematics/2.1:_Basics_of_Kinematics)\n\u2022 Introduction to Kinematics - The Physics Classroom \u2014 Kinematics is a branch of mechanics . The goal of any study of kinematics is to develop sophisticated mental models that serve to describe (and ultimately, explain) the motion of real-world objects. (https://www.physicsclassroom.com/class/1DKin/Lesson-1/Introduction)",
-        "timestamp": 1772076277.9176404
-      },
-      {
-        "role": "user",
-        "content": "search some new ai news",
-        "timestamp": 1772076287.0451396
-      },
-      {
-        "role": "assistant",
-        "content": "<start_function_call>call:web_search{query:<escape>new AI news<escape>}<end_function_call>",
-        "timestamp": 1772076295.6988783,
-        "hidden": true
-      },
-      {
-        "role": "assistant",
-        "content": "Web search:\n\u2022 AI News | Latest News | Insights Powering AI -Driven Business Growth \u2014 AI Business Strategy, Deep Dives, Featured News , Features, Governance, Regulation & Policy, Inside AI . Meeting the new ETSI standard for AI security. (https://www.artificialintelligence-news.com/)\n\u2022 The Latest AI News , Insights and Reports | AI Magazine \u2014 The No.1 Magazine, Website, Newsletter & Webinar service covering AI , Machine Learning, AR & VR, Data, Technology and AI Applications. (https://aimagazine.com/)\n\u2022 News , Reviews & Betas which includes large community peer support \u2014 View all Google news . The Apple Watch Series 11. AI -generated screenshot of Windows 11 desktop. I hate that Microsoft might be vibecoding Windows, but it's inevitable. (https://www.neowin.net/)\n\u2022 Breaking News , Latest News and Videos | CNN \u2014 View the latest news and breaking news today for U.S., world, weather, entertainment, politics and health at CNN.com. (https://edition.cnn.com/)\n\u2022 Google News - Google's Gemini 3.1 Pro shows significant benchmark... \u2014 Gemini 3.1 Pro Surpasses GPT-5 in Advanced Reasoning and Real-World Tasks Marking a New Era of AI Intelligence. (https://news.google.com/stories/CAAqNggKIjBDQklTSGpvSmMzUnZjbmt0TXpZd1NoRUtEd2pfcGVUREVCRUgzcEVBeFg0YzNDZ0FQAQ?hl=en-MY&gl=MY&ceid=MY:en)\n\u2022 AI News | Latest Headlines and Developments | Reuters \u2014 2 hours ago \u00b7 Explore the latest artificial intelligence news with Reuters - from AI breakthroughs and technology trends to regulation, ethics, business and global ... (https://www.reuters.com/technology/artificial-intelligence/)",
-        "timestamp": 1772076295.6988823
-      }
-    ],
-    "updated_at": 1772076295.6988928
-  },
-  {
-    "id": "0be3e997-189e-49f0-9d92-c9141adbad29",
-    "title": "do netowrk scan",
-    "messages": [
-      {
-        "role": "user",
-        "content": "do netowrk scan",
-        "timestamp": 1772076549.5092125
-      },
-      {
-        "role": "assistant",
-        "content": "<start_function_call>call:network_scan{}<end_function_call>",
-        "timestamp": 1772076558.1415937,
-        "hidden": true
-      },
-      {
-        "role": "assistant",
-        "content": "Network scan:\n10.0.0.1  70:13:01:8c:10:0f\nfe80::7213:1ff:fe8c:100f  70:13:01:8c:10:0f",
-        "timestamp": 1772076558.1416028
-      },
-      {
-        "role": "user",
-        "content": "hello",
-        "timestamp": 1772076579.3438463
-      },
-      {
-        "role": "assistant",
-        "content": "<think>\n\n</think>\n\nHello! What can I do for you?",
-        "timestamp": 1772076584.8912642
-      },
-      {
-        "role": "user",
-        "content": "how are you",
-        "timestamp": 1772076586.6339865
-      },
-      {
-        "role": "assistant",
-        "content": "<think>\n\n</think>\n\nI'm here to help! How can I assist you?",
-        "timestamp": 1772076590.585227
-      },
-      {
-        "role": "user",
-        "content": "what is weather in ATL",
-        "timestamp": 1772076592.7761562
-      },
-      {
-        "role": "assistant",
-        "content": "<start_function_call>call:get_weather{location:<escape>ATL<escape>}<end_function_call>",
-        "timestamp": 1772076595.0701091,
-        "hidden": true
-      },
-      {
-        "role": "assistant",
-        "content": "Weather for Atlanta: Cloudy, 12.5\u00b0C, humidity 69%, wind 8.7 km/h.",
-        "timestamp": 1772076595.070116
-      },
-      {
-        "role": "user",
-        "content": "what is weather in Atlanta",
-        "timestamp": 1772076600.9252923
-      },
-      {
-        "role": "assistant",
-        "content": "<start_function_call>call:get_weather{location:<escape>Atlanta<escape>}<end_function_call>",
-        "timestamp": 1772076603.720453,
-        "hidden": true
-      },
-      {
-        "role": "assistant",
-        "content": "Weather for Atlanta: error \u2014 <urlopen error [SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1029)>",
-        "timestamp": 1772076603.720456
-      },
-      {
-        "role": "user",
-        "content": "what is weather in NYC",
-        "timestamp": 1772076610.2619936
-      },
-      {
-        "role": "assistant",
-        "content": "<start_function_call>call:get_weather{location:<escape>New York<escape>}<end_function_call>",
-        "timestamp": 1772076613.473718,
-        "hidden": true
-      },
-      {
-        "role": "assistant",
-        "content": "Weather for New York: Cloudy, 1.5\u00b0C, humidity 66%, wind 12.8 km/h.",
-        "timestamp": 1772076613.4737198
-      },
-      {
-        "role": "user",
-        "content": "what is weather in GA",
-        "timestamp": 1772076619.619943
-      },
-      {
-        "role": "assistant",
-        "content": "<start_function_call>call:get_weather{location:<escape>GA<escape>}<end_function_call>",
-        "timestamp": 1772076621.9140084,
-        "hidden": true
-      },
-      {
-        "role": "assistant",
-        "content": "Weather for G\u00e2: Foggy, 20.6\u00b0C, humidity 97%, wind 3.4 km/h.",
-        "timestamp": 1772076621.914012
-      },
-      {
-        "role": "user",
-        "content": "do network scan",
-        "timestamp": 1772076631.7272394
-      },
-      {
-        "role": "assistant",
-        "content": "<start_function_call>call:network_scan{}<end_function_call>",
-        "timestamp": 1772076632.577599,
-        "hidden": true
-      },
-      {
-        "role": "assistant",
-        "content": "Network scan:\n10.0.0.1  70:13:01:8c:10:0f\nfe80::7213:1ff:fe8c:100f  70:13:01:8c:10:0f",
-        "timestamp": 1772076632.5776007
-      },
-      {
-        "role": "user",
-        "content": "hello",
-        "timestamp": 1772078891.959806
-      },
-      {
-        "role": "assistant",
-        "content": "<think>\n\n</think>\n\nHello! What can I do for you?",
-        "timestamp": 1772078920.5225542
-      },
-      {
-        "role": "user",
-        "content": "check network",
-        "timestamp": 1772078970.4874349
-      },
-      {
-        "role": "assistant",
-        "content": "<start_function_call>call:network_scan{}<end_function_call>",
-        "timestamp": 1772078974.2142026,
-        "hidden": true
-      },
-      {
-        "role": "assistant",
-        "content": "Network scan:\n10.0.0.180  34:5a:60:df:94:d5\n10.0.0.1  70:13:01:8c:10:0f\n2601:c2:2180:5510:81:5271:54b4:392c  34:5a:60:df:94:d5\nfe80::7213:1ff:fe8c:100f  70:13:01:8c:10:0f\n2601:c2:2180:5510::5c2b  34:5a:60:df:94:d5\n2601:c2:2180:5510:f888:12e:2043:2593  34:5a:60:df:94:d5",
-        "timestamp": 1772078974.2142062
-      },
-      {
-        "role": "user",
-        "content": "thank you",
-        "timestamp": 1772078981.565325
-      },
-      {
-        "role": "assistant",
-        "content": "<think>\n\n</think>\n\nYou're welcome! Let me know if there's anything else I can assist you with. \ud83d\ude0a",
-        "timestamp": 1772078995.3927968
-      },
-      {
-        "role": "user",
-        "content": "what is the stock price of GOOG",
-        "timestamp": 1772079025.7060683
-      },
-      {
-        "role": "assistant",
-        "content": "<start_function_call>call:get_stock_price{symbol:<escape>GOOG<escape>}<end_function_call>",
-        "timestamp": 1772079027.5480325,
-        "hidden": true
-      },
-      {
-        "role": "assistant",
-        "content": "Stock GOOG: USD 313.03 (regular market).",
-        "timestamp": 1772079027.5480359
-      },
-      {
-        "role": "user",
-        "content": "thank you",
-        "timestamp": 1772079031.440614
-      },
-      {
-        "role": "assistant",
-        "content": "<think>\n\n</think>\n\nYou're welcome! Let me know if there's anything else I can assist you with. \ud83d\ude0a",
-        "timestamp": 1772079041.2369788
-      },
-      {
-        "role": "user",
-        "content": "what is the weather of NY",
-        "timestamp": 1772079045.7064118
-      },
-      {
-        "role": "assistant",
-        "content": "<start_function_call>call:get_weather{location:<escape>NY<escape>}<end_function_call>",
-        "timestamp": 1772079048.0096443,
-        "hidden": true
-      },
-      {
-        "role": "assistant",
-        "content": "Weather for Ny: Cloudy, 9.1\u00b0C, humidity 94%, wind 11.2 km/h.",
-        "timestamp": 1772079048.0096452
-      },
-      {
-        "role": "user",
-        "content": "thank you",
-        "timestamp": 1772079091.3339584
-      },
-      {
-        "role": "assistant",
-        "content": "<think>\n\n</think>\n\nYou're welcome! Let me know if there's anything else I can assist you with. \ud83d\ude0a",
-        "timestamp": 1772079099.0044498
-      },
-      {
-        "role": "user",
-        "content": "hello",
-        "timestamp": 1772082607.8727467
-      },
-      {
-        "role": "assistant",
-        "content": "<think>\n\n</think>\n\nHello! What can I do for you? \ud83d\ude0a",
-        "timestamp": 1772082629.1561406
-      },
-      {
-        "role": "user",
-        "content": "hello",
-        "timestamp": 1772083076.1757174
-      },
-      {
-        "role": "assistant",
-        "content": "<think>\n\n</think>\n\nHello! How can I assist you? \ud83d\ude0a",
-        "timestamp": 1772083097.4950705
-      },
-      {
-        "role": "user",
-        "content": "how are you",
-        "timestamp": 1772083102.1357179
-      },
-      {
-        "role": "assistant",
-        "content": "<think>\n\n</think>\n\nI'm here to help! How can I assist you? \ud83d\ude0a",
-        "timestamp": 1772083105.2586873
-      },
-      {
-        "role": "user",
-        "content": "test",
-        "timestamp": 1772083172.8856223
-      },
-      {
-        "role": "user",
-        "content": "hello",
-        "timestamp": 1772083433.434615
-      },
-      {
-        "role": "assistant",
-        "content": "<think>\n\n</think>\n\nHello! What can I do for you? \ud83d\ude0a",
-        "timestamp": 1772083454.4886737
-      },
-      {
-        "role": "user",
-        "content": "hello",
-        "timestamp": 1772083724.634402
-      },
-      {
-        "role": "assistant",
-        "content": "<think>\n\n</think>\n\nHello! What can I do for you? \ud83d\ude0a",
-        "timestamp": 1772083749.7012262
-      },
-      {
-        "role": "user",
-        "content": "hello",
-        "timestamp": 1772084010.9667938
-      },
-      {
-        "role": "assistant",
-        "content": "<think>\n\n</think>\n\nHello! How can I assist you? \ud83d\ude0a",
-        "timestamp": 1772084035.0706058
-      },
-      {
-        "role": "user",
-        "content": "get network",
-        "timestamp": 1772084073.32253
-      },
-      {
-        "role": "assistant",
-        "content": "<start_function_call>call:network_scan{}<end_function_call>",
-        "timestamp": 1772084075.0583086,
-        "hidden": true
-      },
-      {
-        "role": "assistant",
-        "content": "Network scan:\n10.0.0.1  70:13:01:8c:10:0f\nfe80::7213:1ff:fe8c:100f  70:13:01:8c:10:0f",
-        "timestamp": 1772084075.05831
-      },
-      {
-        "role": "user",
-        "content": "weather in atl",
-        "timestamp": 1772084103.302407
+        "content": "Get weather in atl"
       },
       {
         "role": "assistant",
         "content": "<start_function_call>call:get_weather{location:<escape>atl<escape>}<end_function_call>",
-        "timestamp": 1772084105.0860536,
         "hidden": true
       },
       {
         "role": "assistant",
-        "content": "Weather for Atlanta: Cloudy, 13.2\u00b0C, humidity 68%, wind 12.6 km/h.",
-        "timestamp": 1772084105.0860555
+        "content": "Weather for Atlanta: Cloudy, 21.9\u00b0C, humidity 83%, wind 12.8 km/h."
       },
       {
         "role": "user",
-        "content": "hello",
-        "timestamp": 1772142469.9455101
+        "content": "Get weather in atl"
       },
       {
         "role": "assistant",
-        "content": "<think>\n\n</think>\n\nHello! What can I do for you? \ud83d\ude0a",
-        "timestamp": 1772142497.0383284
-      },
-      {
-        "role": "user",
-        "content": "how are you",
-        "timestamp": 1772142497.4833496
-      },
-      {
-        "role": "assistant",
-        "content": "<think>\n\n</think>\n\nI'm here to help! How can I assist you? \ud83d\ude0a",
-        "timestamp": 1772142500.8254614
-      },
-      {
-        "role": "user",
-        "content": "ttttt",
-        "timestamp": 1772143079.7761483
-      },
-      {
-        "role": "user",
-        "content": "Hello, how are you?",
-        "timestamp": 1772145917.7619905
-      },
-      {
-        "role": "user",
-        "content": "hello",
-        "timestamp": 1772248309.8254523
-      },
-      {
-        "role": "assistant",
-        "content": "<think>\n\n</think>\n\nHello! How can I assist you? \ud83d\ude0a",
-        "timestamp": 1772248337.537048
-      },
-      {
-        "role": "user",
-        "content": "weather atl",
-        "timestamp": 1772248346.97161
-      },
-      {
-        "role": "assistant",
-        "content": "<start_function_call>call:get_weather{location:<escape>London<escape>}<end_function_call>",
-        "timestamp": 1772248354.9199753,
+        "content": "<start_function_call>call:get_weather{location:<escape>atl<escape>}<end_function_call>",
         "hidden": true
       },
       {
         "role": "assistant",
-        "content": "Weather for London: Rain/Drizzle, 9.7\u00b0C, humidity 90%, wind 8.6 km/h.",
-        "timestamp": 1772248354.9199772
+        "content": "Weather for Atlanta: Partly cloudy, 22.4\u00b0C, humidity 82%, wind 11.8 km/h."
+      },
+      {
+        "role": "user",
+        "content": "Get weather in atl"
+      },
+      {
+        "role": "assistant",
+        "content": "<start_function_call>call:get_weather{location:<escape>atl<escape>}<end_function_call>",
+        "hidden": true
+      },
+      {
+        "role": "assistant",
+        "content": "Weather for Atlanta: Partly cloudy, 22.4\u00b0C, humidity 82%, wind 11.8 km/h."
+      },
+      {
+        "role": "user",
+        "content": "Get weather in atl"
+      },
+      {
+        "role": "assistant",
+        "content": "<start_function_call>call:get_weather{location:<escape>atl<escape>}<end_function_call>",
+        "hidden": true
+      },
+      {
+        "role": "assistant",
+        "content": "Weather for Atlanta: Partly cloudy, 22.4\u00b0C, humidity 82%, wind 11.8 km/h."
+      },
+      {
+        "role": "user",
+        "content": "Get weather in atl"
+      },
+      {
+        "role": "assistant",
+        "content": "<start_function_call>call:get_weather{location:<escape>atl<escape>}<end_function_call>",
+        "hidden": true
+      },
+      {
+        "role": "assistant",
+        "content": "Weather for Atlanta: Partly cloudy, 22.4\u00b0C, humidity 82%, wind 11.8 km/h."
       }
     ],
-    "updated_at": 1772248354.9199827
+    "updated_at": 1772906611.8085742
+  },
+  {
+    "id": "58e208ee-2897-4e23-a361-f267a13b47b2",
+    "title": "Do a web search for the latest...",
+    "messages": [
+      {
+        "role": "user",
+        "content": "Do a web search for the latest news.",
+        "timestamp": 1772908333.488685
+      }
+    ],
+    "updated_at": 1772908333.488693
+  },
+  {
+    "id": "cf2018b2-9ea6-4d4f-b358-cf1cebc298a4",
+    "title": "Do a web search for the latest...",
+    "messages": [
+      {
+        "role": "user",
+        "content": "Do a web search for the latest news.",
+        "timestamp": 1772908383.1638646
+      }
+    ],
+    "updated_at": 1772908383.1638775
+  },
+  {
+    "id": "8d772852-ff40-43d0-afb3-a84c48176e65",
+    "title": "Can you stand my network pleas...",
+    "messages": [
+      {
+        "role": "user",
+        "content": "Can you stand my network please?",
+        "timestamp": 1772910553.1349354
+      },
+      {
+        "role": "user",
+        "content": "scan network",
+        "timestamp": 1772911102.24426
+      },
+      {
+        "role": "assistant",
+        "content": "<start_function_call>call:network_scan{}<end_function_call>",
+        "timestamp": 1772911113.5927093,
+        "hidden": true
+      },
+      {
+        "role": "assistant",
+        "content": "Network scan:\n10.0.0.1  70:13:01:8c:10:0f\nfe80::7213:1ff:fe8c:100f  70:13:01:8c:10:0f",
+        "timestamp": 1772911113.5927129
+      },
+      {
+        "role": "user",
+        "content": "search for any breaking news",
+        "timestamp": 1772911121.687354
+      },
+      {
+        "role": "assistant",
+        "content": "<start_function_call>call:web_search{query:<escape>breaking news<escape>}<end_function_call>",
+        "timestamp": 1772911126.9545774,
+        "hidden": true
+      },
+      {
+        "role": "assistant",
+        "content": "Web search:\n\u2022 Breaking news \u2014 Breaking news, also called late-breaking news, a special report, special coverage, or a news flash, is a current issue that warrants the interruption of a scheduled broadcast in order to report its de\u2026 (https://en.wikipedia.org/wiki/Breaking_news)\n\u2022 Breaking news \u2014 Breaking news constitutes the urgent dissemination of information about significant, unfolding events or recent incidents through mass media, prioritizing real-time updates to alert... (https://grokipedia.com/page/Breaking_news)\n\u2022 Fox News - Breaking News Updates | Latest News Headlines ... \u2014 Fox News will use your zip code below to bring you the latest weather data in your area. (https://www.foxnews.com/)\n\u2022 Associated Press News: Breaking News, Latest Headlines and ... \u2014 Read the latest headlines, breaking news , and videos at APNews.com, the definitive source for independent journalism from every corner of the globe. (https://apnews.com/)\n\u2022 Breaking News, Latest News and Videos | CNN \u2014 View the latest news and breaking news today for U.S., world, weather, entertainment, politics and health at CNN. com . (https://www.cnn.com/)\n\u2022 NBC News - Breaking Headlines and Video Reports on World, U.S ... \u2014 Go to NBCNews.com for breaking news , videos, and the latest top stories in world news, business, politics, health and pop culture. (https://www.nbcnews.com/)",
+        "timestamp": 1772911126.954581
+      },
+      {
+        "role": "user",
+        "content": "search for any breaking news",
+        "timestamp": 1772911177.9302704
+      },
+      {
+        "role": "assistant",
+        "content": "<start_function_call>call:web_search{query:<escape>breaking news<escape>}<end_function_call>",
+        "timestamp": 1772911189.3298056,
+        "hidden": true
+      },
+      {
+        "role": "assistant",
+        "content": "Web search:\n\u2022 Breaking news \u2014 Breaking news, also called late-breaking news, a special report, special coverage, or a news flash, is a current issue that warrants the interruption of a scheduled broadcast in order to report its de\u2026 (https://en.wikipedia.org/wiki/Breaking_news)\n\u2022 Breaking news \u2014 Breaking news constitutes the urgent dissemination of information about significant, unfolding events or recent incidents through mass media, prioritizing real-time updates to alert... (https://grokipedia.com/page/Breaking_news)\n\u2022 Fox News - Breaking News Updates | Latest News Headlines | Photos ... \u2014 3 hours ago \u00b7 Fox News Flash \u00b7 US student rescued from Mideast describes missile activity in Abu Dhabi when class trip turned 'scary' \u00b7 Comer claims whistleblowers warned ... (https://www.foxnews.com/)\n\u2022 ABC News - Breaking News, Latest News and Videos \u2014 3 hours ago \u00b7 Your trusted source for breaking news, analysis, exclusive interviews, headlines, and videos at ABCNews.com. (https://abcnews.com/)\n\u2022 Breaking News: Ian Huntley, whose murder of two schoolgirls in 2002 ... \u2014 57 minutes ago \u00b7 Breaking News: Ian Huntley, whose murder of two schoolgirls in 2002 shook Britain, is dead after being attacked in prison. (https://www.facebook.com/nytimes/posts/breaking-news-ian-huntley-whose-murder-of-two-schoolgirls-in-2002-shook-britain-/1315341390448321/)\n\u2022 The New York Times - Breaking News, US News, World News and ... \u2014 24 minutes ago \u00b7 More News \u00b7 Communities Survey Devastation After Tornadoes in Michigan and Oklahoma. At least six people were dead and well over a dozen injured between the two ... (https://www.nytimes.com/)",
+        "timestamp": 1772911189.3298087
+      },
+      {
+        "role": "user",
+        "content": "Scan my network.",
+        "timestamp": 1772911384.4539278
+      },
+      {
+        "role": "assistant",
+        "content": "<start_function_call>call:network_scan{}<end_function_call>",
+        "timestamp": 1772911390.6360855,
+        "hidden": true
+      },
+      {
+        "role": "assistant",
+        "content": "Network scan:\n10.0.0.1  70:13:01:8c:10:0f\nfe80::7213:1ff:fe8c:100f  70:13:01:8c:10:0f",
+        "timestamp": 1772911390.6360898
+      },
+      {
+        "role": "user",
+        "content": "I want you.",
+        "timestamp": 1772911416.1973226
+      }
+    ],
+    "updated_at": 1772911416.1973336
+  },
+  {
+    "id": "392bda2f-c285-4c45-a15d-e2f76033e347",
+    "title": "Scan my network.",
+    "messages": [
+      {
+        "role": "user",
+        "content": "Scan my network.",
+        "timestamp": 1772911488.98259
+      },
+      {
+        "role": "assistant",
+        "content": "<start_function_call>call:network_scan{}<end_function_call>",
+        "timestamp": 1772911495.7315094,
+        "hidden": true
+      },
+      {
+        "role": "assistant",
+        "content": "Network scan:\n10.0.0.1  70:13:01:8c:10:0f\nfe80::7213:1ff:fe8c:100f  70:13:01:8c:10:0f",
+        "timestamp": 1772911495.731512
+      }
+    ],
+    "updated_at": 1772911495.7315214
   }
 ]

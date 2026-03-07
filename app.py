@@ -8,7 +8,6 @@ from fastapi.staticfiles import StaticFiles
 from config import PORT, CAPTURES_DIR, setup_logging
 from camera_stream import router as camera_router
 from chat_ai import router as chat_router, ai as ai_state
-from tool_ai import preload_tool_model
 
 setup_logging()
 logger = logging.getLogger(__name__)
@@ -43,7 +42,7 @@ async def startup_event():
     logger.info("Unified Backend starting up...")
     if not os.environ.get("SKIP_MODEL_LOAD"):
         ai_state.load_model()
-        preload_tool_model()
+        # Tool model is loaded in a subprocess when needed (avoids thread/crash issues)
     try:
         from task_scheduler import init_scheduler
         init_scheduler(ai_state.conv_manager)

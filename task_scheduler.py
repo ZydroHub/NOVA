@@ -172,6 +172,26 @@ def add_job(name: str, description: str, schedule: Any, payload: dict) -> dict:
     return job
 
 
+def update_job(job_id: str, name: Optional[str] = None, description: Optional[str] = None, schedule: Any = None, payload: Optional[dict] = None) -> Optional[dict]:
+    """Update an existing task. Only provided fields are updated. Returns updated job or None if not found."""
+    jobs = _load_jobs()
+    job = next((j for j in jobs if j.get("id") == job_id), None)
+    if not job:
+        return None
+    if name is not None:
+        job["name"] = name
+    if description is not None:
+        job["description"] = description
+    if schedule is not None:
+        job["schedule"] = schedule
+    if payload is not None:
+        job["payload"] = payload
+    _save_jobs(jobs)
+    if _scheduler:
+        _schedule_one(job)
+    return job
+
+
 def remove_job(job_id: str) -> bool:
     jobs = [j for j in _load_jobs() if j.get("id") != job_id]
     _save_jobs(jobs)

@@ -297,7 +297,9 @@ export function WebSocketProvider({ children }) {
     }, [currentConvId, connectChat]);
 
     const sendMessage = useCallback((type, payload = {}) => {
-        const targetWs = chatWsRef.current?.readyState === WebSocket.OPEN ? chatWsRef.current : wsRef.current;
+        // task.* commands are only handled by the voice WebSocket (/ws/voice), not chat
+        const useVoiceWs = typeof type === 'string' && type.startsWith('task.');
+        const targetWs = useVoiceWs ? wsRef.current : (chatWsRef.current?.readyState === WebSocket.OPEN ? chatWsRef.current : wsRef.current);
         if (targetWs && targetWs.readyState === WebSocket.OPEN) {
             targetWs.send(JSON.stringify({ type, ...payload }));
         } else {
@@ -312,19 +314,22 @@ export function WebSocketProvider({ children }) {
         }
     }, []);
 
-    const toggleVoice = useCallback(() => {
-        sendVoiceCommand('toggle_voice');
+    const toggleVoice = useCallback((options = {}) => {
+        const { transcriptionOnly = false } = options;
+        sendVoiceCommand('toggle_voice', { transcription_only: transcriptionOnly });
     }, [sendVoiceCommand]);
 
-    const startVosk = useCallback(() => {
+    const startVosk = useCallback((options = {}) => {
         setIsVoskRecording(true);
         setVoskText('');
-        sendVoiceCommand('start_vosk');
+        const { transcriptionOnly = false } = options;
+        sendVoiceCommand('start_vosk', { transcription_only: transcriptionOnly });
     }, [sendVoiceCommand]);
 
-    const stopVosk = useCallback(() => {
+    const stopVosk = useCallback((options = {}) => {
         setIsVoskRecording(false);
-        sendVoiceCommand('stop_vosk');
+        const { transcriptionOnly = false } = options;
+        sendVoiceCommand('stop_vosk', { transcription_only: transcriptionOnly });
     }, [sendVoiceCommand]);
 
     const abort = useCallback(() => {

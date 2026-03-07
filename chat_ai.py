@@ -6,6 +6,8 @@ import json
 import logging
 import os
 import re
+import subprocess
+import sys
 import time
 import uuid
 from typing import Any, Dict, List, Optional
@@ -29,6 +31,39 @@ def _get_route(prompt: str) -> str:
     except Exception as e:
         logger.warning("semantic router failed: %s", e)
         return "qwen_basic"
+
+
+def _run_tool_ai_subprocess(prompt: str) -> tuple:
+    """
+    Run tool_ai in a separate process so a crash or OOM in the tool model
+    does not kill the chat server. Returns (tool_call_raw, tool_result).
+    """
+    import tool_ai as tool_ai_module
+    tool_ai_path = tool_ai_module.__file__
+    try:
+        proc = subprocess.run(
+            [sys.executable, tool_ai_path, "--backend-mode"],
+            input=prompt,
+            capture_output=True,
+            text=True,
+            timeout=120,
+            cwd=os.path.dirname(os.path.abspath(tool_ai_path)),
+        )
+    except subprocess.TimeoutExpired:
+        logger.exception("tool_ai subprocess timed out")
+        return None, "Tool call timed out."
+    except Exception as e:
+        logger.exception("tool_ai subprocess error: %s", e)
+        return None, f"Tool error: {e}"
+    try:
+        data = json.loads(proc.stdout.strip() or "{}")
+    except json.JSONDecodeError as e:
+        logger.warning("tool_ai invalid JSON: %s", e)
+        return None, "Tool returned invalid response."
+    if proc.returncode != 0:
+        err = data.get("error", "Unknown error")
+        return data.get("tool_call_raw"), str(err)
+    return data.get("tool_call_raw"), data.get("tool_result")
 
 # --- Model Configuration (from config) ---
 from config import (
@@ -206,10 +241,9 @@ class AIState:
         try:
             self.tts.set_queue_drained_callback(on_tts_queue_drained)
             if route == "function_gemma":
-                # Run tool_ai in executor (blocking); tools print to terminal
-                import tool_ai
+                # Run tool_ai in subprocess so crashes/OOM don't kill the server
                 tool_call_raw, tool_result = await loop.run_in_executor(
-                    None, lambda: tool_ai.run_task_for_backend(text)
+                    None, _run_tool_ai_subprocess, text
                 )
                 if tool_call_raw or tool_result is not None:
                     display_text = str(tool_result) if tool_result else "No tool call produced."
@@ -388,62 +422,68 @@ async def chat_websocket_endpoint(websocket: WebSocket, conv_id: str):
 
                 ai.conv_manager.update_conversation(conv_id, conv["messages"])
 
-                route = _get_route(user_text)
-                logger.debug("[chat] route: %s", route)
+                try:
+                    route = _get_route(user_text)
+                    logger.debug("[chat] route: %s", route)
 
-                await websocket.send_json({"type": "stream_start"})
+                    await websocket.send_json({"type": "stream_start"})
 
-                if route == "function_gemma":
-                    # Run tool_ai in executor; tools print to terminal
-                    import tool_ai
-                    loop = asyncio.get_event_loop()
-                    tool_call_raw, tool_result = await loop.run_in_executor(
-                        None, lambda: tool_ai.run_task_for_backend(user_text)
-                    )
-                    display_reply = str(tool_result) if tool_result is not None else "No tool call produced."
-                    if not abort_event.is_set():
-                        await websocket.send_json({"type": "stream_delta", "text": display_reply})
-                        await websocket.send_json({"type": "stream_final", "text": display_reply})
-                        if tool_call_raw:
-                            conv["messages"].append({"role": "assistant", "content": tool_call_raw, "timestamp": time.time(), "hidden": True})
-                        conv["messages"].append({"role": "assistant", "content": display_reply, "timestamp": time.time()})
-                        ai.conv_manager.update_conversation(conv_id, conv["messages"])
-                else:
-                    # Qwen path: use route to set thinking, not UI toggle
-                    thinking_mode = route == "qwen_thinking"
-                    full_reply = ""
-                    response = await ai.generate_response(conv["messages"], thinking=thinking_mode)
+                    if route == "function_gemma":
+                        # Run tool_ai in a subprocess so crashes/OOM don't kill the server
+                        loop = asyncio.get_event_loop()
+                        tool_call_raw, tool_result = await loop.run_in_executor(
+                            None, _run_tool_ai_subprocess, user_text
+                        )
+                        display_reply = str(tool_result) if tool_result is not None else "No tool call produced."
+                        if not abort_event.is_set():
+                            await websocket.send_json({"type": "stream_delta", "text": display_reply})
+                            await websocket.send_json({"type": "stream_final", "text": display_reply})
+                            if tool_call_raw:
+                                conv["messages"].append({"role": "assistant", "content": tool_call_raw, "timestamp": time.time(), "hidden": True})
+                            conv["messages"].append({"role": "assistant", "content": display_reply, "timestamp": time.time()})
+                            ai.conv_manager.update_conversation(conv_id, conv["messages"])
+                    else:
+                        # Qwen path: use route to set thinking, not UI toggle
+                        thinking_mode = route == "qwen_thinking"
+                        full_reply = ""
+                        response = await ai.generate_response(conv["messages"], thinking=thinking_mode)
 
-                    for chunk in response:
-                        while not message_queue.empty():
-                            msg = await message_queue.get()
-                            if msg.get("type") == "abort":
-                                abort_event.set()
+                        for chunk in response:
+                            while not message_queue.empty():
+                                msg = await message_queue.get()
+                                if msg.get("type") == "abort":
+                                    abort_event.set()
 
-                        if abort_event.is_set():
-                            await websocket.send_json({"type": "stream_aborted"})
-                            break
+                            if abort_event.is_set():
+                                await websocket.send_json({"type": "stream_aborted"})
+                                break
 
-                        delta = chunk['choices'][0]['delta']
-                        if 'content' in delta:
-                            content = delta['content']
-                            full_reply += content
+                            delta = chunk['choices'][0]['delta']
+                            if 'content' in delta:
+                                content = delta['content']
+                                full_reply += content
+                                display_text = full_reply if thinking_mode else strip_think_for_ui(full_reply)
+                                await websocket.send_json({"type": "stream_delta", "text": display_text})
+
+                            await asyncio.sleep(0.01)
+
+                        if not abort_event.is_set():
                             display_text = full_reply if thinking_mode else strip_think_for_ui(full_reply)
-                            await websocket.send_json({"type": "stream_delta", "text": display_text})
-
-                        await asyncio.sleep(0.01)
-
-                    if not abort_event.is_set():
-                        display_text = full_reply if thinking_mode else strip_think_for_ui(full_reply)
-                        await websocket.send_json({"type": "stream_final", "text": display_text})
-                        conv["messages"].append({"role": "assistant", "content": full_reply, "timestamp": time.time()})
-                        ai.conv_manager.update_conversation(conv_id, conv["messages"])
+                            await websocket.send_json({"type": "stream_final", "text": display_text})
+                            conv["messages"].append({"role": "assistant", "content": full_reply, "timestamp": time.time()})
+                            ai.conv_manager.update_conversation(conv_id, conv["messages"])
+                except Exception as e:
+                    logger.exception("Chat send error: %s", e)
+                    try:
+                        await websocket.send_json({"type": "stream_error", "error": str(e)})
+                    except Exception:
+                        pass
             
             elif data["type"] == "abort":
                 abort_event.set()
 
     except WebSocketDisconnect:
-                logger.info("Client disconnected from conversation %s", conv_id)
+        logger.info("Client disconnected from conversation %s", conv_id)
     finally:
         receive_task.cancel()
 
@@ -488,10 +528,14 @@ async def voice_websocket(websocket: WebSocket):
                     logger.debug("Stopping Vosk...")
                     text = ai.vosk.stop_listening()
                     logger.debug("Vosk Final Text: %s", text)
+                    transcription_only = data.get("transcription_only", False)
                     if text:
                         await websocket.send_json({"type": "vosk_final", "text": text})
-                        await websocket.send_json({"type": "voice_status", "status": "thinking"})
-                        await ai.ai_response_and_speak(websocket, text, abort_event, message_queue)
+                        if transcription_only:
+                            await websocket.send_json({"type": "voice_status", "status": "idle"})
+                        else:
+                            await websocket.send_json({"type": "voice_status", "status": "thinking"})
+                            await ai.ai_response_and_speak(websocket, text, abort_event, message_queue)
                     else:
                         await websocket.send_json({"type": "voice_status", "status": "idle"})
 
@@ -508,11 +552,13 @@ async def voice_websocket(websocket: WebSocket):
                     await websocket.send_json({"type": "voice_status", "status": "thinking"})
                     text = ai.stt.stop_and_transcribe()
                     logger.debug("Whisper Transcription: %s", text)
-                    
+                    transcription_only = data.get("transcription_only", False)
                     if text:
                         await websocket.send_json({"type": "voice_transcription", "text": text})
-                        # Trigger AI pipeline
-                        await ai.ai_response_and_speak(websocket, text, abort_event, message_queue)
+                        if transcription_only:
+                            await websocket.send_json({"type": "voice_status", "status": "idle"})
+                        else:
+                            await ai.ai_response_and_speak(websocket, text, abort_event, message_queue)
                     else:
                         await websocket.send_json({"type": "voice_status", "status": "idle"})
 
@@ -546,6 +592,30 @@ async def voice_websocket(websocket: WebSocket):
                     import traceback
                     traceback.print_exc()
                     await websocket.send_json({"type": "task_added", "result": False, "error": str(e)})
+
+            elif command == "task.update":
+                try:
+                    from task_scheduler import update_job
+                    job_id = data.get("id")
+                    name = data.get("name", "").strip() or None
+                    description = data.get("description")
+                    if description is not None:
+                        description = (description or "").strip()
+                    schedule = data.get("schedule")
+                    payload = data.get("payload")
+                    if not job_id:
+                        await websocket.send_json({"type": "task_updated", "result": False, "error": "Missing id"})
+                    else:
+                        job = update_job(job_id, name=name, description=description, schedule=schedule, payload=payload)
+                        if job:
+                            await websocket.send_json({"type": "task_updated", "result": True, "job": job})
+                        else:
+                            await websocket.send_json({"type": "task_updated", "result": False, "error": "Job not found"})
+                except Exception as e:
+                    logger.warning("[task.update] %s", e)
+                    import traceback
+                    traceback.print_exc()
+                    await websocket.send_json({"type": "task_updated", "result": False, "error": str(e)})
 
             elif command == "task.remove":
                 try:

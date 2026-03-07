@@ -23442,7 +23442,8 @@ function WebSocketProvider({ children }) {
     }
   }, [currentConvId, connectChat]);
   const sendMessage = reactExports.useCallback((type, payload = {}) => {
-    const targetWs = chatWsRef.current?.readyState === WebSocket.OPEN ? chatWsRef.current : wsRef.current;
+    const useVoiceWs = typeof type === "string" && type.startsWith("task.");
+    const targetWs = useVoiceWs ? wsRef.current : chatWsRef.current?.readyState === WebSocket.OPEN ? chatWsRef.current : wsRef.current;
     if (targetWs && targetWs.readyState === WebSocket.OPEN) {
       targetWs.send(JSON.stringify({ type, ...payload }));
     } else {
@@ -23456,17 +23457,20 @@ function WebSocketProvider({ children }) {
       console.warn("Voice WS not connected, cannot send", type);
     }
   }, []);
-  const toggleVoice = reactExports.useCallback(() => {
-    sendVoiceCommand("toggle_voice");
+  const toggleVoice = reactExports.useCallback((options = {}) => {
+    const { transcriptionOnly = false } = options;
+    sendVoiceCommand("toggle_voice", { transcription_only: transcriptionOnly });
   }, [sendVoiceCommand]);
-  const startVosk = reactExports.useCallback(() => {
+  const startVosk = reactExports.useCallback((options = {}) => {
     setIsVoskRecording(true);
     setVoskText("");
-    sendVoiceCommand("start_vosk");
+    const { transcriptionOnly = false } = options;
+    sendVoiceCommand("start_vosk", { transcription_only: transcriptionOnly });
   }, [sendVoiceCommand]);
-  const stopVosk = reactExports.useCallback(() => {
+  const stopVosk = reactExports.useCallback((options = {}) => {
     setIsVoskRecording(false);
-    sendVoiceCommand("stop_vosk");
+    const { transcriptionOnly = false } = options;
+    sendVoiceCommand("stop_vosk", { transcription_only: transcriptionOnly });
   }, [sendVoiceCommand]);
   const abort = reactExports.useCallback(() => {
     if (chatWsRef.current?.readyState === WebSocket.OPEN) {
@@ -36785,6 +36789,13 @@ const KEY_SPECIAL = 'flex-[1.2] min-w-0 h-14 px-2 flex items-center justify-cent
 const KEY_ACCENT = 'h-14 px-2 flex items-center justify-center font-["Press_Start_2P"] text-xs border-2 border-[var(--pixel-primary)] bg-[var(--pixel-primary)] text-black active:translate-y-0.5 active:shadow-none shadow-[2px_2px_0_0_var(--pixel-border)] transition-all select-none touch-manipulation';
 const KEY_SPACE = "flex-[3] min-w-0 " + KEY_ACCENT;
 const KEY_ENTER = "flex-1 min-w-[72px] " + KEY_ACCENT;
+const SELECTION_TYPES = /* @__PURE__ */ new Set(["text", "search", "url", "tel", "password"]);
+function supportsSelection(el) {
+  if (!el) return false;
+  if (el.tagName === "TEXTAREA") return true;
+  if (el.tagName !== "INPUT") return false;
+  return SELECTION_TYPES.has((el.type || "text").toLowerCase());
+}
 function insertAtCursor(el, text2) {
   if (!el || typeof el.value === "undefined") return;
   const start = el.selectionStart ?? el.value.length;
@@ -36793,8 +36804,10 @@ function insertAtCursor(el, text2) {
   const after = el.value.slice(end);
   const newValue = before + text2 + after;
   el.value = newValue;
-  const newPos = start + text2.length;
-  el.setSelectionRange(newPos, newPos);
+  if (supportsSelection(el)) {
+    const newPos = start + text2.length;
+    el.setSelectionRange(newPos, newPos);
+  }
   el.dispatchEvent(new Event("input", { bubbles: true }));
 }
 function backspace(el) {
@@ -36807,7 +36820,9 @@ function backspace(el) {
   const before = el.value.slice(0, delStart);
   const after = el.value.slice(delEnd);
   el.value = before + after;
-  el.setSelectionRange(delStart, delStart);
+  if (supportsSelection(el)) {
+    el.setSelectionRange(delStart, delStart);
+  }
   el.dispatchEvent(new Event("input", { bubbles: true }));
 }
 function keyEnter(el) {
@@ -37028,6 +37043,7 @@ function ChatInterface() {
     setCurrentConvId,
     createConversation,
     deleteConversation,
+    fetchConversations,
     thinking,
     toggleVoice,
     isRecording,
@@ -37074,6 +37090,11 @@ function ChatInterface() {
       setCurrentConvId(conversations[0].id);
     }
   }, [currentConvId, conversations, setCurrentConvId]);
+  reactExports.useEffect(() => {
+    fetchConversations();
+    const interval = setInterval(fetchConversations, 15e3);
+    return () => clearInterval(interval);
+  }, [fetchConversations]);
   reactExports.useEffect(() => {
     if (chatConnStatus === "connected" && location.state?.prompt && location.state?.image && currentConvId) {
       const { prompt, image: image2 } = location.state;
@@ -37155,7 +37176,7 @@ function ChatInterface() {
                 {
                   onSend: send,
                   onAbort: abort,
-                  onMicPress: toggleVoice,
+                  onMicPress: () => toggleVoice({ transcriptionOnly: true }),
                   isRecording,
                   streaming,
                   disabled: connStatus !== "connected"
@@ -38018,11 +38039,18 @@ function TaskManager() {
     const removeRemoved = addEventListener("task_removed", () => {
       sendMessage("task.list", {});
     });
+    const removeUpdated = addEventListener("task_updated", () => {
+      sendMessage("task.list", {});
+    });
     return () => {
       removeList();
       removeRemoved();
+      removeUpdated();
     };
   }, [sendMessage, addEventListener]);
+  const handleEditJob = (job) => {
+    navigate("/tasks/edit", { state: { job } });
+  };
   const handleRemoveJob = (id2) => {
     if (confirm("Delete this scheduled task?")) {
       sendMessage("task.remove", { id: id2 });
@@ -38079,16 +38107,28 @@ function TaskManager() {
                   /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "font-['Press_Start_2P'] text-[var(--pixel-text)] text-xs mb-1 uppercase leading-relaxed", children: job.name }),
                   job.description && /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-lg text-gray-500 mt-0.5", children: job.description })
                 ] }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx(
-                  "button",
-                  {
-                    type: "button",
-                    onClick: () => handleRemoveJob(job.id),
-                    className: "p-3 min-h-[44px] min-w-[44px] flex items-center justify-center text-red-500 hover:bg-red-900/30 border-2 border-transparent hover:border-red-500 transition-all touch-manipulation",
-                    "aria-label": "Delete task",
-                    children: /* @__PURE__ */ jsxRuntimeExports.jsx(Trash2, { size: 20 })
-                  }
-                )
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-1", children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(
+                    "button",
+                    {
+                      type: "button",
+                      onClick: () => handleEditJob(job),
+                      className: "p-3 min-h-[44px] min-w-[44px] flex items-center justify-center text-[var(--pixel-primary)] hover:bg-[var(--pixel-primary)]/20 border-2 border-transparent hover:border-[var(--pixel-primary)] transition-all touch-manipulation",
+                      "aria-label": "Edit task",
+                      children: /* @__PURE__ */ jsxRuntimeExports.jsx(Pencil, { size: 20 })
+                    }
+                  ),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(
+                    "button",
+                    {
+                      type: "button",
+                      onClick: () => handleRemoveJob(job.id),
+                      className: "p-3 min-h-[44px] min-w-[44px] flex items-center justify-center text-red-500 hover:bg-red-900/30 border-2 border-transparent hover:border-red-500 transition-all touch-manipulation",
+                      "aria-label": "Delete task",
+                      children: /* @__PURE__ */ jsxRuntimeExports.jsx(Trash2, { size: 20 })
+                    }
+                  )
+                ] })
               ] }),
               /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col gap-2", children: [
                 /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center text-sm text-[var(--pixel-secondary)]", children: [
@@ -38108,8 +38148,48 @@ function TaskManager() {
     )
   ] });
 }
+function jobToFormState(job) {
+  if (!job) return { name: "", description: "", scheduleType: "every", intervalValue: 30, intervalUnit: "minutes", targetDate: "", agentMessage: "" };
+  const s = job.schedule || {};
+  const payload = job.payload || {};
+  let scheduleType = "every";
+  let intervalValue = 30;
+  let intervalUnit = "minutes";
+  let targetDate = "";
+  if (s.kind === "at" && s.atMs != null) {
+    scheduleType = "at";
+    const d = new Date(s.atMs);
+    targetDate = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}T${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
+  } else if (s.kind === "every" && s.everyMs != null) {
+    const ms = s.everyMs;
+    const days = ms / (1e3 * 60 * 60 * 24);
+    const hours = ms / (1e3 * 60 * 60);
+    const mins = ms / (1e3 * 60);
+    if (days >= 1 && Math.abs(days - Math.round(days)) < 0.01) {
+      intervalValue = Math.round(days);
+      intervalUnit = "days";
+    } else if (hours >= 1 && Math.abs(hours - Math.round(hours)) < 0.01) {
+      intervalValue = Math.round(hours);
+      intervalUnit = "hours";
+    } else {
+      intervalValue = Math.max(1, Math.round(mins));
+      intervalUnit = "minutes";
+    }
+  }
+  const agentMessage = payload && (payload.message || payload.text) || "";
+  return { name: job.name || "", description: job.description || "", scheduleType, intervalValue, intervalUnit, targetDate, agentMessage };
+}
 function TaskAdd() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const editJob = location.state?.job;
+  const isEdit = !!editJob;
+  const initial = jobToFormState(editJob);
+  reactExports.useEffect(() => {
+    if (location.pathname === "/tasks/edit" && !editJob) {
+      navigate("/tasks", { replace: true });
+    }
+  }, [location.pathname, editJob, navigate]);
   const formRef = reactExports.useRef(null);
   const scrollContainerRef = reactExports.useRef(null);
   const dragScrollRef = reactExports.useRef(null);
@@ -38146,20 +38226,24 @@ function TaskAdd() {
       syncInputValueRef.current = null;
     }
   });
-  const [name2, setName] = reactExports.useState("");
-  const [description, setDescription] = reactExports.useState("");
-  const [scheduleType, setScheduleType] = reactExports.useState("every");
-  const [intervalValue, setIntervalValue] = reactExports.useState(30);
-  const [intervalUnit, setIntervalUnit] = reactExports.useState("minutes");
-  const [targetDate, setTargetDate] = reactExports.useState("");
-  const [agentMessage, setAgentMessage] = reactExports.useState("");
+  const [name2, setName] = reactExports.useState(initial.name);
+  const [description, setDescription] = reactExports.useState(initial.description);
+  const [scheduleType, setScheduleType] = reactExports.useState(initial.scheduleType);
+  const [intervalValue, setIntervalValue] = reactExports.useState(initial.intervalValue);
+  const [intervalUnit, setIntervalUnit] = reactExports.useState(initial.intervalUnit);
+  const [targetDate, setTargetDate] = reactExports.useState(initial.targetDate);
+  const [agentMessage, setAgentMessage] = reactExports.useState(initial.agentMessage);
   reactExports.useEffect(() => {
-    const remove = addEventListener("task_added", (data) => {
-      if (data.result) {
-        navigate("/tasks", { replace: true });
-      }
+    const removeAdded = addEventListener("task_added", (data) => {
+      if (data.result) navigate("/tasks", { replace: true });
     });
-    return remove;
+    const removeUpdated = addEventListener("task_updated", (data) => {
+      if (data.result) navigate("/tasks", { replace: true });
+    });
+    return () => {
+      removeAdded();
+      removeUpdated();
+    };
   }, [addEventListener, navigate]);
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -38173,8 +38257,12 @@ function TaskAdd() {
       schedule = { kind: "at", atMs: new Date(targetDate).getTime() };
     }
     const payload = agentMessage ? { kind: "agentTurn", message: agentMessage } : {};
-    if (Object.keys(payload).length === 0 && !confirm("No agent message provided. Create job anyway?")) return;
-    sendMessage("task.add", { name: name2, description, schedule, payload });
+    if (Object.keys(payload).length === 0 && !confirm("No agent message provided. Save anyway?")) return;
+    if (isEdit) {
+      sendMessage("task.update", { id: editJob.id, name: name2, description, schedule, payload });
+    } else {
+      sendMessage("task.add", { name: name2, description, schedule, payload });
+    }
   };
   const handleFormKeyDown = reactExports.useCallback((e) => {
     if (e.key !== "Enter") return;
@@ -38241,7 +38329,7 @@ function TaskAdd() {
               children: /* @__PURE__ */ jsxRuntimeExports.jsx(ArrowLeft, { size: 24 })
             }
           ),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("h1", { className: "text-lg font-['Press_Start_2P'] text-[var(--pixel-primary)] leading-tight", children: "NEW TASK" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("h1", { className: "text-lg font-['Press_Start_2P'] text-[var(--pixel-primary)] leading-tight", children: isEdit ? "EDIT TASK" : "NEW TASK" }),
           /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-12" })
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -38378,7 +38466,7 @@ function TaskAdd() {
                     children: "CANCEL"
                   }
                 ),
-                /* @__PURE__ */ jsxRuntimeExports.jsx("button", { type: "submit", className: "pixel-btn flex-1 py-4 min-h-[52px] text-sm touch-manipulation bg-[var(--pixel-primary)] text-black", children: "ADD TASK" })
+                /* @__PURE__ */ jsxRuntimeExports.jsx("button", { type: "submit", className: "pixel-btn flex-1 py-4 min-h-[52px] text-sm touch-manipulation bg-[var(--pixel-primary)] text-black", children: isEdit ? "SAVE TASK" : "ADD TASK" })
               ] })
             ] }) })
           }
@@ -38745,6 +38833,7 @@ const AnimatedRoutes = () => {
     /* @__PURE__ */ jsxRuntimeExports.jsx(Route, { path: "/gallery", element: /* @__PURE__ */ jsxRuntimeExports.jsx(Gallery, {}) }),
     /* @__PURE__ */ jsxRuntimeExports.jsx(Route, { path: "/tasks", element: /* @__PURE__ */ jsxRuntimeExports.jsx(TaskManager, {}) }),
     /* @__PURE__ */ jsxRuntimeExports.jsx(Route, { path: "/tasks/add", element: /* @__PURE__ */ jsxRuntimeExports.jsx(TaskAdd, {}) }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx(Route, { path: "/tasks/edit", element: /* @__PURE__ */ jsxRuntimeExports.jsx(TaskAdd, {}) }),
     /* @__PURE__ */ jsxRuntimeExports.jsx(Route, { path: "/heartbeat", element: /* @__PURE__ */ jsxRuntimeExports.jsx(HeartbeatManager, {}) }),
     /* @__PURE__ */ jsxRuntimeExports.jsx(Route, { path: "/gpio", element: /* @__PURE__ */ jsxRuntimeExports.jsx(GPIOControl, {}) }),
     /* @__PURE__ */ jsxRuntimeExports.jsx(Route, { path: "/settings", element: /* @__PURE__ */ jsxRuntimeExports.jsx(Settings, {}) })

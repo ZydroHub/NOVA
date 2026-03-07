@@ -46,9 +46,19 @@ def _get_router():
     qwen_basic = Route(
         name="qwen_basic",
         utterances=[
+            # Greetings and chitchat
             "hi", "hello", "hey there", "how are you", "what's up", "good morning",
             "good night", "thanks!", "thank you", "bye", "see you", "ok", "got it",
             "that's nice", "cool", "sure", "no problem", "how's it going", "nice to meet you",
+            # Simple factual / symbol facts — non-thinking
+            "what is the largest continent?", "what is the capital of the United States?",
+            "what is the capital of France?", "how many continents are there?",
+            "what is two plus two?", "who wrote Romeo and Juliet?",
+            "what is the speed of light?", "what year did World War II end?",
+            "what is the largest ocean?", "name the planets in our solar system",
+            "what is the capital of Japan?", "how many days in a week?",
+            "what is the biggest country by area?", "simple facts", "give me a quick fact",
+            "what's the population of China?", "who is the president of the US?",
         ],
     )
     qwen_thinking = Route(

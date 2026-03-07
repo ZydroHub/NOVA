@@ -18,6 +18,15 @@ const KEY_ACCENT =
 const KEY_SPACE = 'flex-[3] min-w-0 ' + KEY_ACCENT;
 const KEY_ENTER = 'flex-1 min-w-[72px] ' + KEY_ACCENT;
 
+// Only text-like inputs support setSelectionRange; number/date/time etc. do not
+const SELECTION_TYPES = new Set(['text', 'search', 'url', 'tel', 'password']);
+function supportsSelection(el) {
+    if (!el) return false;
+    if (el.tagName === 'TEXTAREA') return true;
+    if (el.tagName !== 'INPUT') return false;
+    return SELECTION_TYPES.has((el.type || 'text').toLowerCase());
+}
+
 function insertAtCursor(el, text) {
     if (!el || typeof el.value === 'undefined') return;
     const start = el.selectionStart ?? el.value.length;
@@ -26,8 +35,10 @@ function insertAtCursor(el, text) {
     const after = el.value.slice(end);
     const newValue = before + text + after;
     el.value = newValue;
-    const newPos = start + text.length;
-    el.setSelectionRange(newPos, newPos);
+    if (supportsSelection(el)) {
+        const newPos = start + text.length;
+        el.setSelectionRange(newPos, newPos);
+    }
     el.dispatchEvent(new Event('input', { bubbles: true }));
 }
 
@@ -41,7 +52,9 @@ function backspace(el) {
     const before = el.value.slice(0, delStart);
     const after = el.value.slice(delEnd);
     el.value = before + after;
-    el.setSelectionRange(delStart, delStart);
+    if (supportsSelection(el)) {
+        el.setSelectionRange(delStart, delStart);
+    }
     el.dispatchEvent(new Event('input', { bubbles: true }));
 }
 

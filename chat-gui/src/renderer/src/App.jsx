@@ -42,6 +42,7 @@ const AnimatedRoutes = () => {
         <Route path="/gallery" element={<Gallery />} />
         <Route path="/tasks" element={<TaskManager />} />
         <Route path="/tasks/add" element={<TaskAdd />} />
+        <Route path="/tasks/edit" element={<TaskAdd />} />
         <Route path="/heartbeat" element={<HeartbeatManager />} />
         <Route path="/gpio" element={<GPIOControl />} />
         <Route path="/settings" element={<Settings />} />

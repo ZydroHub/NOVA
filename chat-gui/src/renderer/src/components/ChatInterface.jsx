@@ -27,6 +27,7 @@ export default function ChatInterface() {
         setCurrentConvId,
         createConversation,
         deleteConversation,
+        fetchConversations,
         thinking,
         toggleVoice,
         isRecording,
@@ -81,6 +82,13 @@ export default function ChatInterface() {
             setCurrentConvId(conversations[0].id);
         }
     }, [currentConvId, conversations, setCurrentConvId]);
+
+    // Refetch conversations when Chat is shown and on an interval so task-created conversations appear without restart
+    useEffect(() => {
+        fetchConversations();
+        const interval = setInterval(fetchConversations, 15000);
+        return () => clearInterval(interval);
+    }, [fetchConversations]);
 
     // ─── Auto-send from Gallery navigation ─────────────────────────────
     useEffect(() => {
@@ -163,7 +171,7 @@ export default function ChatInterface() {
                 <ChatInput
                     onSend={send}
                     onAbort={abort}
-                    onMicPress={toggleVoice}
+                    onMicPress={() => toggleVoice({ transcriptionOnly: true })}
                     isRecording={isRecording}
                     streaming={streaming}
                     disabled={connStatus !== 'connected'}

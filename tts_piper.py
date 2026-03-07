@@ -26,7 +26,7 @@ def split_sentences(text):
 
 
 class PocketAudio:
-    def __init__(self, model_name="en_US-lessac-low"):
+    def __init__(self, model_name="en_US-lessac-medium"):
         self.base_dir = os.path.dirname(os.path.abspath(__file__))
         self.model_dir = os.path.join(self.base_dir, "models")
         self.model_path = os.path.join(self.model_dir, f"{model_name}.onnx")

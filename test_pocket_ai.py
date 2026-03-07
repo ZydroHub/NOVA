@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 """
-Pocket AI voice loop: STT -> semantic router + Qwen -> TTS.
+Pocket AI voice loop: STT -> semantic router -> Qwen or Function Gemma -> TTS.
 
 - Press Enter to use Whisper for speech-to-text.
 - Press V then Enter to use Vosk for speech-to-text (lighter, faster).
-Then your speech is routed and answered by Qwen; the reply is spoken via Piper TTS.
+Your speech is routed: qwen_basic/qwen_thinking (Qwen reply) or function_gemma (tool run).
+The reply or tool result is spoken via Piper TTS.
 
 Run from project root: python test_pocket_ai.py
 """
@@ -83,14 +84,24 @@ def run_voice_loop():
         print(f"  -> route: {route}")
 
         if route == "function_gemma":
-            print("  (Tool/function_gemma skipped in this test.)\n")
-            continue
+            print("Running tool (Function Gemma)...")
+            try:
+                import tool_ai
+                tool_call_raw, tool_result = tool_ai.run_task_for_backend(text)
+                tts_text = str(tool_result).strip() if tool_result is not None else "No tool call produced."
+                if not tts_text:
+                    tts_text = "No tool call produced."
+                print(f"Tool result: {tts_text}")
+            except Exception as e:
+                tts_text = f"Tool error: {e}"
+                print(tts_text)
+        else:
+            print("AI: ", end="", flush=True)
+            raw_response = _generate_sync(text, thinking=(route == "qwen_thinking"))
+            tts_text = _strip_think(raw_response)
+            if not tts_text.strip():
+                tts_text = "I have nothing to say."
 
-        print("AI: ", end="", flush=True)
-        raw_response = _generate_sync(text, thinking=(route == "qwen_thinking"))
-        tts_text = _strip_think(raw_response)
-        if not tts_text.strip():
-            tts_text = "I have nothing to say."
         done = threading.Event()
         tts.set_queue_drained_callback(lambda: done.set())
         tts.speak(tts_text)
