@@ -41,7 +41,7 @@ ddgs>=9.0.0
 
 # Hailo object detection (object_detection.py + hailo_od)
 lap>=0.4.0
-cython_bbox  # may need building on Pi; install from project .venv
+# cython_bbox  # may need building on Pi; install from project .venv
 PyYAML>=6.0
 
 # Testing (optional): pip install pytest then run pytest tests/

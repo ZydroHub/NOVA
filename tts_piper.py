@@ -6,6 +6,7 @@ import threading
 import queue
 import time
 import urllib.request
+import pyaudio
 from piper.voice import PiperVoice
 
 os.environ['ORT_LOGGING_LEVEL'] = '3'
@@ -35,7 +36,10 @@ class PocketAudio:
         self._ensure_models_exist(model_name)
         print("Loading Piper into memory... (Standby)")
         self.voice = PiperVoice.load(self.model_path, config_path=self.config_path)
-        print(f"System Ready. Outputting to ALSA device: {TTS_ALSA_DEVICE}")
+        print(f"System Ready. Outputting to audio device.")
+
+        # Initialize PyAudio for cross-platform audio playback
+        self.p = pyaudio.PyAudio()
 
         # Sentence-by-sentence playback queue
         self._queue = queue.Queue()
@@ -101,22 +105,24 @@ class PocketAudio:
         self.enqueue_text(text)
 
     def _speak_internal(self, text):
-        command = f"aplay -D {TTS_ALSA_DEVICE} -r 22050 -f S16_LE -t raw -"
-        args = shlex.split(command)
         print(f"Synthesizing: {text[:50]}...")
         try:
-            with subprocess.Popen(args, stdin=subprocess.PIPE) as play_process:
-                t0 = time.perf_counter()
-                for chunk in self.voice.synthesize(text):
-                    play_process.stdin.write(chunk.audio_int16_bytes)
-                tts_ms = (time.perf_counter() - t0) * 1000
-                print(f"  text-to-speech: {tts_ms:.0f} ms")
-                play_process.stdin.close()
-                play_process.wait()
-            if play_process.returncode != 0:
-                print(f"aplay exited with code {play_process.returncode}")
+            # Use PyAudio for cross-platform audio playback
+            stream = self.p.open(format=pyaudio.paInt16, channels=1, rate=22050, output=True)
+            t0 = time.perf_counter()
+            for chunk in self.voice.synthesize(text):
+                stream.write(chunk.audio_int16_bytes)
+            tts_ms = (time.perf_counter() - t0) * 1000
+            print(f"  text-to-speech: {tts_ms:.0f} ms")
+            stream.stop_stream()
+            stream.close()
         except Exception as e:
             print(f"Audio Error: {e}")
+
+    def terminate(self):
+        """Clean up resources."""
+        if hasattr(self, 'p'):
+            self.p.terminate()
 
 if __name__ == "__main__":
     # Test all three sizes: small (low), medium, large (high)

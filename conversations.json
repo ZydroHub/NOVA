@@ -195,8 +195,117 @@
         "role": "assistant",
         "content": "Network scan:\n10.0.0.1  70:13:01:8c:10:0f\nfe80::7213:1ff:fe8c:100f  70:13:01:8c:10:0f",
         "timestamp": 1772911495.731512
+      },
+      {
+        "role": "user",
+        "content": "hello",
+        "timestamp": 1775318145.6922338
+      },
+      {
+        "role": "assistant",
+        "content": "<think>\n\n</think>\n\nHello! How can I assist you today?",
+        "timestamp": 1775318146.3433444
+      },
+      {
+        "role": "user",
+        "content": "hello",
+        "timestamp": 1775346891.8468437
+      },
+      {
+        "role": "assistant",
+        "content": "<think>\n\n</think>\n\nHello! How can I assist you today?",
+        "timestamp": 1775346893.8222036
+      },
+      {
+        "role": "user",
+        "content": "hello",
+        "timestamp": 1775347248.4773693
+      },
+      {
+        "role": "assistant",
+        "content": "<think>\n\n</think>\n\nHello! How can I assist you today?",
+        "timestamp": 1775347249.6173966
+      },
+      {
+        "role": "user",
+        "content": "hi",
+        "timestamp": 1775347621.7161353
+      },
+      {
+        "role": "assistant",
+        "content": "<think>\n\n</think>\n\nHi! How can I assist you today?",
+        "timestamp": 1775347656.4812076
       }
     ],
-    "updated_at": 1772911495.7315214
+    "updated_at": 1775347656.4812076
+  },
+  {
+    "id": "9ddd12de-2097-4e74-9630-80f102521658",
+    "title": "scan my network",
+    "messages": [
+      {
+        "role": "user",
+        "content": "scan my network",
+        "timestamp": 1775347755.8454983
+      },
+      {
+        "role": "assistant",
+        "content": "<think>\n\n</think>\n\nI'm sorry, but I cannot scan your network. Please provide me with more information or clarify your request so I can assist you better.",
+        "timestamp": 1775347757.7519205
+      },
+      {
+        "role": "user",
+        "content": "hi",
+        "timestamp": 1775347959.1982892
+      },
+      {
+        "role": "assistant",
+        "content": "<think>\n\n</think>\n\nHello! How can I assist you today?",
+        "timestamp": 1775347967.1895266
+      }
+    ],
+    "updated_at": 1775347967.1895266
+  },
+  {
+    "id": "29a47b44-2691-4fc5-b544-5d1871eb030d",
+    "title": "hello",
+    "messages": [
+      {
+        "role": "user",
+        "content": "hello",
+        "timestamp": 1775348110.1184018
+      },
+      {
+        "role": "assistant",
+        "content": "<think>\n\n</think>\n\nHello! How can I assist you today?",
+        "timestamp": 1775348110.9205556
+      },
+      {
+        "role": "user",
+        "content": "do you work",
+        "timestamp": 1775348115.6411781
+      },
+      {
+        "role": "assistant",
+        "content": "<think>\n\n</think>\n\nYes, I work as a language model. My goal is to help users with their questions and provide them with accurate information in different languages. Let me know how I can assist you!",
+        "timestamp": 1775348116.8675694
+      },
+      {
+        "role": "user",
+        "content": "what llm",
+        "timestamp": 1775348120.5505393
+      },
+      {
+        "role": "assistant",
+        "content": "<think>\nOkay, the user asked about LLMs. I need to explain what an LLM is in simple terms. Let me start by defining it clearly. Maybe mention that LLMs are artificial intelligence models.\n\nI should also explain their purpose. They can help with tasks like answering questions, providing information, or even creative writing. It's important to highlight how they work, like using a huge dataset of text to generate answers.\n\nI need to keep the explanation concise but informative. Avoid technical jargon so it's easy to understand. Also, ask if they have specific questions in mind, which will help tailor the response. Let me put this all together in a friendly and helpful way.\n</think>\n\nAn LLM (Large Language Model) is a type of artificial intelligence model developed to process and generate text, such as language, speech, or other forms of information. These models are trained on vast amounts of data to understand and respond to human questions accurately.\n\nLLMs can be used for various tasks, including answering questions, providing information, generating creative content, and even assisting with writing. They work by analyzing a large dataset to learn patterns and create responses that are both accurate and helpful.\n\nWould you like help with anything specific?",
+        "timestamp": 1775348127.0460773
+      },
+      {
+        "role": "user",
+        "content": "hello",
+        "timestamp": 1775348508.26622
+      }
+    ],
+    "updated_at": 1775348508.26622
   }
 ]

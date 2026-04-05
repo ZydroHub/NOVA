@@ -3,11 +3,12 @@ import threading
 import sys
 import json
 import pyaudio
+import os
 from vosk import Model, KaldiRecognizer
 
 # --- CONFIGURATION ---
-# Using your absolute path to the Vosk model
-MODEL_PATH = "/home/pocket-ai/Documents/pocket-ai/models/vosk/vosk-model-small-en-us-0.15"        
+# Using relative path to the Vosk model
+MODEL_PATH = os.path.join(os.path.dirname(__file__), "models", "vosk", "vosk-model-small-en-us-0.15")
 CHUNK_SIZE = 4000           # Frames per buffer
 FORMAT = pyaudio.paInt16    # 16-bit PCM
 CHANNELS = 1                # Mono
