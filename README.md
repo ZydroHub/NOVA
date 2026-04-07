@@ -2,11 +2,7 @@
 
 **Version 1** — *Project in active development; more features planned.*
 
-<<<<<<< HEAD
 A **Raspberry Pi 5**–focused, local-first AI assistant with voice and chat. fork of Pocket-AI. The backend runs a small GGUF LLM (Qwen), Piper TTS, and optional Whisper/Vosk STT. The GUI is an Electron + React app that talks to the backend over HTTP and WebSockets. This README is written for **Raspberry Pi 5** and **Raspberry Pi OS** (64-bit).
-=======
-A **Raspberry Pi 5**–focused, local-first AI assistant with voice and chat. The backend runs a small GGUF LLM (Qwen), Piper TTS, and optional Whisper/Vosk STT. The GUI is an Electron + React app that talks to the backend over HTTP and WebSockets. This README is written for **Raspberry Pi 5** and **Raspberry Pi OS** (64-bit).
->>>>>>> 057d20a (Removed camera function, general improvements)
 
 ---
 
