@@ -5,8 +5,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
-from config import PORT, CAPTURES_DIR, setup_logging
-from camera_stream import router as camera_router
+from config import PORT, setup_logging
 from chat_ai import router as chat_router, ai as ai_state
 
 setup_logging()
@@ -23,12 +22,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Static files for gallery
-os.makedirs(CAPTURES_DIR, exist_ok=True)
-app.mount("/captures", StaticFiles(directory=CAPTURES_DIR), name="captures")
-
 # Include the routers
-app.include_router(camera_router)
 app.include_router(chat_router)
 
 @app.get("/health")

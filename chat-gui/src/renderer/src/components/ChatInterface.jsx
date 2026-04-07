@@ -90,7 +90,7 @@ export default function ChatInterface() {
         return () => clearInterval(interval);
     }, [fetchConversations]);
 
-    // ─── Auto-send from Gallery navigation ─────────────────────────────
+    // ─── Auto-send from navigation ─────────────────────────────
     useEffect(() => {
         if (chatConnStatus === 'connected' && location.state?.prompt && location.state?.image && currentConvId) {
             const { prompt, image } = location.state;

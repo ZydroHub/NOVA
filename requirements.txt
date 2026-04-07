@@ -6,9 +6,6 @@ uvicorn==0.41.0
 pydantic==2.12.5
 websockets==16.0
 
-# Camera & video (OpenCV used by backend and camera stream)
-opencv-python==4.13.0.92
-
 # System & async
 psutil==7.2.2
 numpy==2.4.2
@@ -40,7 +37,7 @@ ddgs>=9.0.0
 # semantic-router[local]
 
 # Hailo object detection (object_detection.py + hailo_od)
-lap>=0.4.0
+# lap>=0.4.0
 # cython_bbox  # may need building on Pi; install from project .venv
 PyYAML>=6.0
 

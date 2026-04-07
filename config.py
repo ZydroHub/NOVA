@@ -20,7 +20,6 @@ CONVERSATIONS_FILE = os.environ.get("CONVERSATIONS_FILE", "conversations.json")
 TOOLS_PATH = os.environ.get("TOOLS_PATH", "tools.json")
 JOBS_FILE = os.environ.get("JOBS_FILE", "task_jobs.json")
 LOCAL_DIR = os.environ.get("LOCAL_DIR", "./models")
-CAPTURES_DIR = os.environ.get("CAPTURES_DIR", "captures")
 
 # Chat LLM (Qwen)
 CHAT_REPO_ID = os.environ.get("CHAT_REPO_ID", "Qwen/Qwen3-0.6B-GGUF")

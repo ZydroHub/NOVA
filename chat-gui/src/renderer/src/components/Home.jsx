@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MessageCircle, Settings, Camera, Image as GalleryIcon, Code } from 'lucide-react';
+import { MessageCircle, Settings, Code } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import Avatar from './Avatar';
 import { useWebSocket } from '../contexts/WebSocketContext.jsx';
@@ -167,12 +167,10 @@ export default function Home() {
                 </AnimatePresence>
             </div>
 
-            {/* Main Menu Grid - 4 buttons: Chat, Vision, Agent, Gallery */}
-            <div className="grid grid-cols-2 grid-rows-[1fr_1fr] gap-3 z-10 w-full max-w-[520px] flex-1 min-h-0">
+            {/* Main Menu - Chat and Agent buttons */}
+            <div className="flex gap-4 justify-center z-10 w-full max-w-[520px] flex-1 min-h-0">
                 <MenuButton icon={MessageCircle} label="CHAT" onClick={() => navigate('/chat')} color="var(--pixel-primary)" />
-                <MenuButton icon={Camera} label="VISION" onClick={() => navigate('/camera')} color="var(--pixel-accent)" />
                 <MenuButton icon={Code} label="AGENT" onClick={() => navigate('/tasks')} color="#f7768e" />
-                <MenuButton icon={GalleryIcon} label="GALLERY" onClick={() => navigate('/gallery')} color="var(--pixel-secondary)" />
             </div>
 
             {/* Decorative BG Elements */}

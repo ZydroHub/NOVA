@@ -55,7 +55,6 @@ with open(tools_path, "r") as f:
 # 5. Define test queries mapping to our tools
 queries = [
     "What is the weather like in New York?",           # Expected: get_weather
-    "Turn on the security cameras and PIR sensors.",   # Expected: activate_security_mode
     "Search the web for the latest news on AI.",       # Expected: web_search
     "Can you scan my local network?",                  # Expected: network_scan
     "What is the current price of TSLA stock?",        # Expected: get_stock_price

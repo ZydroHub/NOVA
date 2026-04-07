@@ -39,28 +39,30 @@ class STTEngine:
     def load_vocabulary(self):
         # Try to load vocabulary.txt or vocabulary.json from whisper-tiny/ or current dir
         vocab_files = ["whisper-tiny/vocabulary.txt", "whisper-tiny/vocabulary.json", "vocabulary.txt", "vocabulary.json"]
+        vocabularies = []
         for vocab_file in vocab_files:
             if os.path.exists(vocab_file):
                 try:
                     if vocab_file.endswith(".txt"):
                         with open(vocab_file, "r", encoding="utf-8") as f:
                             words = [line.strip() for line in f if line.strip()]
-                        self.vocabulary = " ".join(words)
+                        vocabularies.append(" ".join(words))
                     elif vocab_file.endswith(".json"):
                         with open(vocab_file, "r", encoding="utf-8") as f:
                             data = json.load(f)
                         if isinstance(data, list):
-                            self.vocabulary = " ".join(data)
+                            vocabularies.append(" ".join(data))
                         elif isinstance(data, dict) and "vocab" in data:
-                            self.vocabulary = " ".join(data["vocab"])
+                            vocabularies.append(" ".join(data["vocab"]))
                         else:
                             print(f"Unsupported vocabulary.json format in {vocab_file}")
                             continue
                     print(f"Loaded vocabulary from {vocab_file}")
-                    break
                 except Exception as e:
                     print(f"Error loading vocabulary from {vocab_file}: {e}")
                     continue
+        if vocabularies:
+            self.vocabulary = " ".join(vocabularies)
         else:
             print("No vocabulary file found (vocabulary.txt or vocabulary.json)")
 

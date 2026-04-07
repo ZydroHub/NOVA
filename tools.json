@@ -16,14 +16,6 @@
     }
   },
   {
-    "name": "activate_security_mode",
-    "description": "Toggles Raspberry Pi security protocols, camera monitoring, and PIR sensors.",
-    "parameters": {
-      "type": "object",
-      "properties": {}
-    }
-  },
-  {
     "name": "web_search",
     "description": "Performs a live internet search to retrieve snippets for current events or facts.",
     "parameters": {
