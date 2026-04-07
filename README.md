@@ -2,7 +2,11 @@
 
 **Version 1** — *Project in active development; more features planned.*
 
+<<<<<<< HEAD
 A **Raspberry Pi 5**–focused, local-first AI assistant with voice and chat. fork of Pocket-AI. The backend runs a small GGUF LLM (Qwen), Piper TTS, and optional Whisper/Vosk STT. The GUI is an Electron + React app that talks to the backend over HTTP and WebSockets. This README is written for **Raspberry Pi 5** and **Raspberry Pi OS** (64-bit).
+=======
+A **Raspberry Pi 5**–focused, local-first AI assistant with voice and chat. The backend runs a small GGUF LLM (Qwen), Piper TTS, and optional Whisper/Vosk STT. The GUI is an Electron + React app that talks to the backend over HTTP and WebSockets. This README is written for **Raspberry Pi 5** and **Raspberry Pi OS** (64-bit).
+>>>>>>> 057d20a (Removed camera function, general improvements)
 
 ---
 
@@ -11,17 +15,15 @@ A **Raspberry Pi 5**–focused, local-first AI assistant with voice and chat. fo
 - **Backend (Python)**  
   - FastAPI app (`app.py`) with CORS, static files, and routers.  
   - **Chat** (`chat_ai.py`): conversation CRUD, WebSocket chat, voice pipeline (STT → LLM → TTS).  
-  - **Camera** (`camera_stream.py`): Pi Camera 2 (libcamera/picamera2) stream, MJPEG feed, capture, gallery, detection hooks.  
   - **TTS** (`tts_piper.py`): Piper-based speech output.  
   - **STT** (`stt_whisper.py`, `stt_vosk.py`): optional Whisper and Vosk engines.
 
 - **Frontend (Electron + React)**  
   - `chat-gui/`: Vite + React 19, Tailwind, Framer Motion, React Router.  
-  - Features: home screen, chat UI with sidebar, camera view, settings, WebSocket context for chat and voice.
+  - Features: home screen, chat UI with sidebar, settings, WebSocket context for chat and voice.
 
 - **Data**  
   - Conversations: `conversations.json`.  
-  - Captures: `captures/`.  
   - Models: `models/` (LLM, Piper, and optionally Vosk — see [Models](#models-what-downloads-where) below).
 
 ---
@@ -85,15 +87,14 @@ To run Pocket AI automatically at login, copy the same `.desktop` file to `~/.co
 
 | Requirement | Notes |
 |-------------|--------|
-| **Raspberry Pi 5** | 4 GB or 8 GB RAM; 8 GB recommended for running the LLM plus camera/GUI comfortably. |
-| **Raspberry Pi OS (64-bit)** | Bookworm or later; **Trixie** recommended when using the Hailo NPU (see [Hailo-8 HAT setup](#hailo-8--hailo-8l-ai-hat-setup)). Use the **desktop** image to run the Electron GUI on the Pi; **lite** is fine if you only run the backend and use the GUI from another machine. |
+| **Raspberry Pi 5** | 4 GB or 8 GB RAM; 8 GB recommended for running the LLM plus GUI comfortably. |
+| **Raspberry Pi OS (64-bit)** | Bookworm or later. Use the **desktop** image to run the Electron GUI on the Pi; **lite** is fine if you only run the backend and use the GUI from another machine. |
 | **Storage** | SD card or (better) SSD. Plan for **at least 4–5 GB free** for models (Qwen GGUF ~500 MB, Piper, Whisper cache, Vosk). |
 | **Python 3.10+** | Raspberry Pi OS Bookworm ships with Python 3.11; that’s fine. |
 | **Node.js 18+** (and npm) | For building and running the Electron GUI. Install on the Pi (see below). |
 | **Microphone** | USB microphone or the Pi’s 3.5 mm jack input (if configured). Needed for voice (STT). |
 | **Speaker / USB audio** | For TTS. The code defaults to a USB audio device; see [TTS playback](#other-setup-notes-pi-5-gotchas) below. |
-| **Camera (optional)** | Official Raspberry Pi Camera Module (or compatible libcamera camera) for the camera stream. |
-| **Hailo-8 / Hailo-8L (optional)** | For computer vision acceleration. Use either the **Raspberry Pi 5 AI Kit** (M.2 HAT + Hailo-8L) or the **Raspberry Pi 5 AI HAT**. See [Hailo-8 HAT setup](#hailo-8--hailo-8l-ai-hat-setup) below. |
+
 
 ---
 
@@ -345,12 +346,11 @@ Do this on your **Pi 5** from the **project root** (the folder that contains `ap
 
 ### 1. System packages (Raspberry Pi OS)
 
-Install dependencies for audio (PyAudio), Python dev headers, and the Pi camera stack:
+Install dependencies for audio (PyAudio) and Python dev headers:
 
 ```bash
 sudo apt update
 sudo apt install -y portaudio19-dev python3-dev python3-pip python3-venv
-sudo apt install -y python3-picamera2   # Pi 5 camera (libcamera)
 ```
 
 - **Camera:** If you use a camera module, enable it:  
@@ -463,11 +463,9 @@ The GUI expects the backend at **port 8000** on the same machine. To use the GUI
 
 ## Order of operations (Pi 5 checklist)
 
-1. **Raspberry Pi OS** up to date; **Node.js** and **system packages** installed (NodeSource, `portaudio19-dev`, `python3-picamera2`, etc.).  
-2. **Hailo-8 (if used):** Install AI Kit or AI HAT hardware and software, set PCIe to Gen3, reboot, and verify with `hailortcli fw-control identify` and `gst-inspect-1.0 hailotools` / `hailo` (see [Hailo-8 HAT setup](#hailo-8--hailo-8l-ai-hat-setup)).  
-3. **Camera (if used):** Enable in `raspi-config`, connect module, reboot.  
+1. **Raspberry Pi OS** up to date; **Node.js** and **system packages** installed (NodeSource, `portaudio19-dev`, etc.).  
 4. **Backend:**  
-   - Clone/open project, create venv (optionally `--system-site-packages` for picamera2).  
+   - Clone/open project, create venv.  
    - `pip install -r requirements.txt`.  
    - Download and place the **Vosk** model; set `MODEL_PATH` in `stt_vosk.py`.  
    - Run `python app.py` and wait for first-time model downloads.  
