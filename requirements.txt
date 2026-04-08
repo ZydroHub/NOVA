@@ -8,7 +8,7 @@ websockets==16.0
 
 # System & async
 psutil==7.2.2
-numpy==2.4.2
+numpy>=1.26,<2.3
 
 # Audio I/O (STT capture)
 # System dependency (Debian/Ubuntu): sudo apt-get update && sudo apt-get install -y portaudio19-dev
@@ -17,7 +17,7 @@ PyAudio==0.2.14
 # Speech-to-text
 faster-whisper==1.2.1
 vosk==0.3.45
-scipy==1.17.0
+scipy>=1.11,<1.15
 
 # Text-to-speech (Piper)
 piper-tts==1.4.1

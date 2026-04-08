@@ -38,7 +38,18 @@ def parse_args() -> argparse.Namespace:
 
 
 def check_required_modules() -> list[str]:
-    required = ["fastapi", "uvicorn", "psutil", "llama_cpp"]
+    required = [
+        "fastapi",
+        "uvicorn",
+        "psutil",
+        "numpy",
+        "scipy",
+        "pyaudio",
+        "faster_whisper",
+        "vosk",
+        "huggingface_hub",
+        "llama_cpp",
+    ]
     missing = [name for name in required if importlib.util.find_spec(name) is None]
     return missing
 

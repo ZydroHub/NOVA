@@ -19,7 +19,7 @@ try:
 except ImportError as exc:
     raise ImportError(
         "Missing dependency 'llama_cpp' (package: llama-cpp-python). "
-        "Install with: python -m pip install -r requirements.txt"
+        f"Install with: {sys.executable} -m pip install -r requirements.txt"
     ) from exc
 from pydantic import BaseModel
 from stt_whisper import STTEngine as WhisperEngine
