@@ -10,6 +10,7 @@ from __future__ import annotations
 import argparse
 import importlib.util
 import logging
+import shutil
 import subprocess
 import sys
 from pathlib import Path
@@ -68,6 +69,20 @@ def install_requirements() -> bool:
         return False
 
 
+def check_linux_build_tools() -> bool:
+    """Return True when required build tools are present on Linux."""
+    if sys.platform.startswith("linux"):
+        required_tools = ["ninja", "cmake", "gcc", "g++"]
+        missing_tools = [tool for tool in required_tools if shutil.which(tool) is None]
+        if missing_tools:
+            logger.error("Missing Linux build tools: %s", ", ".join(missing_tools))
+            logger.error(
+                "Install with: sudo apt update && sudo apt install -y ninja-build cmake build-essential python3-dev"
+            )
+            return False
+    return True
+
+
 def preflight_checks() -> int:
     if not APP_FILE.exists():
         logger.error("Missing app entrypoint: %s", APP_FILE)
@@ -76,6 +91,8 @@ def preflight_checks() -> int:
     missing = check_required_modules()
     if missing:
         logger.warning("Missing Python packages: %s", ", ".join(missing))
+        if "llama_cpp" in missing and not check_linux_build_tools():
+            return 2
         if not install_requirements():
             logger.error("Install dependencies manually with: %s -m pip install -r requirements.txt", sys.executable)
             return 2

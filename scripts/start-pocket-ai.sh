@@ -42,6 +42,24 @@ fi
 echo "Activating Python venv..."
 source .venv/bin/activate
 
+# If llama_cpp is missing, make sure local build tools exist before pip install.
+# llama-cpp-python often requires compiling from source on Linux.
+if ! python -c "import llama_cpp" >/dev/null 2>&1; then
+    MISSING_TOOLS=()
+    for tool in ninja cmake gcc g++; do
+        if ! command -v "$tool" >/dev/null 2>&1; then
+            MISSING_TOOLS+=("$tool")
+        fi
+    done
+
+    if [ ${#MISSING_TOOLS[@]} -gt 0 ]; then
+        echo "ERROR: Missing system build tools: ${MISSING_TOOLS[*]}"
+        echo "Install them, then rerun launcher:"
+        echo "  sudo apt update && sudo apt install -y ninja-build cmake build-essential python3-dev"
+        exit 1
+    fi
+fi
+
 # Ensure required Python dependencies are installed
 if ! python -c "import fastapi, psutil, uvicorn, llama_cpp" >/dev/null 2>&1; then
     echo "Installing Python dependencies..."
