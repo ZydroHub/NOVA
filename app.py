@@ -4,7 +4,6 @@ import uvicorn
 import psutil
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.staticfiles import StaticFiles
 
 from config import PORT, setup_logging
 from chat_ai import router as chat_router, ai as ai_state
@@ -50,15 +49,20 @@ async def system_stats():
                     if entries:
                         temp = entries[0].current
                         break
+            else:
+                logger.debug("No temperature sensors available in this environment.")
         except (AttributeError, OSError):
             # Temperature sensors not available (common in VMs)
             temp = 0
+            logger.debug("Temperature sensors are not supported in this environment.")
         
-        return {
+        stats = {
             "cpu": round(cpu_percent, 1),
             "ram": round(ram_percent, 1),
             "temp": round(temp, 1)
         }
+        logger.debug("System stats sampled: %s", stats)
+        return stats
     except Exception as e:
         logger.warning("Error getting system stats: %s", e)
         return {
@@ -70,9 +74,12 @@ async def system_stats():
 
 @app.on_event("startup")
 async def startup_event():
-    logger.info("Unified Backend starting up...")
+    logger.info("Unified Backend starting up on port %s", PORT)
+    logger.debug("SKIP_MODEL_LOAD=%s", os.environ.get("SKIP_MODEL_LOAD", ""))
     if not os.environ.get("SKIP_MODEL_LOAD"):
+        logger.info("Loading chat model...")
         ai_state.load_model()
+        logger.info("Chat model loaded.")
         # Tool model is loaded in a subprocess when needed (avoids thread/crash issues)
     try:
         from task_scheduler import init_scheduler

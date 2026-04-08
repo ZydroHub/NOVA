@@ -30,10 +30,26 @@ cd "$PROJECT_ROOT"
 echo "=== Pocket AI launcher ==="
 echo "Project: $PROJECT_ROOT"
 
-# Activate venv if present
-if [ -f ".venv/bin/activate" ]; then
-    echo "Activating Python venv..."
-    source .venv/bin/activate
+# Create and activate venv if needed
+if [ ! -f ".venv/bin/activate" ]; then
+    echo "Creating Python venv (.venv)..."
+    python3 -m venv .venv || {
+        echo "ERROR: Could not create .venv. Ensure python3-venv is installed."
+        exit 1
+    }
+fi
+
+echo "Activating Python venv..."
+source .venv/bin/activate
+
+# Ensure required Python dependencies are installed
+if ! python -c "import fastapi, psutil" >/dev/null 2>&1; then
+    echo "Installing Python dependencies..."
+    python -m pip install --upgrade pip
+    python -m pip install -r requirements.txt || {
+        echo "ERROR: Failed to install Python dependencies from requirements.txt"
+        exit 1
+    }
 fi
 
 # Start backend in background
