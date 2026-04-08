@@ -1,6 +1,7 @@
 import logging
 import os
 import uvicorn
+import psutil
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
@@ -29,6 +30,42 @@ app.include_router(chat_router)
 async def health():
     """Simple health check for monitoring and tests."""
     return {"status": "ok"}
+
+
+@app.get("/system/stats")
+async def system_stats():
+    """Get current system stats (CPU, RAM, Temperature)."""
+    try:
+        cpu_percent = psutil.cpu_percent(interval=0.1)
+        ram = psutil.virtual_memory()
+        ram_percent = ram.percent
+        
+        # Try to get temperature (may not work in VM or without sensors)
+        temp = 0
+        try:
+            temps = psutil.sensors_temperatures()
+            if temps:
+                # Get the first available temperature sensor
+                for name, entries in temps.items():
+                    if entries:
+                        temp = entries[0].current
+                        break
+        except (AttributeError, OSError):
+            # Temperature sensors not available (common in VMs)
+            temp = 0
+        
+        return {
+            "cpu": round(cpu_percent, 1),
+            "ram": round(ram_percent, 1),
+            "temp": round(temp, 1)
+        }
+    except Exception as e:
+        logger.warning("Error getting system stats: %s", e)
+        return {
+            "cpu": 0,
+            "ram": 0,
+            "temp": 0
+        }
 
 
 @app.on_event("startup")
