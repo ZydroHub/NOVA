@@ -38,9 +38,23 @@ def parse_args() -> argparse.Namespace:
 
 
 def check_required_modules() -> list[str]:
-    required = ["fastapi", "uvicorn", "psutil"]
+    required = ["fastapi", "uvicorn", "psutil", "llama_cpp"]
     missing = [name for name in required if importlib.util.find_spec(name) is None]
     return missing
+
+
+def install_requirements() -> bool:
+    if not REQUIREMENTS_FILE.exists():
+        logger.error("requirements.txt not found at %s", REQUIREMENTS_FILE)
+        return False
+    try:
+        logger.info("Installing dependencies from requirements.txt...")
+        subprocess.run([sys.executable, "-m", "pip", "install", "--upgrade", "pip"], cwd=str(ROOT), check=True)
+        subprocess.run([sys.executable, "-m", "pip", "install", "-r", str(REQUIREMENTS_FILE)], cwd=str(ROOT), check=True)
+        return True
+    except subprocess.CalledProcessError as exc:
+        logger.error("Dependency installation failed with exit code %s", exc.returncode)
+        return False
 
 
 def preflight_checks() -> int:
@@ -50,12 +64,14 @@ def preflight_checks() -> int:
 
     missing = check_required_modules()
     if missing:
-        logger.error("Missing Python packages: %s", ", ".join(missing))
-        if REQUIREMENTS_FILE.exists():
-            logger.error("Install dependencies with: %s -m pip install -r requirements.txt", sys.executable)
-        else:
-            logger.error("requirements.txt not found at %s", REQUIREMENTS_FILE)
-        return 2
+        logger.warning("Missing Python packages: %s", ", ".join(missing))
+        if not install_requirements():
+            logger.error("Install dependencies manually with: %s -m pip install -r requirements.txt", sys.executable)
+            return 2
+        missing_after_install = check_required_modules()
+        if missing_after_install:
+            logger.error("Still missing Python packages after install: %s", ", ".join(missing_after_install))
+            return 3
 
     logger.debug("Preflight checks passed. Using Python: %s", sys.executable)
     return 0

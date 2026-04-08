@@ -43,7 +43,7 @@ echo "Activating Python venv..."
 source .venv/bin/activate
 
 # Ensure required Python dependencies are installed
-if ! python -c "import fastapi, psutil" >/dev/null 2>&1; then
+if ! python -c "import fastapi, psutil, uvicorn, llama_cpp" >/dev/null 2>&1; then
     echo "Installing Python dependencies..."
     python -m pip install --upgrade pip
     python -m pip install -r requirements.txt || {

@@ -14,7 +14,13 @@ from typing import Any, Dict, List, Optional
 
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect, HTTPException
 from huggingface_hub import hf_hub_download
-from llama_cpp import Llama
+try:
+    from llama_cpp import Llama
+except ImportError as exc:
+    raise ImportError(
+        "Missing dependency 'llama_cpp' (package: llama-cpp-python). "
+        "Install with: python -m pip install -r requirements.txt"
+    ) from exc
 from pydantic import BaseModel
 from stt_whisper import STTEngine as WhisperEngine
 from stt_vosk import STTEngine as VoskEngine
