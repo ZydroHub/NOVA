@@ -64,7 +64,8 @@ fi
 if ! python -c "import fastapi, psutil, uvicorn, llama_cpp" >/dev/null 2>&1; then
     echo "Installing Python dependencies..."
     python -m pip install --upgrade pip
-    python -m pip install -r requirements.txt || {
+    python -m pip install --upgrade setuptools wheel ninja cmake scikit-build-core
+    python -m pip install --no-build-isolation -r requirements.txt || {
         echo "ERROR: Failed to install Python dependencies from requirements.txt"
         exit 1
     }

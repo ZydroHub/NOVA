@@ -23,8 +23,12 @@ scipy>=1.11,<1.15
 piper-tts==1.4.1
 onnxruntime>=1.17,<1.21
 
+# Build tools for llama-cpp-python (needed when wheel is not available)
+ninja>=1.11
+cmake>=3.27
+
 # Local LLM & model download
-llama-cpp-python==0.3.16
+llama-cpp-python>=0.2.90,<0.3
 huggingface-hub==1.4.1
 
 # Web search (tool_ai)

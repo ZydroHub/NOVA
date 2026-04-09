@@ -62,7 +62,27 @@ def install_requirements() -> bool:
     try:
         logger.info("Installing dependencies from requirements.txt...")
         subprocess.run([sys.executable, "-m", "pip", "install", "--upgrade", "pip"], cwd=str(ROOT), check=True)
-        subprocess.run([sys.executable, "-m", "pip", "install", "-r", str(REQUIREMENTS_FILE)], cwd=str(ROOT), check=True)
+        subprocess.run(
+            [
+                sys.executable,
+                "-m",
+                "pip",
+                "install",
+                "--upgrade",
+                "setuptools",
+                "wheel",
+                "ninja",
+                "cmake",
+                "scikit-build-core",
+            ],
+            cwd=str(ROOT),
+            check=True,
+        )
+        subprocess.run(
+            [sys.executable, "-m", "pip", "install", "--no-build-isolation", "-r", str(REQUIREMENTS_FILE)],
+            cwd=str(ROOT),
+            check=True,
+        )
         return True
     except subprocess.CalledProcessError as exc:
         logger.error("Dependency installation failed with exit code %s", exc.returncode)
