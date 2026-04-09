@@ -30,6 +30,27 @@ cd "$PROJECT_ROOT"
 echo "=== Pocket AI launcher ==="
 echo "Project: $PROJECT_ROOT"
 
+ensure_linux_packages() {
+    if command -v apt-get >/dev/null 2>&1; then
+        echo "Checking Linux build tools..."
+        MISSING_TOOLS=()
+        for tool in ninja cmake gcc g++; do
+            if ! command -v "$tool" >/dev/null 2>&1; then
+                MISSING_TOOLS+=("$tool")
+            fi
+        done
+
+        if [ ${#MISSING_TOOLS[@]} -gt 0 ]; then
+            echo "Installing missing system build tools: ${MISSING_TOOLS[*]}"
+            if command -v sudo >/dev/null 2>&1; then
+                sudo apt-get update && sudo apt-get install -y ninja-build cmake build-essential python3-dev || return 1
+            else
+                apt-get update && apt-get install -y ninja-build cmake build-essential python3-dev || return 1
+            fi
+        fi
+    fi
+}
+
 # Create and activate venv if needed
 if [ ! -f ".venv/bin/activate" ]; then
     echo "Creating Python venv (.venv)..."
@@ -42,23 +63,11 @@ fi
 echo "Activating Python venv..."
 source .venv/bin/activate
 
-# If llama_cpp is missing, make sure local build tools exist before pip install.
-# llama-cpp-python often requires compiling from source on Linux.
-if ! python -c "import llama_cpp" >/dev/null 2>&1; then
-    MISSING_TOOLS=()
-    for tool in ninja cmake gcc g++; do
-        if ! command -v "$tool" >/dev/null 2>&1; then
-            MISSING_TOOLS+=("$tool")
-        fi
-    done
-
-    if [ ${#MISSING_TOOLS[@]} -gt 0 ]; then
-        echo "ERROR: Missing system build tools: ${MISSING_TOOLS[*]}"
-        echo "Install them, then rerun launcher:"
-        echo "  sudo apt update && sudo apt install -y ninja-build cmake build-essential python3-dev"
-        exit 1
-    fi
-fi
+ensure_linux_packages || {
+    echo "ERROR: Failed to install Linux build tools automatically."
+    echo "Try manually: sudo apt-get update && sudo apt-get install -y ninja-build cmake build-essential python3-dev"
+    exit 1
+}
 
 # Ensure required Python dependencies are installed
 if ! python -c "import fastapi, psutil, uvicorn, llama_cpp" >/dev/null 2>&1; then
