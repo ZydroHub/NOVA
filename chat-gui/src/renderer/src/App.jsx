@@ -89,11 +89,10 @@ export default function App() {
       <WebSocketProvider>
         <KeyboardProvider>
           <div className="flex flex-col h-screen w-screen overflow-hidden bg-[var(--pixel-bg)] text-[var(--pixel-text)]">
-            {/* CRT Scanline overlay effect */}
-            <RandomScanlineOverlay />
-            
             <StatusBar />
             <div className="flex-1 overflow-hidden relative w-full">
+              {/* CRT scanline overlay only for the route content area */}
+              <RandomScanlineOverlay />
               <ErrorBoundary>
                 <AnimatedRoutes />
               </ErrorBoundary>
