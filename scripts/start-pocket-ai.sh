@@ -104,16 +104,35 @@ ensure_linux_packages || {
     exit 1
 }
 
-# Ensure required Python dependencies are installed
-if ! python -c "import fastapi, psutil, uvicorn, llama_cpp" >/dev/null 2>&1; then
-    echo "Installing Python dependencies..."
-    python -m pip install --upgrade pip
-    python -m pip install --upgrade setuptools wheel ninja cmake scikit-build-core
-    python -m pip install --no-build-isolation -r "$REQUIREMENTS_FILE" || {
-        echo "ERROR: Failed to install Python dependencies from $REQUIREMENTS_FILE"
-        exit 1
-    }
+# Ensure virtual environment is active before installing
+if [ -z "$VIRTUAL_ENV" ]; then
+    echo "ERROR: Virtual environment is not active. Run: source .venv/bin/activate"
+    exit 1
 fi
+
+# Ensure required Python dependencies are installed
+echo "Installing Python dependencies from requirements.txt..."
+python -m pip install --upgrade pip setuptools wheel || {
+    echo "ERROR: Failed to upgrade pip/setuptools"
+    exit 1
+}
+
+python -m pip install --upgrade ninja cmake scikit-build-core || {
+    echo "WARNING: Some build tools failed to install; continuing..."
+}
+
+python -m pip install --no-build-isolation -r "$REQUIREMENTS_FILE" || {
+    echo "ERROR: Failed to install Python dependencies from $REQUIREMENTS_FILE"
+    exit 1
+}
+
+# Explicitly install semantic-router with local extras for advanced routing
+echo "Installing semantic-router[local] for AI routing capabilities..."
+python -m pip install "semantic-router[local]" || {
+    echo "WARNING: semantic-router[local] install failed; continuing (optional feature)..."
+}
+
+echo "Python dependencies synchronized."
 
 # Start backend in background
 echo "Starting backend..."
@@ -130,11 +149,17 @@ for i in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27
     sleep 1
 done
 
-# Start Electron GUI
-cd "$PROJECT_ROOT/chat-gui"
+# Sync frontend dependencies
+echo ""
+echo "Synchronizing frontend dependencies..."
+cd "$PROJECT_ROOT/chat-gui" || {
+    echo "ERROR: Could not enter chat-gui directory."
+    kill $BACKEND_PID 2>/dev/null || true
+    exit 1
+}
+
 if ! command -v npm &>/dev/null; then
-    echo ""
-    echo "ERROR: npm not found. Add Node/npm to your PATH or run this script from a terminal."
+    echo "ERROR: npm not found. Add Node.js/npm to your PATH or run this script from a terminal."
     echo "Backend is still running (PID $BACKEND_PID). Close this window to stop it, or run: kill $BACKEND_PID"
     echo "Press Enter to close..."
     read -r
@@ -142,6 +167,15 @@ if ! command -v npm &>/dev/null; then
     exit 1
 fi
 
+echo "Running npm install (this may take a minute on first run)..."
+npm install || {
+    echo "ERROR: npm install failed."
+    kill $BACKEND_PID 2>/dev/null || true
+    exit 1
+}
+
+echo "Frontend dependencies synchronized."
+echo ""
 echo "Starting NOVA window..."
 if [ -f "out/main/index.js" ]; then
     npx electron . 2>/dev/null || npm run dev

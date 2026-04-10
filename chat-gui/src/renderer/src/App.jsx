@@ -53,6 +53,9 @@ export default function App() {
       <WebSocketProvider>
         <KeyboardProvider>
           <div className="flex flex-col h-screen w-screen overflow-hidden bg-[var(--pixel-bg)] text-[var(--pixel-text)]">
+            {/* CRT Scanline overlay effect */}
+            <div className="scanline-overlay" />
+            
             <StatusBar />
             <div className="flex-1 overflow-hidden relative w-full">
               <ErrorBoundary>
