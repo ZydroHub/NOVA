@@ -58,7 +58,7 @@ function RandomScanlineOverlay() {
       burstRef.current = setTimeout(() => {
         setActive(false);
         scheduleNext();
-      }, 2500);
+      }, 8000);
     };
 
     const scheduleNext = () => {

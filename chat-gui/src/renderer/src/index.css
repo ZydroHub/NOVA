@@ -176,10 +176,10 @@
 
 @keyframes scanSweep {
   0% {
-    transform: translateY(-100%);
+    transform: translateY(0);
   }
   100% {
-    transform: translateY(100%);
+    transform: translateY(120vh);
   }
 }
 
@@ -195,24 +195,24 @@
   background: repeating-linear-gradient(
     to bottom,
     transparent 0px,
-    transparent 6px,
-    rgba(122, 162, 247, 0.12) 6px,
-    rgba(122, 162, 247, 0.12) 12px
+    transparent 2px,
+    rgba(122, 162, 247, 0.1) 2px,
+    rgba(122, 162, 247, 0.1) 4px
   );
   animation: scanlines 1.8s linear infinite;
   transition: opacity 180ms ease;
 }
 
 .scanline-overlay.active {
-  opacity: 0.30;
+  opacity: 0.22;
 }
 
 .scanline-sweep {
   position: absolute;
-  top: 0;
+  top: -14%;
   left: 0;
   width: 100%;
-  height: 100%;
+  height: 14%;
   pointer-events: none;
   z-index: 10000;
   opacity: 0;
@@ -226,7 +226,7 @@
 
 .scanline-sweep.active {
   opacity: 1;
-  animation: scanSweep 2.5s linear 1;
+  animation: scanSweep 8s linear 1;
 }
 
 /* Small-screen typography: slightly tighter for 4.3" / low height */
