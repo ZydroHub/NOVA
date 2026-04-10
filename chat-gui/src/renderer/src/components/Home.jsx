@@ -11,11 +11,12 @@ const MenuButton = ({ icon: Icon, label, onClick, color }) => (
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
         onClick={onClick}
-        className="pixel-btn flex flex-col items-center justify-center gap-3 w-full min-h-[100px] flex-1 min-w-0"
-        style={{ borderColor: color, color: color }}
+        className="group relative overflow-hidden flex flex-col items-center justify-center gap-3 w-full min-h-[100px] flex-1 min-w-0 border-4 bg-[var(--pixel-surface)] px-6 py-4 font-['Press_Start_2P'] text-sm transition-all active:translate-y-1 active:shadow-none focus:outline-none"
+        style={{ borderColor: color, color: color, boxShadow: '4px 4px 0 0 rgba(0, 0, 0, 0.5)' }}
     >
-        <Icon size={40} />
-        <span className="text-sm">{label}</span>
+        <div className="absolute inset-0 bg-current opacity-0 transition-opacity duration-150 group-hover:opacity-10" />
+        <Icon size={40} className="relative z-10" />
+        <span className="relative z-10 text-sm">{label}</span>
     </motion.button>
 );
 
