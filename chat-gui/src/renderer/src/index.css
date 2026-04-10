@@ -199,13 +199,13 @@
     rgba(122, 162, 247, 0.045) 3px,
     rgba(122, 162, 247, 0.045) 4px
   );
-  animation: scanlines 6s linear infinite;
+  animation: scanlines 8s linear infinite;
   transition: opacity 180ms ease;
   will-change: background-position;
 }
 
 .scanline-overlay.active {
-  opacity: 0.1;
+  opacity: 0.06;
 }
 
 .scanline-sweep {
@@ -213,20 +213,25 @@
   top: 0;
   left: 0;
   width: 100%;
-  height: 3px;
+  height: 4px;
   pointer-events: none;
   z-index: 10000;
   opacity: 0;
-  background: linear-gradient(to bottom, rgba(122, 162, 247, 0), rgba(122, 162, 247, 0.75), rgba(122, 162, 247, 0));
+  background: linear-gradient(
+    to bottom,
+    rgba(122, 162, 247, 0),
+    rgba(122, 162, 247, 0.34),
+    rgba(122, 162, 247, 0)
+  );
   box-shadow:
-    0 0 6px rgba(122, 162, 247, 0.35),
-    0 0 14px rgba(122, 162, 247, 0.18);
-  filter: blur(0.4px);
+    0 0 4px rgba(122, 162, 247, 0.18),
+    0 0 8px rgba(122, 162, 247, 0.08);
+  mix-blend-mode: screen;
   will-change: transform, opacity;
 }
 
 .scanline-sweep.active {
-  opacity: 0.9;
+  opacity: 0.55;
   animation: scanSweep 8s linear 1 both;
 }
 
