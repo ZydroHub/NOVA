@@ -213,20 +213,27 @@
   top: 0;
   left: 0;
   width: 100%;
-  height: 2px;
+  height: 6px;
   pointer-events: none;
   z-index: 10000;
   opacity: 0;
-  background: rgba(255, 255, 255, 0.38);
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0),
+    rgba(255, 255, 255, 0.05) 22%,
+    rgba(255, 255, 255, 0.12) 50%,
+    rgba(255, 255, 255, 0.05) 78%,
+    rgba(255, 255, 255, 0)
+  );
   box-shadow:
-    0 0 3px rgba(255, 255, 255, 0.14),
-    0 0 10px rgba(122, 162, 247, 0.1);
+    0 0 2px rgba(255, 255, 255, 0.08),
+    0 0 8px rgba(122, 162, 247, 0.05);
   mix-blend-mode: screen;
   will-change: transform, opacity;
 }
 
 .scanline-sweep.active {
-  opacity: 0.55;
+  opacity: 0.28;
   animation: scanSweep 8s linear 1 both;
 }
 
