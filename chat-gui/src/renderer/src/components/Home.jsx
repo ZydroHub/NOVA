@@ -109,7 +109,7 @@ export default function Home() {
             {/* Avatar name + status */}
             <div className="flex flex-col items-center gap-2 mb-4 z-10">
                 <h1 className="text-2xl font-['Press_Start_2P'] tracking-tight text-[var(--pixel-primary)]">
-                    POCKET AI
+                    NOVA
                 </h1>
                 <span className="text-xs font-['Press_Start_2P'] tracking-widest text-[var(--pixel-accent)]">
                     SYSTEMS ONLINE

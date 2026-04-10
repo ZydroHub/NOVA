@@ -21,7 +21,7 @@ export default function ChatHeader({ connected, onToggleSidebar, onCloseKeyboard
                 </button>
             </div>
             <div className="flex flex-col items-center justify-center text-center">
-                <div className="text-xl font-['Press_Start_2P'] tracking-tight text-[var(--pixel-primary)] leading-none mb-1">POCKET AI</div>
+                <div className="text-xl font-['Press_Start_2P'] tracking-tight text-[var(--pixel-primary)] leading-none mb-1">NOVA</div>
                 <div className="text-xs text-[var(--pixel-secondary)] font-['VT323'] leading-none tracking-widest uppercase">{connected ? 'Chat Engine Online' : 'Connecting to AI...'}</div>
             </div>
             <div className="flex justify-end">

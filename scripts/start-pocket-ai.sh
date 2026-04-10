@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Start Pocket AI: backend (FastAPI) then Electron GUI.
+# Start NOVA: backend (FastAPI) then Electron GUI.
 # When you close the GUI, the backend is stopped too.
 
 # When run from desktop, PATH may not include node/npm — load your shell profile
@@ -23,11 +23,46 @@ if ! command -v npm &>/dev/null; then
     done
 fi
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+resolve_script_path() {
+    local src="$1"
+    if command -v readlink >/dev/null 2>&1; then
+        readlink -f "$src" 2>/dev/null || echo "$src"
+    else
+        echo "$src"
+    fi
+}
+
+find_project_root() {
+    local start_dir="$1"
+    local current="$start_dir"
+    while [ "$current" != "/" ]; do
+        if [ -f "$current/requirements.txt" ] && [ -f "$current/app.py" ]; then
+            echo "$current"
+            return 0
+        fi
+        current="$(dirname "$current")"
+    done
+    return 1
+}
+
+SCRIPT_PATH="$(resolve_script_path "${BASH_SOURCE[0]}")"
+SCRIPT_DIR="$(cd "$(dirname "$SCRIPT_PATH")" && pwd)"
+PROJECT_ROOT="$(find_project_root "$SCRIPT_DIR")"
+
+if [ -z "$PROJECT_ROOT" ]; then
+    PROJECT_ROOT="$(find_project_root "$(pwd)")"
+fi
+
+if [ -z "$PROJECT_ROOT" ]; then
+    echo "ERROR: Could not find project root (missing requirements.txt/app.py)."
+    echo "Run this script from inside your NOVA project or fix the desktop Exec path."
+    exit 1
+fi
+
+REQUIREMENTS_FILE="$PROJECT_ROOT/requirements.txt"
 cd "$PROJECT_ROOT"
 
-echo "=== Pocket AI launcher ==="
+echo "=== NOVA launcher ==="
 echo "Project: $PROJECT_ROOT"
 
 ensure_linux_packages() {
@@ -74,8 +109,8 @@ if ! python -c "import fastapi, psutil, uvicorn, llama_cpp" >/dev/null 2>&1; the
     echo "Installing Python dependencies..."
     python -m pip install --upgrade pip
     python -m pip install --upgrade setuptools wheel ninja cmake scikit-build-core
-    python -m pip install --no-build-isolation -r requirements.txt || {
-        echo "ERROR: Failed to install Python dependencies from requirements.txt"
+    python -m pip install --no-build-isolation -r "$REQUIREMENTS_FILE" || {
+        echo "ERROR: Failed to install Python dependencies from $REQUIREMENTS_FILE"
         exit 1
     }
 fi
@@ -107,7 +142,7 @@ if ! command -v npm &>/dev/null; then
     exit 1
 fi
 
-echo "Starting Pocket AI window..."
+echo "Starting NOVA window..."
 if [ -f "out/main/index.js" ]; then
     npx electron . 2>/dev/null || npm run dev
 else

@@ -14,7 +14,7 @@ from chat_ai import router as chat_router, ai as ai_state
 setup_logging()
 logger = logging.getLogger(__name__)
 
-app = FastAPI(title="Pocket AI Unified Backend")
+app = FastAPI(title="NOVA Unified Backend")
 
 # Enable CORS for the frontend
 app.add_middleware(
@@ -127,7 +127,7 @@ def _finite_float(value: float, fallback: float = 0.0) -> float:
 
 @app.on_event("startup")
 async def startup_event():
-    logger.info("Unified Backend starting up on port %s", PORT)
+    logger.info("NOVA backend starting up on port %s", PORT)
     logger.debug("SKIP_MODEL_LOAD=%s", os.environ.get("SKIP_MODEL_LOAD", ""))
     if not os.environ.get("SKIP_MODEL_LOAD"):
         logger.info("Loading chat model...")
@@ -139,7 +139,7 @@ async def startup_event():
         init_scheduler(ai_state.conv_manager)
     except Exception as e:
         logger.warning("Task scheduler not started: %s", e)
-    logger.info("Unified Backend ready.")
+    logger.info("NOVA backend ready.")
 
 @app.post("/shutdown")
 async def shutdown():
