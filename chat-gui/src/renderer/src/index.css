@@ -167,10 +167,10 @@
 /* CRT Scanline Overlay - Subtle horizontal lines for retro Jarvis feel */
 @keyframes scanlines {
   0% {
-    transform: translateY(0);
+    background-position-y: 0px;
   }
   100% {
-    transform: translateY(10px);
+    background-position-y: 48px;
   }
 }
 
@@ -182,14 +182,20 @@
   height: 100%;
   pointer-events: none;
   z-index: 9999;
+  opacity: 0;
   background: repeating-linear-gradient(
     to bottom,
     transparent 0px,
-    transparent 2px,
-    rgba(0, 0, 0, 0.03) 2px,
-    rgba(0, 0, 0, 0.03) 4px
+    transparent 4px,
+    rgba(122, 162, 247, 0.08) 4px,
+    rgba(122, 162, 247, 0.08) 8px
   );
-  animation: scanlines 8s linear infinite;
+  animation: scanlines 2.2s linear infinite;
+  transition: opacity 220ms ease;
+}
+
+.scanline-overlay.active {
+  opacity: 0.22;
 }
 
 /* Small-screen typography: slightly tighter for 4.3" / low height */

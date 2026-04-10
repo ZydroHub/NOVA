@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { HashRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 import Home from './components/Home';
@@ -47,6 +47,34 @@ const AnimatedRoutes = () => {
   );
 };
 
+function RandomScanlineOverlay() {
+  const [active, setActive] = useState(false);
+  const timeoutRef = useRef(null);
+
+  useEffect(() => {
+    const scheduleNext = () => {
+      const nextDelayMs = (20 + Math.random() * 10) * 1000;
+      timeoutRef.current = setTimeout(() => {
+        setActive(true);
+        timeoutRef.current = setTimeout(() => {
+          setActive(false);
+          scheduleNext();
+        }, 2200);
+      }, nextDelayMs);
+    };
+
+    scheduleNext();
+
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, []);
+
+  return <div className={`scanline-overlay ${active ? 'active' : ''}`} />;
+}
+
 export default function App() {
   return (
     <HashRouter>
@@ -54,7 +82,7 @@ export default function App() {
         <KeyboardProvider>
           <div className="flex flex-col h-screen w-screen overflow-hidden bg-[var(--pixel-bg)] text-[var(--pixel-text)]">
             {/* CRT Scanline overlay effect */}
-            <div className="scanline-overlay" />
+            <RandomScanlineOverlay />
             
             <StatusBar />
             <div className="flex-1 overflow-hidden relative w-full">
