@@ -170,7 +170,16 @@
     background-position-y: 0px;
   }
   100% {
-    background-position-y: 48px;
+    background-position-y: 64px;
+  }
+}
+
+@keyframes scanSweep {
+  0% {
+    transform: translateY(-120%);
+  }
+  100% {
+    transform: translateY(120%);
   }
 }
 
@@ -186,16 +195,38 @@
   background: repeating-linear-gradient(
     to bottom,
     transparent 0px,
-    transparent 4px,
-    rgba(122, 162, 247, 0.08) 4px,
-    rgba(122, 162, 247, 0.08) 8px
+    transparent 6px,
+    rgba(122, 162, 247, 0.12) 6px,
+    rgba(122, 162, 247, 0.12) 12px
   );
-  animation: scanlines 2.2s linear infinite;
-  transition: opacity 220ms ease;
+  animation: scanlines 1.8s linear infinite;
+  transition: opacity 180ms ease;
 }
 
 .scanline-overlay.active {
-  opacity: 0.22;
+  opacity: 0.30;
+}
+
+.scanline-sweep {
+  position: fixed;
+  top: -25%;
+  left: 0;
+  width: 100%;
+  height: 25%;
+  pointer-events: none;
+  z-index: 10000;
+  opacity: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(122, 162, 247, 0),
+    rgba(122, 162, 247, 0.18),
+    rgba(122, 162, 247, 0)
+  );
+}
+
+.scanline-sweep.active {
+  opacity: 1;
+  animation: scanSweep 2.5s linear 1;
 }
 
 /* Small-screen typography: slightly tighter for 4.3" / low height */

@@ -49,30 +49,38 @@ const AnimatedRoutes = () => {
 
 function RandomScanlineOverlay() {
   const [active, setActive] = useState(false);
-  const timeoutRef = useRef(null);
+  const delayRef = useRef(null);
+  const burstRef = useRef(null);
 
   useEffect(() => {
-    const scheduleNext = () => {
-      const nextDelayMs = (20 + Math.random() * 10) * 1000;
-      timeoutRef.current = setTimeout(() => {
-        setActive(true);
-        timeoutRef.current = setTimeout(() => {
-          setActive(false);
-          scheduleNext();
-        }, 2200);
-      }, nextDelayMs);
+    const triggerBurst = () => {
+      setActive(true);
+      burstRef.current = setTimeout(() => {
+        setActive(false);
+        scheduleNext();
+      }, 2500);
     };
 
-    scheduleNext();
+    const scheduleNext = () => {
+      const nextDelayMs = (20 + Math.random() * 10) * 1000;
+      delayRef.current = setTimeout(triggerBurst, nextDelayMs);
+    };
+
+    // Show a first pulse quickly so users can verify the feature is working.
+    delayRef.current = setTimeout(triggerBurst, 1200);
 
     return () => {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-      }
+      if (delayRef.current) clearTimeout(delayRef.current);
+      if (burstRef.current) clearTimeout(burstRef.current);
     };
   }, []);
 
-  return <div className={`scanline-overlay ${active ? 'active' : ''}`} />;
+  return (
+    <>
+      <div className={`scanline-overlay ${active ? 'active' : ''}`} />
+      <div className={`scanline-sweep ${active ? 'active' : ''}`} />
+    </>
+  );
 }
 
 export default function App() {
