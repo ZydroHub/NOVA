@@ -1,5 +1,8 @@
 import logging
+import math
 import os
+import subprocess
+from datetime import datetime
 import uvicorn
 import psutil
 from fastapi import FastAPI
@@ -38,38 +41,88 @@ async def system_stats():
         cpu_percent = psutil.cpu_percent(interval=0.1)
         ram = psutil.virtual_memory()
         ram_percent = ram.percent
-        
-        # Try to get temperature (may not work in VM or without sensors)
-        temp = 0
-        try:
-            temps = psutil.sensors_temperatures()
-            if temps:
-                # Get the first available temperature sensor
-                for name, entries in temps.items():
-                    if entries:
-                        temp = entries[0].current
-                        break
-            else:
-                logger.debug("No temperature sensors available in this environment.")
-        except (AttributeError, OSError):
-            # Temperature sensors not available (common in VMs)
-            temp = 0
-            logger.debug("Temperature sensors are not supported in this environment.")
-        
+
+        temp = _read_temperature_celsius()
+        now = datetime.now().strftime("%H:%M:%S")
+        cpu_value = _finite_float(cpu_percent)
+        ram_value = _finite_float(ram_percent)
+        temp_value = _finite_float(temp)
+
         stats = {
-            "cpu": round(cpu_percent, 1),
-            "ram": round(ram_percent, 1),
-            "temp": round(temp, 1)
+            # Canonical keys used by the renderer.
+            "time": now,
+            "cpu_percent": round(cpu_value, 1),
+            "memory_percent": round(ram_value, 1),
+            "temperature": round(temp_value, 1),
+            # Backward-compatible aliases.
+            "cpu": round(cpu_value, 1),
+            "ram": round(ram_value, 1),
+            "temp": round(temp_value, 1)
         }
         logger.debug("System stats sampled: %s", stats)
         return stats
     except Exception as e:
         logger.warning("Error getting system stats: %s", e)
         return {
+            "time": datetime.now().strftime("%H:%M:%S"),
+            "cpu_percent": 0,
+            "memory_percent": 0,
+            "temperature": 0,
             "cpu": 0,
             "ram": 0,
             "temp": 0
         }
+
+
+def _read_temperature_celsius() -> float:
+    """Read CPU temperature with Linux/Raspberry Pi fallbacks."""
+    # 1) psutil sensors API (works on many Linux systems, including some Pi setups).
+    try:
+        temps = psutil.sensors_temperatures()
+        if temps:
+            for entries in temps.values():
+                if entries and entries[0].current is not None:
+                    return float(entries[0].current)
+    except (AttributeError, OSError):
+        pass
+
+    # 2) Direct sysfs read (common on Raspberry Pi).
+    try:
+        with open("/sys/class/thermal/thermal_zone0/temp", "r", encoding="utf-8") as f:
+            milli_c = f.read().strip()
+        if milli_c:
+            return float(milli_c) / 1000.0
+    except (OSError, ValueError):
+        pass
+
+    # 3) vcgencmd fallback (Pi firmware utility).
+    try:
+        result = subprocess.run(
+            ["vcgencmd", "measure_temp"],
+            capture_output=True,
+            text=True,
+            timeout=1,
+            check=False,
+        )
+        output = (result.stdout or "").strip()
+        # Expected format: temp=52.8'C
+        if output.startswith("temp=") and "'" in output:
+            value = output.split("=", 1)[1].split("'", 1)[0]
+            return float(value)
+    except (OSError, ValueError, subprocess.TimeoutExpired):
+        pass
+
+    logger.debug("Temperature sources unavailable; returning 0C.")
+    return 0.0
+
+
+def _finite_float(value: float, fallback: float = 0.0) -> float:
+    """Convert numeric-like values to a finite float, with fallback on NaN/inf/errors."""
+    try:
+        number = float(value)
+        return number if math.isfinite(number) else fallback
+    except (TypeError, ValueError):
+        return fallback
 
 
 @app.on_event("startup")

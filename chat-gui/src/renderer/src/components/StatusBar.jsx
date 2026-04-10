@@ -2,6 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { Activity, Thermometer, Cpu, Clock } from 'lucide-react';
 import { apiFetch } from '../apiClient.js';
 
+const toFiniteNumber = (value, fallback = 0) => {
+    const parsed = Number(value);
+    return Number.isFinite(parsed) ? parsed : fallback;
+};
+
 const StatusBar = () => {
     const [stats, setStats] = useState({
         time: '--:--:--',
@@ -14,7 +19,12 @@ const StatusBar = () => {
         const fetchStats = async () => {
             try {
                 const data = await apiFetch('/system/stats');
-                setStats(data);
+                setStats({
+                    time: data.time || new Date().toLocaleTimeString('en-GB', { hour12: false }),
+                    cpu_percent: toFiniteNumber(data.cpu_percent ?? data.cpu ?? 0),
+                    memory_percent: toFiniteNumber(data.memory_percent ?? data.ram ?? 0),
+                    temperature: toFiniteNumber(data.temperature ?? data.temp ?? 0)
+                });
             } catch (error) {
                 console.error('Failed to fetch system stats:', error);
             }
