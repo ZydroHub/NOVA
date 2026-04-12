@@ -171,7 +171,7 @@ class AIState:
         self.is_recording = False
         self.is_vosk_recording = False
         self.voice_messages = [
-            {"role": "system", "content": "You are a helpful assistant. Keep your responses concise for text-to-speech."}
+            {"role": "system", "content": "You are NOVA, a high-performance local AI core integrated into a Raspberry Pi 5. Identity: You are helpful, technical and similar to a Jarvis-like interface. Operational Constraints: Context: You have access to a 7-inch touchscreen UI. Format: Do not use bold markdown or special characters that might confuse the Text-to-Speech (TTS) engine. Keep your responses concise for text-to-speech."}
         ]
 
     def load_model(self):
