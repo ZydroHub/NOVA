@@ -2,14 +2,60 @@ import logging
 import math
 import os
 import subprocess
+import sys
 from datetime import datetime
-import uvicorn
+
 import psutil
-from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
+import uvicorn
 
 from config import PORT, setup_logging
-from chat_ai import router as chat_router, ai as ai_state
+
+
+def _pip_reinstall(packages):
+    """Best-effort dependency repair in the current interpreter environment."""
+    cmd = [sys.executable, "-m", "pip", "install", "--upgrade", "--force-reinstall", *packages]
+    try:
+        result = subprocess.run(cmd, check=False, capture_output=True, text=True)
+        return result.returncode == 0
+    except Exception:
+        return False
+
+
+def _import_fastapi_components():
+    try:
+        from fastapi import FastAPI as _FastAPI
+        from fastapi.middleware.cors import CORSMiddleware as _CORSMiddleware
+        return _FastAPI, _CORSMiddleware
+    except Exception as exc:
+        msg = str(exc).lower()
+        if "annotated_doc" in msg or "cannot import name 'doc'" in msg:
+            repaired = _pip_reinstall(["annotated-doc==0.0.4", "fastapi==0.129.2"])
+            if repaired:
+                from fastapi import FastAPI as _FastAPI
+                from fastapi.middleware.cors import CORSMiddleware as _CORSMiddleware
+                return _FastAPI, _CORSMiddleware
+        raise
+
+
+def _import_chat_state():
+    try:
+        from chat_ai import router as _chat_router, ai as _ai_state
+        return _chat_router, _ai_state
+    except Exception as exc:
+        msg = str(exc).lower()
+        repaired = False
+        if "cannot import name 'tqdm' from 'tqdm.auto'" in msg or "tqdm.auto" in msg:
+            repaired = _pip_reinstall(["tqdm>=4.66,<5", "huggingface-hub==1.4.1"])
+        elif "no module named 'llama_cpp'" in msg:
+            repaired = _pip_reinstall(["llama-cpp-python==0.3.16"])
+        if repaired:
+            from chat_ai import router as _chat_router, ai as _ai_state
+            return _chat_router, _ai_state
+        raise
+
+
+FastAPI, CORSMiddleware = _import_fastapi_components()
+chat_router, ai_state = _import_chat_state()
 
 setup_logging()
 logger = logging.getLogger(__name__)
