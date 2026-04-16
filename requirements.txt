@@ -2,6 +2,7 @@
 --extra-index-url https://abetlen.github.io/llama-cpp-python/whl/cpu
 python-dotenv==1.0.1
 fastapi==0.129.2
+annotated-doc==0.0.4
 apscheduler>=3.10.0
 uvicorn==0.41.0
 pydantic==2.12.5
