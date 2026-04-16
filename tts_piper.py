@@ -11,8 +11,13 @@ from piper.voice import PiperVoice
 
 os.environ['ORT_LOGGING_LEVEL'] = '3'
 
-# ALSA device for playback (e.g. plughw:3,0 for USB). Use "default" for system default.
-TTS_ALSA_DEVICE = os.environ.get("TTS_ALSA_DEVICE", "default")
+# Optional output-device selection.
+# - TTS_OUTPUT_DEVICE_INDEX: explicit PyAudio output device index
+# - TTS_OUTPUT_DEVICE_NAME: substring match against output-device name
+# - TTS_ALSA_DEVICE: backward-compatible alias for name matching
+TTS_OUTPUT_DEVICE_INDEX = os.environ.get("TTS_OUTPUT_DEVICE_INDEX", "").strip()
+TTS_OUTPUT_DEVICE_NAME = os.environ.get("TTS_OUTPUT_DEVICE_NAME", "").strip()
+TTS_ALSA_DEVICE = os.environ.get("TTS_ALSA_DEVICE", "").strip()
 
 # Sentence-ending punctuation (split on these, keep delimiter with sentence)
 SENTENCE_END_RE = re.compile(r'(?<=[.!?\n])\s*')
@@ -36,16 +41,57 @@ class PocketAudio:
         self._ensure_models_exist(model_name)
         print("Loading Piper into memory... (Standby)")
         self.voice = PiperVoice.load(self.model_path, config_path=self.config_path)
-        print(f"System Ready. Outputting to audio device.")
+        self.sample_rate = int(getattr(getattr(self.voice, "config", None), "sample_rate", 22050))
+        print(f"System Ready. Piper sample rate: {self.sample_rate} Hz")
 
         # Initialize PyAudio for cross-platform audio playback
         self.p = pyaudio.PyAudio()
+        self.output_device_index = self._resolve_output_device_index()
+        if self.output_device_index is None:
+            print("TTS output device: system default")
+        else:
+            dev = self.p.get_device_info_by_index(self.output_device_index)
+            print(f"TTS output device: {dev.get('name')} (index {self.output_device_index})")
 
         # Sentence-by-sentence playback queue
         self._queue = queue.Queue()
         self._queue_drained_callback = None
         self._worker = threading.Thread(target=self._queue_worker, daemon=True)
         self._worker.start()
+
+    def _resolve_output_device_index(self):
+        # 1) explicit index has highest priority
+        if TTS_OUTPUT_DEVICE_INDEX:
+            try:
+                idx = int(TTS_OUTPUT_DEVICE_INDEX)
+                dev = self.p.get_device_info_by_index(idx)
+                if dev.get('maxOutputChannels', 0) > 0:
+                    return idx
+                print(f"TTS warning: device index {idx} is not an output device, using default")
+            except Exception as e:
+                print(f"TTS warning: invalid TTS_OUTPUT_DEVICE_INDEX '{TTS_OUTPUT_DEVICE_INDEX}': {e}")
+
+        # 2) name match (new env var or backward-compatible alias)
+        name_query = (TTS_OUTPUT_DEVICE_NAME or TTS_ALSA_DEVICE).lower()
+        if name_query:
+            for i in range(self.p.get_device_count()):
+                dev = self.p.get_device_info_by_index(i)
+                if dev.get('maxOutputChannels', 0) > 0 and name_query in str(dev.get('name', '')).lower():
+                    return i
+            print(f"TTS warning: no output device matched '{name_query}', using default")
+
+        return None
+
+    def _open_output_stream(self):
+        kwargs = {
+            "format": pyaudio.paInt16,
+            "channels": 1,
+            "rate": self.sample_rate,
+            "output": True,
+        }
+        if self.output_device_index is not None:
+            kwargs["output_device_index"] = self.output_device_index
+        return self.p.open(**kwargs)
 
     def _ensure_models_exist(self, name):
         if not os.path.exists(self.model_dir): os.makedirs(self.model_dir)
@@ -108,11 +154,15 @@ class PocketAudio:
         print(f"Synthesizing: {text[:50]}...")
         try:
             # Use PyAudio for cross-platform audio playback
-            stream = self.p.open(format=pyaudio.paInt16, channels=1, rate=22050, output=True)
+            stream = self._open_output_stream()
             t0 = time.perf_counter()
+            chunk_count = 0
             for chunk in self.voice.synthesize(text):
                 stream.write(chunk.audio_int16_bytes)
+                chunk_count += 1
             tts_ms = (time.perf_counter() - t0) * 1000
+            if chunk_count == 0:
+                print("TTS warning: synthesize returned 0 chunks")
             print(f"  text-to-speech: {tts_ms:.0f} ms")
             stream.stop_stream()
             stream.close()
