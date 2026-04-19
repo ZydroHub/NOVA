@@ -31,6 +31,14 @@ export function WebSocketProvider({ children }) {
     const reconnectTimer = useRef(null);
     const stageResetTimerRef = useRef(null);
 
+    const resetVoiceActivity = useCallback(() => {
+        setVoiceStatus('idle');
+        setVoiceStage('idle');
+        setIsVoiceStreaming(false);
+        setVoiceStreamText('');
+        setIsRecording(false);
+    }, []);
+
     const setStageWithAutoReset = useCallback((stage, timeoutMs = 0) => {
         if (stageResetTimerRef.current) {
             clearTimeout(stageResetTimerRef.current);
@@ -99,6 +107,11 @@ export function WebSocketProvider({ children }) {
                     { role: 'assistant', text: `⚠ Error: ${data.error || 'Unknown error'}` },
                 ]);
                 setStreamText('');
+                break;
+            case 'error':
+                console.error('WS backend error', data.message || data.error || data);
+                resetVoiceActivity();
+                setStageWithAutoReset('idle');
                 break;
             case 'stream_aborted':
                 setStageWithAutoReset('idle');
@@ -191,8 +204,14 @@ export function WebSocketProvider({ children }) {
 
         ws.onclose = () => {
             setConnStatus('disconnected');
+            resetVoiceActivity();
             wsRef.current = null;
             reconnectTimer.current = setTimeout(connect, 3000);
+        };
+
+        ws.onerror = (event) => {
+            console.error('Voice websocket error', event);
+            resetVoiceActivity();
         };
 
         ws.onmessage = (event) => {
@@ -203,7 +222,7 @@ export function WebSocketProvider({ children }) {
                 console.error("WS Parse error", e);
             }
         };
-    }, [handleServerMessage]);
+    }, [handleServerMessage, resetVoiceActivity]);
 
     const fetchConversations = useCallback(async () => {
         try {

@@ -50,21 +50,23 @@ export default function NewsPage() {
         return 'border-cyan-400/60 bg-cyan-500/10';
     };
 
+    const sortedItems = [...items].sort((a, b) => (b.priority_rank || 0) - (a.priority_rank || 0));
+
     return (
         <motion.div
-            className="w-full h-full min-h-0 flex flex-col gap-0 bg-transparent"
+            className="w-full h-full min-h-0 flex flex-col gap-0 bg-transparent overflow-y-auto touch-scroll-y"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, ease: 'easeOut' }}
         >
             {/* Header */}
             <div className="flex-shrink-0 px-6 py-4 border-b border-cyan-400/20">
-                <div className="flex items-center gap-3">
-                    <div className="text-2xl">🔔</div>
+                <div className="flex items-end justify-between gap-4 flex-wrap">
                     <div>
-                        <h2 className="text-xl font-bold text-white font-['Plus_Jakarta_Sans']">SWEDISH ALERTS</h2>
-                        <p className="text-xs text-cyan-300/70">Polisen • Krisinformation • SOS Alarm</p>
+                        <div className="text-xs uppercase tracking-[0.24em] text-cyan-300/70 font-semibold mb-1">Swedish Alerts</div>
+                        <h2 className="text-2xl font-black text-white font-['Plus_Jakarta_Sans']">Swedish Alerts</h2>
                     </div>
+                    <div className="text-xs text-cyan-300/60">Sorted by priority</div>
                 </div>
             </div>
 
@@ -102,22 +104,27 @@ export default function NewsPage() {
                         </motion.div>
                     )}
 
-                    {items.map((item, idx) => (
+                    {sortedItems.map((item, idx) => (
                         <motion.div
                             key={`${item.title}-${idx}`}
-                            className={`block p-4 rounded-lg border transition-all hover:border-opacity-100 hover:shadow-lg cursor-default ${getSourceColor(item.source)}`}
+                            className={`block p-4 rounded-2xl border transition-all cursor-default ${getSourceColor(item.source)}`}
                             initial={{ opacity: 0, x: -20 }}
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ duration: 0.4, delay: idx * 0.05 }}
-                            whileHover={{ scale: 1.01, x: 2 }}
+                            whileHover={{ scale: 1.01 }}
                         >
                             <div className="flex gap-3">
                                 <div className="text-2xl flex-shrink-0">{getSourceIcon(item.source)}</div>
                                 <div className="flex-1 min-w-0">
-                                    <div className="text-sm font-bold text-cyan-200 uppercase tracking-wider">
-                                        {item.source || 'Alert'}
+                                    <div className="flex items-center gap-2 flex-wrap">
+                                        <div className="text-sm font-bold text-cyan-200 uppercase tracking-wider">
+                                            {item.source || 'Alert'}
+                                        </div>
+                                        <div className="text-[10px] px-2 py-0.5 rounded-full border border-cyan-300/20 bg-cyan-400/10 text-cyan-100 font-semibold uppercase tracking-[0.18em]">
+                                            {item.priority_label || 'News'}
+                                        </div>
                                     </div>
-                                    <div className="text-sm text-white mt-1 line-clamp-2">
+                                    <div className="text-sm text-white mt-1 line-clamp-2 font-semibold">
                                         {item.title}
                                     </div>
                                     {item.location && (

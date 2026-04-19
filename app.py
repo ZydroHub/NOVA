@@ -305,6 +305,22 @@ def _fetch_rss_items(url: str, source: str, limit: int = 8) -> list[dict]:
     return items
 
 
+def _alert_priority(source: str, title: str = "") -> tuple[int, str]:
+    source_l = source.lower()
+    title_l = title.lower()
+    if "vma" in source_l:
+        return 100, "Critical"
+    if "polisen" in source_l:
+        return 80, "Police"
+    if "sos" in source_l:
+        return 70, "Emergency"
+    if "krisinformation" in source_l:
+        if any(word in title_l for word in ["varning", "störning", "brand", "explosion", "olycka", "farlig"]):
+            return 90, "Alert"
+        return 60, "Notice"
+    return 20, "News"
+
+
 @app.get("/integrations/weather")
 async def weather_open_meteo(latitude: float = 59.3293, longitude: float = 18.0686, timezone: str = "auto"):
     """Weather for dashboard cards via Open-Meteo (current + hourly + 7-day forecast)."""
@@ -363,6 +379,8 @@ async def swedish_alerts(limit: int = 12):
                     "url": entry.get("url") or "https://polisen.se/aktuellt/",
                     "published": entry.get("datetime") or "",
                     "location": entry.get("location", {}).get("name") or "",
+                    "priority_rank": _alert_priority("Polisen", entry.get("name") or "")[0],
+                    "priority_label": _alert_priority("Polisen", entry.get("name") or "")[1],
                 }
             )
         logger.debug("Polisen: fetched %d items", len(polisen_data or []))
@@ -387,6 +405,8 @@ async def swedish_alerts(limit: int = 12):
                     "url": entry.get("Link") or entry.get("link") or "https://krisinformation.se/",
                     "published": entry.get("Published") or entry.get("published") or entry.get("Updated") or "",
                     "location": entry.get("Area") or entry.get("area") or "",
+                    "priority_rank": _alert_priority("Krisinformation VMA", entry.get("Headline") or entry.get("headline") or entry.get("title") or "VMA")[0],
+                    "priority_label": _alert_priority("Krisinformation VMA", entry.get("Headline") or entry.get("headline") or entry.get("title") or "VMA")[1],
                 }
             )
 
@@ -398,6 +418,8 @@ async def swedish_alerts(limit: int = 12):
                     "url": entry.get("Link") or entry.get("link") or "https://krisinformation.se/",
                     "published": entry.get("Published") or entry.get("published") or entry.get("Updated") or entry.get("updated") or "",
                     "location": entry.get("Area") or entry.get("area") or "",
+                    "priority_rank": _alert_priority("Krisinformation", entry.get("Headline") or entry.get("headline") or entry.get("Title") or entry.get("title") or "Alert")[0],
+                    "priority_label": _alert_priority("Krisinformation", entry.get("Headline") or entry.get("headline") or entry.get("Title") or entry.get("title") or "Alert")[1],
                 }
             )
         logger.debug("Krisinformation: fetched %d VMAs and %d news items", len(vma_items), len(news_items))
@@ -418,6 +440,8 @@ async def swedish_alerts(limit: int = 12):
                     "url": entry.get("url") or "https://www.sosalarm.se/",
                     "published": entry.get("timestamp") or entry.get("updated") or entry.get("published") or "",
                     "location": entry.get("location") or "",
+                    "priority_rank": _alert_priority("SOS Alarm", entry.get("headline") or entry.get("title") or "SOS Event")[0],
+                    "priority_label": _alert_priority("SOS Alarm", entry.get("headline") or entry.get("title") or "SOS Event")[1],
                 }
             )
         logger.debug("SOS Alarm: fetched %d items", len(sos_items))
@@ -435,6 +459,10 @@ async def swedish_alerts(limit: int = 12):
         for feed_url, source in fallback_feeds:
             try:
                 feed_items = _fetch_rss_items(feed_url, source, limit=limit)
+                for item in feed_items:
+                    priority_rank, priority_label = _alert_priority(source, item.get("title", ""))
+                    item["priority_rank"] = priority_rank
+                    item["priority_label"] = priority_label
                 items.extend(feed_items)
                 if len(items) >= limit:
                     break
@@ -451,8 +479,15 @@ async def swedish_alerts(limit: int = 12):
             continue
         seen.add(key)
         deduped.append(item)
-        if len(deduped) >= limit:
-            break
+
+    deduped.sort(
+        key=lambda item: (
+            -int(item.get("priority_rank") or 0),
+            (item.get("published") or ""),
+            (item.get("title") or ""),
+        )
+    )
+    deduped = deduped[:limit]
 
     # Return results with error log
     result = {
@@ -488,10 +523,11 @@ async def wake_pc():
     broadcast_ip = "192.168.1.255"
     try:
         _send_magic_packet(target_mac, broadcast_ip)
-        return {"status": "sent", "target": "PC-Oscar", "mac": target_mac, "broadcast": broadcast_ip}
+        logger.info("Start PC action sent to %s via %s", target_mac, broadcast_ip)
+        return {"status": "sent", "target": "Start PC", "mac": target_mac, "broadcast": broadcast_ip}
     except Exception as exc:
-        logger.warning("Wake-on-LAN failed: %s", exc)
-        return {"status": "error", "target": "PC-Oscar", "error": str(exc)}
+        logger.exception("Start PC / Wake-on-LAN failed")
+        return {"status": "error", "target": "Start PC", "error": str(exc)}
 
 
 @app.on_event("startup")

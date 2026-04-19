@@ -238,6 +238,7 @@ class AIState:
 
         full_response = ""
         loop = asyncio.get_event_loop()
+        logger.debug("[voice] pipeline start route=%s message_len=%d", route, len(text))
 
         def on_tts_queue_drained():
             async def send_idle():
@@ -248,6 +249,7 @@ class AIState:
             self.tts.set_queue_drained_callback(on_tts_queue_drained)
             if route == "function_gemma":
                 # Run tool_ai in subprocess so crashes/OOM don't kill the server
+                logger.info("[voice] running function_gemma path")
                 tool_call_raw, tool_result = await loop.run_in_executor(
                     None, _run_tool_ai_subprocess, text
                 )
@@ -277,12 +279,13 @@ class AIState:
                 return
             # Qwen path: stream response and feed TTS sentence-by-sentence
             thinking = route == "qwen_thinking"
+            logger.info("[voice] generating response thinking=%s messages=%d", thinking, len(self.voice_messages))
             response = await self.generate_response(self.voice_messages, thinking=thinking)
 
             tts_flushed_len = 0  # index in clean_reply up to which we've flushed to TTS
             speaking_status_sent = False
 
-            for chunk in response:
+            for chunk_index, chunk in enumerate(response, start=1):
                 # Check for abort messages in queue
                 while not message_queue.empty():
                     msg = await message_queue.get()
@@ -302,6 +305,8 @@ class AIState:
                     if "content" in delta:
                         content = delta["content"]
                         full_response += content
+                        if chunk_index % 20 == 1:
+                            logger.debug("[voice] streamed chunk=%d response_len=%d", chunk_index, len(full_response))
                         await websocket.send_json({"type": "ai_delta", "text": strip_think_for_ui(full_response)})
 
                         # Flush complete sentences to TTS (only non-thinking content; strip unclosed <think> too)
@@ -390,6 +395,7 @@ async def delete_conversation(conv_id: str):
 @router.websocket("/ws/chat/{conv_id}")
 async def chat_websocket_endpoint(websocket: WebSocket, conv_id: str):
     await websocket.accept()
+    logger.info("Chat websocket connected for conversation %s", conv_id)
     
     conv = ai.conv_manager.get_conversation(conv_id)
     if not conv:
@@ -410,8 +416,10 @@ async def chat_websocket_endpoint(websocket: WebSocket, conv_id: str):
             while True:
                 data = await websocket.receive_json()
                 await message_queue.put(data)
-        except:
-            pass
+        except WebSocketDisconnect:
+            logger.info("Chat websocket receive loop disconnected for conversation %s", conv_id)
+        except Exception:
+            logger.exception("Chat websocket receive loop failed for conversation %s", conv_id)
 
     receive_task = asyncio.create_task(receive_messages())
 
@@ -434,13 +442,15 @@ async def chat_websocket_endpoint(websocket: WebSocket, conv_id: str):
 
                 try:
                     route = _get_route(user_text)
-                    logger.debug("[chat] route: %s", route)
+                    logger.debug("[chat] route=%s conv_id=%s text_len=%d", route, conv_id, len(user_text))
 
                     await websocket.send_json({"type": "stream_start"})
+                    logger.debug("[chat] stream_start sent for conversation %s", conv_id)
 
                     if route == "function_gemma":
                         # Run tool_ai in a subprocess so crashes/OOM don't kill the server
                         loop = asyncio.get_event_loop()
+                        logger.info("[chat] running function_gemma path for conversation %s", conv_id)
                         tool_call_raw, tool_result = await loop.run_in_executor(
                             None, _run_tool_ai_subprocess, user_text
                         )
@@ -456,6 +466,7 @@ async def chat_websocket_endpoint(websocket: WebSocket, conv_id: str):
                         # Qwen path: use route to set thinking, not UI toggle
                         thinking_mode = route == "qwen_thinking"
                         full_reply = ""
+                        logger.info("[chat] generating response route=%s thinking=%s conv_id=%s", route, thinking_mode, conv_id)
                         response = await ai.generate_response(conv["messages"], thinking=thinking_mode)
 
                         for chunk in response:
@@ -510,8 +521,10 @@ async def voice_websocket(websocket: WebSocket):
             while True:
                 data = await websocket.receive_json()
                 await message_queue.put(data)
-        except:
-            pass
+        except WebSocketDisconnect:
+            logger.info("Voice websocket receive loop disconnected")
+        except Exception:
+            logger.exception("Voice websocket receive loop failed")
 
     receive_task = asyncio.create_task(receive_messages())
 

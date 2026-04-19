@@ -82,7 +82,7 @@ const AnimatedRoutes = () => {
     <AnimatePresence mode="wait">
       <motion.div
         key={location.pathname}
-        className="h-full min-h-0"
+        className="h-full min-h-0 overflow-hidden"
         initial={{ opacity: 0, x: swipeDirection * 100 }}
         animate={{ opacity: 1, x: 0 }}
         exit={{ opacity: 0, x: -swipeDirection * 100 }}

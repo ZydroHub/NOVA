@@ -44,9 +44,13 @@ export default function Home() {
     const hourlyTimes = Array.isArray(hourly.time) ? hourly.time : [];
     const hourlyTemps = Array.isArray(hourly.temperature_2m) ? hourly.temperature_2m : [];
     const hourlyCodes = Array.isArray(hourly.weather_code) ? hourly.weather_code : [];
-    const forecastDays = weather?.daily?.time || [];
-    const forecastTempsMax = weather?.daily?.temperature_2m_max || [];
-    const forecastTempsMin = weather?.daily?.temperature_2m_min || [];
+    const forecastDays = Array.isArray(weather?.daily?.time) ? weather.daily.time : [];
+    const forecastTempsMax = Array.isArray(weather?.daily?.temperature_2m_max) ? weather.daily.temperature_2m_max : [];
+    const forecastTempsMin = Array.isArray(weather?.daily?.temperature_2m_min) ? weather.daily.temperature_2m_min : [];
+
+    const alertsSorted = useMemo(() => {
+        return [...alerts].sort((a, b) => (b.priority_rank || 0) - (a.priority_rank || 0));
+    }, [alerts]);
 
     const getWeatherEmoji = useCallback((code) => {
         if (code === 0) return '☀️';     // Clear
@@ -99,6 +103,12 @@ export default function Home() {
         return date.toLocaleDateString('en-US', { weekday: 'short' });
     };
 
+    const formatTempRange = (minTemp, maxTemp) => {
+        const low = typeof minTemp === 'number' ? Math.round(minTemp) : '-';
+        const high = typeof maxTemp === 'number' ? Math.round(maxTemp) : '-';
+        return `${low}° - ${high}°`;
+    };
+
     const stageLabel = {
         idle: '• SYSTEMS ONLINE',
         listening: '• LISTENING FOR VOICE...',
@@ -110,7 +120,7 @@ export default function Home() {
 
     return (
         <motion.div 
-            className="nova-home touch-scroll-y"
+            className="nova-home touch-scroll-y overflow-y-auto h-full min-h-0"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, ease: 'easeOut' }}
@@ -136,8 +146,8 @@ export default function Home() {
                     <div className="weather-main-container">
                         <div className="weather-left">
                             <div className="weather-location">Stockholm</div>
-                            <div className="weather-rain-chance">Chance of rain: {forecastDays.length > 0 ? (weather?.daily?.precipitation_probability_max?.[0] ?? 0) : '-'}%</div>
-                            <div className="weather-temp-huge">{currentTemp !== '-' ? Math.round(currentTemp) : '-'}°</div>
+                                    <div className="weather-rain-chance">Chance of rain: {forecastDays.length > 0 ? (weather?.daily?.precipitation_probability_max?.[0] ?? 0) : '-'}%</div>
+                                    <div className="weather-temp-huge">{typeof currentTemp === 'number' ? Math.round(currentTemp) : '-'}°</div>
                         </div>
 
                         <div className="weather-hourly-section">
@@ -159,11 +169,11 @@ export default function Home() {
                     <div className="air-conditions-grid">
                         <div className="air-condition-item">
                             <div className="condition-label">Real Feel</div>
-                            <div className="condition-value">{weather?.current?.apparent_temperature ? Math.round(weather.current.apparent_temperature) : '-'}°</div>
+                            <div className="condition-value">{typeof weather?.current?.apparent_temperature === 'number' ? Math.round(weather.current.apparent_temperature) : '-'}°</div>
                         </div>
                         <div className="air-condition-item">
                             <div className="condition-label">Wind</div>
-                            <div className="condition-value">{weather?.current?.wind_speed_10m ? Math.round(weather.current.wind_speed_10m) : '-'} km/h</div>
+                            <div className="condition-value">{typeof weather?.current?.wind_speed_10m === 'number' ? Math.round(weather.current.wind_speed_10m) : '-'} km/h</div>
                         </div>
                         <div className="air-condition-item">
                             <div className="condition-label">Humidity</div>
@@ -171,7 +181,7 @@ export default function Home() {
                         </div>
                         <div className="air-condition-item">
                             <div className="condition-label">UV Index</div>
-                            <div className="condition-value">{weather?.current?.uv_index ? Math.round(weather.current.uv_index * 10) / 10 : '-'}</div>
+                            <div className="condition-value">{typeof weather?.current?.uv_index === 'number' ? Math.round(weather.current.uv_index * 10) / 10 : '-'}</div>
                         </div>
                     </div>
                 </section>
@@ -186,18 +196,18 @@ export default function Home() {
             >
                 {/* 7-day Forecast */}
                 <div className="forecast-7day">
-                    <div className="text-xs opacity-70 mb-2 font-semibold">7-DAY FORECAST</div>
+                    <div className="text-xs opacity-70 mb-2 font-semibold tracking-[0.18em]">7-DAY FORECAST</div>
                     <div className="space-y-1">
                         {forecastDays.length > 0 ? forecastDays.slice(0, 7).map((day, idx) => {
-                            const maxTemp = forecastTempsMax[idx] ? Math.round(forecastTempsMax[idx]) : '-';
-                            const minTemp = forecastTempsMin[idx] ? Math.round(forecastTempsMin[idx]) : '-';
+                            const maxTemp = typeof forecastTempsMax[idx] === 'number' ? Math.round(forecastTempsMax[idx]) : '-';
+                            const minTemp = typeof forecastTempsMin[idx] === 'number' ? Math.round(forecastTempsMin[idx]) : '-';
                             const dayName = formatDay(day, idx);
                             const dayWeatherCode = weather?.daily?.weather_code?.[idx] || currentWeatherCode;
                             return (
                                 <div key={day} className="forecast-row">
                                     <span className="text-sm font-medium">{dayName}</span>
                                     <span style={{fontSize: '1.1rem', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>{getWeatherEmoji(dayWeatherCode)}</span>
-                                    <span className="font-semibold ml-auto text-sm">{maxTemp}°/{minTemp}°</span>
+                                    <span className="font-semibold ml-auto text-sm text-cyan-100">{formatTempRange(minTemp, maxTemp)}</span>
                                 </div>
                             );
                         }) : <div className="opacity-50 text-xs">Loading forecast...</div>}
@@ -218,7 +228,7 @@ export default function Home() {
                         {wakeState === 'loading' && 'Waking...'}
                         {wakeState === 'sent' && '✓ Signal Sent'}
                         {wakeState === 'error' && '✗ Failed'}
-                        {wakeState === 'idle' && 'Wake PC Oscar'}
+                        {wakeState === 'idle' && 'Start PC'}
                     </span>
                 </motion.button>
 
@@ -229,14 +239,17 @@ export default function Home() {
                     animate={{ opacity: 1 }}
                     transition={{ duration: 0.4, delay: 0.4 }}
                 >
-                    <div className="text-xs opacity-70 mb-2 font-semibold">LATEST NEWS & ALERTS</div>
+                    <div className="text-xs opacity-70 mb-2 font-semibold tracking-[0.18em]">LATEST NEWS & ALERTS</div>
                     <div className="space-y-1">
                         {alertsError && <div className="text-xs opacity-70">{alertsError}</div>}
-                        {alerts.length > 0 ? alerts.slice(0, 4).map((item, idx) => (
-                            <a key={`${item.title}-${idx}`} href={item.url || '#'} target="_blank" rel="noreferrer" className="alert-item">
-                                <span className="alert-source">{item.source || 'Alert'}</span>
-                                <span className="alert-title">{item.title.slice(0, 50)}</span>
-                            </a>
+                        {alertsSorted.length > 0 ? alertsSorted.slice(0, 4).map((item, idx) => (
+                            <div key={`${item.title}-${idx}`} className="alert-item alert-item-static">
+                                <div className="alert-row-top">
+                                    <span className="alert-source">{item.source || 'Alert'}</span>
+                                    <span className="alert-priority">{item.priority_label || 'News'}</span>
+                                </div>
+                                <span className="alert-title">{item.title.slice(0, 70)}</span>
+                            </div>
                         )) : <div className="text-xs opacity-50">No items yet</div>}
                     </div>
                 </motion.div>

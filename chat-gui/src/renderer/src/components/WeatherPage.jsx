@@ -40,29 +40,65 @@ export default function WeatherPage() {
     const days = Array.isArray(daily.time) ? daily.time : [];
     const hourly = weather?.hourly || {};
     const hours = Array.isArray(hourly.time) ? hourly.time.slice(0, 12) : [];
+    const current = weather?.current || {};
+
+    const formatTempRange = (minTemp, maxTemp) => {
+        const low = typeof minTemp === 'number' ? Math.round(minTemp) : '-';
+        const high = typeof maxTemp === 'number' ? Math.round(maxTemp) : '-';
+        return `${low}° - ${high}°`;
+    };
 
     return (
         <motion.div
-            className="w-full h-full overflow-y-auto touch-scroll-y p-4"
+            className="weather-page w-full h-full min-h-0 overflow-y-auto touch-scroll-y p-4"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.5, ease: 'easeOut' }}
         >
-            <section className="glass-card p-6 flex flex-col gap-5">
-                <div>
-                    <h2 className="nova-title">Weather</h2>
-                    <p className="nova-subtitle">Stockholm live + hourly + 7-day outlook</p>
+            <section className="weather-shell glass-card p-4 sm:p-6 flex flex-col gap-5">
+                <div className="weather-hero">
+                    <div className="weather-hero-copy">
+                        <div className="weather-kicker">Stockholm live weather</div>
+                        <h2 className="nova-title">Weather</h2>
+                        <p className="weather-hero-subtitle">Hourly forecasts, daily ranges, and current conditions in one glance.</p>
+                    </div>
+                    <div className="weather-hero-temp">
+                        <div className="weather-hero-value">{typeof current.temperature_2m === 'number' ? Math.round(current.temperature_2m) : '-'}°</div>
+                        <div className="weather-hero-meta">
+                            <span>{getWeatherEmoji(current.weather_code ?? 0)}</span>
+                            <span>{typeof current.apparent_temperature === 'number' ? `${Math.round(current.apparent_temperature)}° feels like` : 'Feels-like unavailable'}</span>
+                        </div>
+                    </div>
                 </div>
 
-                <div>
-                    <h3 className="text-sm font-semibold mb-2 text-cyan-200/90">NEXT 12 HOURS</h3>
-                    <div className="weather-grid">
-                        {hours.length === 0 && <div className="weather-day">Hourly data unavailable.</div>}
+                <div className="weather-metrics-grid">
+                    <div className="weather-metric-card">
+                        <span>Wind</span>
+                        <strong>{typeof current.wind_speed_10m === 'number' ? `${Math.round(current.wind_speed_10m)} km/h` : '-'}</strong>
+                    </div>
+                    <div className="weather-metric-card">
+                        <span>Humidity</span>
+                        <strong>{typeof current.relative_humidity_2m === 'number' ? `${Math.round(current.relative_humidity_2m)}%` : '-'}</strong>
+                    </div>
+                    <div className="weather-metric-card">
+                        <span>UV Index</span>
+                        <strong>{typeof current.uv_index === 'number' ? Math.round(current.uv_index * 10) / 10 : '-'}</strong>
+                    </div>
+                    <div className="weather-metric-card weather-metric-card-highlight">
+                        <span>Rain chance</span>
+                        <strong>{typeof daily.precipitation_probability_max?.[0] === 'number' ? `${Math.round(daily.precipitation_probability_max[0])}%` : '-'}</strong>
+                    </div>
+                </div>
+
+                <div className="weather-section">
+                    <div className="weather-section-title">Next 12 hours</div>
+                    <div className="weather-grid weather-grid-wide">
+                        {hours.length === 0 && <div className="weather-day weather-empty">Hourly data unavailable.</div>}
                         {hours.map((hour, index) => (
                             <motion.div
                                 key={`${hour}-${index}`}
-                                className="weather-day"
+                                className="weather-day weather-day-compact"
                                 initial={{ opacity: 0, scale: 0.94 }}
                                 animate={{ opacity: 1, scale: 1 }}
                                 transition={{ duration: 0.2, delay: index * 0.02 }}
@@ -76,24 +112,24 @@ export default function WeatherPage() {
                     </div>
                 </div>
 
-                <div>
-                    <h3 className="text-sm font-semibold mb-2 text-cyan-200/90">7-DAY</h3>
-                    <div className="weather-grid mt-1">
-                        {days.length === 0 && <div className="weather-day">Weather data unavailable.</div>}
+                <div className="weather-section">
+                    <div className="weather-section-title">7-day outlook</div>
+                    <div className="weather-grid weather-grid-wide mt-1">
+                        {days.length === 0 && <div className="weather-day weather-empty">Weather data unavailable.</div>}
                         {days.map((day, index) => (
-                        <motion.div 
-                            key={day} 
-                            className="weather-day"
-                            initial={{ opacity: 0, scale: 0.9 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            transition={{ duration: 0.3, delay: index * 0.05 }}
-                        >
-                            <h4>{new Date(day).toLocaleDateString('en-US', { weekday: 'short' })}</h4>
-                            <div className="text-xl">{getWeatherEmoji(daily.weather_code?.[index])}</div>
-                            <div>{Math.round(daily.temperature_2m_max?.[index] ?? 0)}° / {Math.round(daily.temperature_2m_min?.[index] ?? 0)}°</div>
-                            <small>Rain {Math.round(daily.precipitation_probability_max?.[index] ?? 0)}%</small>
-                        </motion.div>
-                    ))}
+                            <motion.div 
+                                key={day} 
+                                className="weather-day weather-day-wide"
+                                initial={{ opacity: 0, scale: 0.9 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                transition={{ duration: 0.3, delay: index * 0.05 }}
+                            >
+                                <h4>{new Date(day).toLocaleDateString('en-US', { weekday: 'short' })}</h4>
+                                <div className="text-xl">{getWeatherEmoji(daily.weather_code?.[index])}</div>
+                                <div>{formatTempRange(daily.temperature_2m_min?.[index], daily.temperature_2m_max?.[index])}</div>
+                                <small>Rain {Math.round(daily.precipitation_probability_max?.[index] ?? 0)}%</small>
+                            </motion.div>
+                        ))}
                     </div>
                 </div>
             </section>

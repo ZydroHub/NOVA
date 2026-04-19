@@ -160,7 +160,7 @@ const StatusBar = () => {
                 {/* Watts */}
                 <div className="flex items-center gap-1 text-[var(--nova-text)]">
                     <Zap size={14} className="text-cyan-200/70" />
-                    <span className="text-cyan-100">{stats.wattage.toFixed(1)}W</span>
+                    <span className="text-green-400">{stats.wattage.toFixed(1)}W</span>
                 </div>
 
             </div>
