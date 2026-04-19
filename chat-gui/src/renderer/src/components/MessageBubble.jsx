@@ -38,13 +38,13 @@ export default function MessageBubble({ role, text }) {
     return (
         <div className={`flex animate-message-in ${isUser ? 'justify-end' : 'justify-start'}`}>
             <div
-                className={`max-w-[85%] px-4 py-3 text-[16px] leading-relaxed break-words border-2 font-['VT323'] shadow-[4px_4px_0_0_rgba(0,0,0,0.3)] ${isUser
-                    ? 'bg-[var(--pixel-surface)] border-[var(--pixel-primary)] text-[var(--pixel-text)]'
-                    : 'bg-[var(--pixel-bg)] border-[var(--pixel-secondary)] text-[var(--pixel-text)]'
+                className={`max-w-[85%] px-4 py-3 text-[15px] leading-relaxed break-words rounded-lg border border-opacity-40 font-['Inter'] shadow-md ${isUser
+                    ? 'bg-[rgba(47,109,255,0.15)] border-[#1ad1ff] text-white'
+                    : 'bg-[rgba(20,40,84,0.4)] border-[#2f6dff] text-[#e4f7ff]'
                     }`}
             >
-                <div className={`text-[12px] font-['Press_Start_2P'] uppercase tracking-wider mb-2 opacity-80 ${isUser ? 'text-[var(--pixel-primary)]' : 'text-[var(--pixel-secondary)]'}`}>
-                    {isUser ? '> PLAYER 1' : '> SYSTEM'}
+                <div className={`text-[13px] font-bold tracking-wide mb-2 opacity-90 font-['Inter'] ${isUser ? 'text-[#1ad1ff]' : 'text-[#2f6dff]'}`}>
+                    {isUser ? 'Zydrohub' : 'NOVA'}
                 </div>
 
                 {!isUser && thoughts.length > 0 && (

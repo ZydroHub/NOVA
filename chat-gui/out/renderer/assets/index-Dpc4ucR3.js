@@ -22628,7 +22628,7 @@ const createLucideIcon = (iconName, iconNode) => {
   Component.displayName = toPascalCase(iconName);
   return Component;
 };
-const __iconNode$q = [
+const __iconNode$u = [
   [
     "path",
     {
@@ -22637,20 +22637,20 @@ const __iconNode$q = [
     }
   ]
 ];
-const Activity = createLucideIcon("activity", __iconNode$q);
-const __iconNode$p = [
+const Activity = createLucideIcon("activity", __iconNode$u);
+const __iconNode$t = [
   ["path", { d: "m12 19-7-7 7-7", key: "1l729n" }],
   ["path", { d: "M19 12H5", key: "x3x0zl" }]
 ];
-const ArrowLeft = createLucideIcon("arrow-left", __iconNode$p);
-const __iconNode$o = [["path", { d: "M20 6 9 17l-5-5", key: "1gmf2c" }]];
-const Check = createLucideIcon("check", __iconNode$o);
-const __iconNode$n = [
+const ArrowLeft = createLucideIcon("arrow-left", __iconNode$t);
+const __iconNode$s = [["path", { d: "M20 6 9 17l-5-5", key: "1gmf2c" }]];
+const Check = createLucideIcon("check", __iconNode$s);
+const __iconNode$r = [
   ["path", { d: "M12 6v6l4 2", key: "mmk7yg" }],
   ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }]
 ];
-const Clock = createLucideIcon("clock", __iconNode$n);
-const __iconNode$m = [
+const Clock = createLucideIcon("clock", __iconNode$r);
+const __iconNode$q = [
   ["path", { d: "M12 2v2", key: "tus03m" }],
   ["path", { d: "m4.93 4.93 1.41 1.41", key: "149t6j" }],
   ["path", { d: "M20 12h2", key: "1q8mjw" }],
@@ -22658,8 +22658,31 @@ const __iconNode$m = [
   ["path", { d: "M15.947 12.65a4 4 0 0 0-5.925-4.128", key: "dpwdj0" }],
   ["path", { d: "M13 22H7a5 5 0 1 1 4.9-6H13a3 3 0 0 1 0 6Z", key: "s09mg5" }]
 ];
-const CloudSun = createLucideIcon("cloud-sun", __iconNode$m);
-const __iconNode$l = [
+const CloudSun = createLucideIcon("cloud-sun", __iconNode$q);
+const __iconNode$p = [
+  [
+    "path",
+    {
+      d: "M7 16.3c2.2 0 4-1.83 4-4.05 0-1.16-.57-2.26-1.71-3.19S7.29 6.75 7 5.3c-.29 1.45-1.14 2.84-2.29 3.76S3 11.1 3 12.25c0 2.22 1.8 4.05 4 4.05z",
+      key: "1ptgy4"
+    }
+  ],
+  [
+    "path",
+    {
+      d: "M12.56 6.6A10.97 10.97 0 0 0 14 3.02c.5 2.5 2 4.9 4 6.5s3 3.5 3 5.5a6.98 6.98 0 0 1-11.91 4.97",
+      key: "1sl1rz"
+    }
+  ]
+];
+const Droplets = createLucideIcon("droplets", __iconNode$p);
+const __iconNode$o = [
+  ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }],
+  ["path", { d: "M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20", key: "13o1zl" }],
+  ["path", { d: "M2 12h20", key: "9i4pu4" }]
+];
+const Globe = createLucideIcon("globe", __iconNode$o);
+const __iconNode$n = [
   ["path", { d: "M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8", key: "5wwlr5" }],
   [
     "path",
@@ -22669,8 +22692,8 @@ const __iconNode$l = [
     }
   ]
 ];
-const House = createLucideIcon("house", __iconNode$l);
-const __iconNode$k = [
+const House = createLucideIcon("house", __iconNode$n);
+const __iconNode$m = [
   ["path", { d: "M10 8h.01", key: "1r9ogq" }],
   ["path", { d: "M12 12h.01", key: "1mp3jc" }],
   ["path", { d: "M14 8h.01", key: "1primd" }],
@@ -22681,14 +22704,14 @@ const __iconNode$k = [
   ["path", { d: "M8 12h.01", key: "czm47f" }],
   ["rect", { width: "20", height: "16", x: "2", y: "4", rx: "2", key: "18n3k1" }]
 ];
-const Keyboard = createLucideIcon("keyboard", __iconNode$k);
-const __iconNode$j = [
+const Keyboard = createLucideIcon("keyboard", __iconNode$m);
+const __iconNode$l = [
   ["path", { d: "M4 5h16", key: "1tepv9" }],
   ["path", { d: "M4 12h16", key: "1lakjw" }],
   ["path", { d: "M4 19h16", key: "1djgab" }]
 ];
-const Menu = createLucideIcon("menu", __iconNode$j);
-const __iconNode$i = [
+const Menu = createLucideIcon("menu", __iconNode$l);
+const __iconNode$k = [
   [
     "path",
     {
@@ -22697,8 +22720,8 @@ const __iconNode$i = [
     }
   ]
 ];
-const MessageCircle = createLucideIcon("message-circle", __iconNode$i);
-const __iconNode$h = [
+const MessageCircle = createLucideIcon("message-circle", __iconNode$k);
+const __iconNode$j = [
   [
     "path",
     {
@@ -22707,19 +22730,19 @@ const __iconNode$h = [
     }
   ]
 ];
-const MessageSquare = createLucideIcon("message-square", __iconNode$h);
-const __iconNode$g = [
+const MessageSquare = createLucideIcon("message-square", __iconNode$j);
+const __iconNode$i = [
   ["path", { d: "M12 19v3", key: "npa21l" }],
   ["path", { d: "M19 10v2a7 7 0 0 1-14 0v-2", key: "1vc78b" }],
   ["rect", { x: "9", y: "2", width: "6", height: "13", rx: "3", key: "s6n7sd" }]
 ];
-const Mic = createLucideIcon("mic", __iconNode$g);
-const __iconNode$f = [
+const Mic = createLucideIcon("mic", __iconNode$i);
+const __iconNode$h = [
   ["circle", { cx: "8", cy: "18", r: "4", key: "1fc0mg" }],
   ["path", { d: "M12 18V2l7 4", key: "g04rme" }]
 ];
-const Music2 = createLucideIcon("music-2", __iconNode$f);
-const __iconNode$e = [
+const Music2 = createLucideIcon("music-2", __iconNode$h);
+const __iconNode$g = [
   ["path", { d: "M15 18h-5", key: "95g1m2" }],
   ["path", { d: "M18 14h-8", key: "sponae" }],
   [
@@ -22731,13 +22754,13 @@ const __iconNode$e = [
   ],
   ["rect", { width: "8", height: "4", x: "10", y: "6", rx: "1", key: "aywv1n" }]
 ];
-const Newspaper = createLucideIcon("newspaper", __iconNode$e);
-const __iconNode$d = [
+const Newspaper = createLucideIcon("newspaper", __iconNode$g);
+const __iconNode$f = [
   ["rect", { x: "14", y: "3", width: "5", height: "18", rx: "1", key: "kaeet6" }],
   ["rect", { x: "5", y: "3", width: "5", height: "18", rx: "1", key: "1wsw3u" }]
 ];
-const Pause = createLucideIcon("pause", __iconNode$d);
-const __iconNode$c = [
+const Pause = createLucideIcon("pause", __iconNode$f);
+const __iconNode$e = [
   [
     "path",
     {
@@ -22747,8 +22770,8 @@ const __iconNode$c = [
   ],
   ["path", { d: "m15 5 4 4", key: "1mk7zo" }]
 ];
-const Pencil = createLucideIcon("pencil", __iconNode$c);
-const __iconNode$b = [
+const Pencil = createLucideIcon("pencil", __iconNode$e);
+const __iconNode$d = [
   [
     "path",
     {
@@ -22757,25 +22780,25 @@ const __iconNode$b = [
     }
   ]
 ];
-const Play = createLucideIcon("play", __iconNode$b);
-const __iconNode$a = [
+const Play = createLucideIcon("play", __iconNode$d);
+const __iconNode$c = [
   ["path", { d: "M5 12h14", key: "1ays0h" }],
   ["path", { d: "M12 5v14", key: "s699le" }]
 ];
-const Plus = createLucideIcon("plus", __iconNode$a);
-const __iconNode$9 = [
+const Plus = createLucideIcon("plus", __iconNode$c);
+const __iconNode$b = [
   ["path", { d: "M12 2v10", key: "mnfbl" }],
   ["path", { d: "M18.4 6.6a9 9 0 1 1-12.77.04", key: "obofu9" }]
 ];
-const Power = createLucideIcon("power", __iconNode$9);
-const __iconNode$8 = [
+const Power = createLucideIcon("power", __iconNode$b);
+const __iconNode$a = [
   ["path", { d: "m17 2 4 4-4 4", key: "nntrym" }],
   ["path", { d: "M3 11v-1a4 4 0 0 1 4-4h14", key: "84bu3i" }],
   ["path", { d: "m7 22-4-4 4-4", key: "1wqhfi" }],
   ["path", { d: "M21 13v1a4 4 0 0 1-4 4H3", key: "1rx37r" }]
 ];
-const Repeat = createLucideIcon("repeat", __iconNode$8);
-const __iconNode$7 = [
+const Repeat = createLucideIcon("repeat", __iconNode$a);
+const __iconNode$9 = [
   [
     "path",
     {
@@ -22786,16 +22809,16 @@ const __iconNode$7 = [
   ["path", { d: "M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7", key: "1ydtos" }],
   ["path", { d: "M7 3v4a1 1 0 0 0 1 1h7", key: "t51u73" }]
 ];
-const Save = createLucideIcon("save", __iconNode$7);
-const __iconNode$6 = [
+const Save = createLucideIcon("save", __iconNode$9);
+const __iconNode$8 = [
   ["path", { d: "m18 14 4 4-4 4", key: "10pe0f" }],
   ["path", { d: "m18 2 4 4-4 4", key: "pucp1d" }],
   ["path", { d: "M2 18h1.973a4 4 0 0 0 3.3-1.7l5.454-8.6a4 4 0 0 1 3.3-1.7H22", key: "1ailkh" }],
   ["path", { d: "M2 6h1.972a4 4 0 0 1 3.6 2.2", key: "km57vx" }],
   ["path", { d: "M22 18h-6.041a4 4 0 0 1-3.3-1.8l-.359-.45", key: "os18l9" }]
 ];
-const Shuffle = createLucideIcon("shuffle", __iconNode$6);
-const __iconNode$5 = [
+const Shuffle = createLucideIcon("shuffle", __iconNode$8);
+const __iconNode$7 = [
   [
     "path",
     {
@@ -22805,8 +22828,8 @@ const __iconNode$5 = [
   ],
   ["path", { d: "M3 20V4", key: "1ptbpl" }]
 ];
-const SkipBack = createLucideIcon("skip-back", __iconNode$5);
-const __iconNode$4 = [
+const SkipBack = createLucideIcon("skip-back", __iconNode$7);
+const __iconNode$6 = [
   ["path", { d: "M21 4v16", key: "7j8fe9" }],
   [
     "path",
@@ -22816,19 +22839,37 @@ const __iconNode$4 = [
     }
   ]
 ];
-const SkipForward = createLucideIcon("skip-forward", __iconNode$4);
-const __iconNode$3 = [
+const SkipForward = createLucideIcon("skip-forward", __iconNode$6);
+const __iconNode$5 = [
+  ["circle", { cx: "12", cy: "12", r: "4", key: "4exip2" }],
+  ["path", { d: "M12 2v2", key: "tus03m" }],
+  ["path", { d: "M12 20v2", key: "1lh1kg" }],
+  ["path", { d: "m4.93 4.93 1.41 1.41", key: "149t6j" }],
+  ["path", { d: "m17.66 17.66 1.41 1.41", key: "ptbguv" }],
+  ["path", { d: "M2 12h2", key: "1t8f8n" }],
+  ["path", { d: "M20 12h2", key: "1q8mjw" }],
+  ["path", { d: "m6.34 17.66-1.41 1.41", key: "1m8zz5" }],
+  ["path", { d: "m19.07 4.93-1.41 1.41", key: "1shlcs" }]
+];
+const Sun = createLucideIcon("sun", __iconNode$5);
+const __iconNode$4 = [
   ["path", { d: "M14 4v10.54a4 4 0 1 1-4 0V4a2 2 0 0 1 4 0Z", key: "17jzev" }]
 ];
-const Thermometer = createLucideIcon("thermometer", __iconNode$3);
-const __iconNode$2 = [
+const Thermometer = createLucideIcon("thermometer", __iconNode$4);
+const __iconNode$3 = [
   ["path", { d: "M10 11v6", key: "nco0om" }],
   ["path", { d: "M14 11v6", key: "outv1u" }],
   ["path", { d: "M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6", key: "miytrc" }],
   ["path", { d: "M3 6h18", key: "d0wm0j" }],
   ["path", { d: "M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2", key: "e791ji" }]
 ];
-const Trash2 = createLucideIcon("trash-2", __iconNode$2);
+const Trash2 = createLucideIcon("trash-2", __iconNode$3);
+const __iconNode$2 = [
+  ["path", { d: "M12.8 19.6A2 2 0 1 0 14 16H2", key: "148xed" }],
+  ["path", { d: "M17.5 8a2.5 2.5 0 1 1 2 4H2", key: "1u4tom" }],
+  ["path", { d: "M9.8 4.4A2 2 0 1 1 11 8H2", key: "75valh" }]
+];
+const Wind = createLucideIcon("wind", __iconNode$2);
 const __iconNode$1 = [
   ["path", { d: "M18 6 6 18", key: "1bl5f8" }],
   ["path", { d: "m6 6 12 12", key: "d8bk6v" }]
@@ -23291,8 +23332,18 @@ function Home() {
       clearInterval(timer);
     };
   }, []);
-  const currentTemp = Math.round(weather?.current?.temperature_2m ?? 0);
+  const currentTemp = weather?.current?.temperature_2m ?? "-";
+  const currentWeatherCode = weather?.current?.weather_code ?? 0;
   const forecastDays = weather?.daily?.time || [];
+  const forecastTempsMax = weather?.daily?.temperature_2m_max || [];
+  const forecastTempsMin = weather?.daily?.temperature_2m_min || [];
+  const getWeatherEmoji = (code2) => {
+    if (code2 === 0 || code2 === 1) return "☀️";
+    if (code2 === 2 || code2 === 3) return "⛅";
+    if (code2 === 45 || code2 === 48) return "🌫️";
+    if (code2 >= 51 && code2 <= 67) return "🌧️";
+    return "🌤️";
+  };
   const onWakePc = async () => {
     setWakeState("loading");
     try {
@@ -23307,106 +23358,166 @@ function Home() {
   const onNovaClick = () => {
     toggleVoice();
   };
-  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "nova-home", children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "nova-home-left", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "nova-orb-section", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex justify-center mb-2", children: /* @__PURE__ */ jsxRuntimeExports.jsx(NovaOrb, { voiceState: voiceStatus, onClick: onNovaClick }) }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "nova-orb-status", children: [
-          voiceStatus === "idle" && "• SYSTEMS ONLINE",
-          voiceStatus === "listening" && "• LISTENING...",
-          voiceStatus === "speaking" && "• SPEAKING...",
-          voiceStatus === "thinking" && "• PROCESSING..."
-        ] })
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "weather-card", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "weather-current", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "weather-temp", children: [
-            currentTemp,
-            "°"
-          ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "weather-condition", children: "Stockholm" })
-        ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "weather-hourly", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "weather-hourly-title", children: "TODAY'S FORECAST" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "weather-hourly-grid", children: forecastDays.slice(0, 6).map((day, idx) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "weather-hour", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-xs", children: [
-              "6AM+",
-              idx * 3,
-              "h"
-            ] }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-2xl", children: "🌤️" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "font-semibold", children: [
-              Math.round(weather?.daily?.temperature_2m_max?.[idx] ?? 0),
-              "°"
-            ] })
-          ] }, `${day}-${idx}`)) })
-        ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "weather-conditions", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "weather-condition-row", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-xs opacity-70", children: "Real Feel" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "font-semibold", children: [
-              currentTemp,
-              "°"
-            ] })
-          ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "weather-condition-row", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-xs opacity-70", children: "Wind" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-semibold", children: "0.2 km/h" })
-          ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "weather-condition-row", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-xs opacity-70", children: "Rain %" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-semibold", children: "0%" })
-          ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "weather-condition-row", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-xs opacity-70", children: "UV Index" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-semibold", children: "3" })
-          ] })
-        ] })
-      ] })
-    ] }),
-    /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "nova-home-right", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "forecast-7day", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-xs opacity-70 mb-2", children: "7-DAY FORECAST" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "space-y-1", children: forecastDays.slice(0, 7).map((day, idx) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "forecast-row", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-sm", children: ["Today", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"][idx] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-xl", children: "🌤️" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "font-semibold ml-auto", children: [
-            Math.round(weather?.daily?.temperature_2m_max?.[idx] ?? 0),
-            "°/",
-            Math.round(weather?.daily?.temperature_2m_min?.[idx] ?? 0),
-            "°"
-          ] })
-        ] }, day)) })
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs(
-        motion.button,
-        {
-          whileTap: { scale: 0.97 },
-          onClick: onWakePc,
-          className: `wake-pc-card ${wakeState}`,
-          children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(Power, { size: 20 }),
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { children: [
-              wakeState === "loading" && "Waking...",
-              wakeState === "sent" && "Signal Sent ✓",
-              wakeState === "error" && "Failed",
-              wakeState === "idle" && "Wake PC Oscar"
-            ] })
-          ]
-        }
-      ),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "alerts-ticker", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-xs opacity-70 mb-1", children: "SWEDISH ALERTS" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-1", children: [
-          alerts.slice(0, 4).map((item, idx) => /* @__PURE__ */ jsxRuntimeExports.jsxs("a", { href: item.url || "#", target: "_blank", rel: "noreferrer", className: "alert-item", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "alert-source", children: item.source }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "alert-title", children: item.title.slice(0, 45) })
-          ] }, `${item.title}-${idx}`)),
-          alerts.length === 0 && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-xs opacity-50", children: "No alerts" })
-        ] })
-      ] })
-    ] })
-  ] });
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+    motion.div,
+    {
+      className: "nova-home",
+      initial: { opacity: 0, y: 20 },
+      animate: { opacity: 1, y: 0 },
+      transition: { duration: 0.5, ease: "easeOut" },
+      children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs(
+          motion.section,
+          {
+            className: "nova-home-left",
+            initial: { opacity: 0, x: -20 },
+            animate: { opacity: 1, x: 0 },
+            transition: { duration: 0.6, delay: 0.1, ease: "easeOut" },
+            children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "nova-orb-section", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex justify-center mb-2", children: /* @__PURE__ */ jsxRuntimeExports.jsx(NovaOrb, { voiceState: voiceStatus, onClick: onNovaClick }) }),
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "nova-orb-status", children: [
+                  voiceStatus === "idle" && "• SYSTEMS ONLINE",
+                  voiceStatus === "listening" && "• LISTENING...",
+                  voiceStatus === "speaking" && "• SPEAKING...",
+                  voiceStatus === "thinking" && "• PROCESSING..."
+                ] })
+              ] }),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "weather-card", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "weather-current", children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "weather-temp", children: [
+                    currentTemp !== "-" ? Math.round(currentTemp) : "-",
+                    "°"
+                  ] }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "weather-condition", children: "Stockholm, Sweden" })
+                ] }),
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "weather-hourly", children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "weather-hourly-title", children: "HOURLY" }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "weather-hourly-grid", children: forecastDays.length > 0 ? forecastDays.slice(0, 6).map((day, idx) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "weather-hour", children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-xs", children: [
+                      "+",
+                      idx * 4,
+                      "h"
+                    ] }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { style: { fontSize: "1.1rem" }, children: getWeatherEmoji(currentWeatherCode) }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "font-semibold", children: [
+                      forecastTempsMax[idx] ? Math.round(forecastTempsMax[idx]) : "-",
+                      "°"
+                    ] })
+                  ] }, `${day}-${idx}`)) : /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "opacity-50 text-xs col-span-6", children: "Loading..." }) })
+                ] }),
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "weather-conditions", children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "weather-condition-row", children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-xs opacity-70 flex items-center gap-1", children: [
+                      /* @__PURE__ */ jsxRuntimeExports.jsx(Droplets, { size: 11 }),
+                      " Feels"
+                    ] }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "font-semibold", children: [
+                      weather?.current?.apparent_temperature ? Math.round(weather.current.apparent_temperature) : "-",
+                      "°"
+                    ] })
+                  ] }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "weather-condition-row", children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-xs opacity-70 flex items-center gap-1", children: [
+                      /* @__PURE__ */ jsxRuntimeExports.jsx(Droplets, { size: 11 }),
+                      " Humidity"
+                    ] }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "font-semibold", children: [
+                      weather?.current?.relative_humidity_2m ?? "-",
+                      "%"
+                    ] })
+                  ] }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "weather-condition-row", children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-xs opacity-70 flex items-center gap-1", children: [
+                      /* @__PURE__ */ jsxRuntimeExports.jsx(Wind, { size: 11 }),
+                      " Wind"
+                    ] }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "font-semibold", children: [
+                      weather?.current?.wind_speed_10m ? Math.round(weather.current.wind_speed_10m) : "-",
+                      " km/h"
+                    ] })
+                  ] }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "weather-condition-row", children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-xs opacity-70 flex items-center gap-1", children: [
+                      /* @__PURE__ */ jsxRuntimeExports.jsx(Sun, { size: 11 }),
+                      " UV"
+                    ] }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-semibold", children: weather?.current?.uv_index ? Math.round(weather.current.uv_index * 10) / 10 : "-" })
+                  ] })
+                ] })
+              ] })
+            ]
+          }
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs(
+          motion.section,
+          {
+            className: "nova-home-right",
+            initial: { opacity: 0, x: 20 },
+            animate: { opacity: 1, x: 0 },
+            transition: { duration: 0.6, delay: 0.2, ease: "easeOut" },
+            children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "forecast-7day", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-xs opacity-70 mb-2 font-semibold", children: "7-DAY FORECAST" }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "space-y-1", children: forecastDays.length > 0 ? forecastDays.slice(0, 7).map((day, idx) => {
+                  const maxTemp = forecastTempsMax[idx] ? Math.round(forecastTempsMax[idx]) : "-";
+                  const minTemp = forecastTempsMin[idx] ? Math.round(forecastTempsMin[idx]) : "-";
+                  const dayName = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"][idx] || `Day+${idx}`;
+                  const dayWeatherCode = weather?.daily?.weather_code?.[idx] || currentWeatherCode;
+                  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "forecast-row", children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-sm font-medium", children: dayName }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("span", { style: { fontSize: "1.1rem", display: "flex", alignItems: "center", justifyContent: "center" }, children: getWeatherEmoji(dayWeatherCode) }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "font-semibold ml-auto text-sm", children: [
+                      maxTemp,
+                      "°/",
+                      minTemp,
+                      "°"
+                    ] })
+                  ] }, day);
+                }) : /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "opacity-50 text-xs", children: "Loading forecast..." }) })
+              ] }),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                motion.button,
+                {
+                  whileTap: { scale: 0.93 },
+                  onClick: onWakePc,
+                  className: `wake-pc-card ${wakeState}`,
+                  initial: { opacity: 0, y: 10 },
+                  animate: { opacity: 1, y: 0 },
+                  transition: { duration: 0.4, delay: 0.3 },
+                  children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsx(Power, { size: 18 }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { children: [
+                      wakeState === "loading" && "Waking...",
+                      wakeState === "sent" && "✓ Signal Sent",
+                      wakeState === "error" && "✗ Failed",
+                      wakeState === "idle" && "Wake PC Oscar"
+                    ] })
+                  ]
+                }
+              ),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                motion.div,
+                {
+                  className: "alerts-ticker",
+                  initial: { opacity: 0 },
+                  animate: { opacity: 1 },
+                  transition: { duration: 0.4, delay: 0.4 },
+                  children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-xs opacity-70 mb-2 font-semibold", children: "ALERTS" }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "space-y-1", children: alerts.length > 0 ? alerts.slice(0, 4).map((item, idx) => /* @__PURE__ */ jsxRuntimeExports.jsxs("a", { href: item.url || "#", target: "_blank", rel: "noreferrer", className: "alert-item", children: [
+                      /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "alert-source", children: item.source || "Alert" }),
+                      /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "alert-title", children: item.title.slice(0, 50) })
+                    ] }, `${item.title}-${idx}`)) : /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-xs opacity-50", children: "No alerts" }) })
+                  ]
+                }
+              )
+            ]
+          }
+        )
+      ]
+    }
+  );
 }
 function ChatHeader({ connected, onToggleSidebar, onCloseKeyboard }) {
   const navigate = useNavigate();
@@ -36057,9 +36168,9 @@ function MessageBubble({ role, text: text2 }) {
   return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: `flex animate-message-in ${isUser ? "justify-end" : "justify-start"}`, children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
     "div",
     {
-      className: `max-w-[85%] px-4 py-3 text-[16px] leading-relaxed break-words border-2 font-['VT323'] shadow-[4px_4px_0_0_rgba(0,0,0,0.3)] ${isUser ? "bg-[var(--pixel-surface)] border-[var(--pixel-primary)] text-[var(--pixel-text)]" : "bg-[var(--pixel-bg)] border-[var(--pixel-secondary)] text-[var(--pixel-text)]"}`,
+      className: `max-w-[85%] px-4 py-3 text-[15px] leading-relaxed break-words rounded-lg border border-opacity-40 font-['Inter'] shadow-md ${isUser ? "bg-[rgba(47,109,255,0.15)] border-[#1ad1ff] text-white" : "bg-[rgba(20,40,84,0.4)] border-[#2f6dff] text-[#e4f7ff]"}`,
       children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: `text-[12px] font-['Press_Start_2P'] uppercase tracking-wider mb-2 opacity-80 ${isUser ? "text-[var(--pixel-primary)]" : "text-[var(--pixel-secondary)]"}`, children: isUser ? "> PLAYER 1" : "> SYSTEM" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: `text-[13px] font-bold tracking-wide mb-2 opacity-90 font-['Inter'] ${isUser ? "text-[#1ad1ff]" : "text-[#2f6dff]"}`, children: isUser ? "Zydrohub" : "NOVA" }),
         !isUser && thoughts.length > 0 && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mb-2", children: thoughts.map((thought, idx) => /* @__PURE__ */ jsxRuntimeExports.jsx(ThoughtBlock$1, { children: thought }, idx)) }),
         /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: `markdown-content ${isUser ? "prose-invert" : ""}`, children: /* @__PURE__ */ jsxRuntimeExports.jsx(
           Markdown,
@@ -36948,62 +37059,166 @@ function SideNav() {
   }) });
 }
 function MusicPage() {
-  return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "nova-page-grid", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "glass-card p-6", children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "nova-title", children: "Music Control" }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "nova-subtitle", children: "Spotify-style controls are ready for integration." }),
-    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "music-card mt-6", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xl font-semibold", children: "No Track Selected" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm opacity-70", children: "Connect playback source later" })
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "music-progress" }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "music-controls", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("button", { className: "round-btn", "aria-label": "Shuffle", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Shuffle, { size: 22 }) }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("button", { className: "round-btn", "aria-label": "Previous", children: /* @__PURE__ */ jsxRuntimeExports.jsx(SkipBack, { size: 22 }) }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("button", { className: "round-btn round-btn-main", "aria-label": "Play", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Play, { size: 24 }) }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("button", { className: "round-btn", "aria-label": "Pause", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Pause, { size: 22 }) }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("button", { className: "round-btn", "aria-label": "Next", children: /* @__PURE__ */ jsxRuntimeExports.jsx(SkipForward, { size: 22 }) }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("button", { className: "round-btn", "aria-label": "Repeat", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Repeat, { size: 22 }) })
+  const [isPlaying, setIsPlaying] = reactExports.useState(false);
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(
+    motion.div,
+    {
+      className: "nova-page-grid",
+      initial: { opacity: 0, y: 20 },
+      animate: { opacity: 1, y: 0 },
+      exit: { opacity: 0, y: -20 },
+      transition: { duration: 0.5, ease: "easeOut" },
+      children: /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "glass-card p-6", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "nova-title", children: "Music Control" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "nova-subtitle", children: "Spotify-style controls are ready for integration." }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "music-card mt-6", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xl font-semibold", children: "No Track Selected" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm opacity-70", children: "Connect playback source later" })
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "music-progress" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "music-controls", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("button", { className: "round-btn", "aria-label": "Shuffle", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Shuffle, { size: 22 }) }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("button", { className: "round-btn", "aria-label": "Previous", children: /* @__PURE__ */ jsxRuntimeExports.jsx(SkipBack, { size: 22 }) }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "button",
+              {
+                className: "round-btn round-btn-main",
+                "aria-label": isPlaying ? "Pause" : "Play",
+                onClick: () => setIsPlaying(!isPlaying),
+                children: isPlaying ? /* @__PURE__ */ jsxRuntimeExports.jsx(Pause, { size: 24 }) : /* @__PURE__ */ jsxRuntimeExports.jsx(Play, { size: 24 })
+              }
+            ),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("button", { className: "round-btn", "aria-label": "Next", children: /* @__PURE__ */ jsxRuntimeExports.jsx(SkipForward, { size: 22 }) }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("button", { className: "round-btn", "aria-label": "Repeat", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Repeat, { size: 22 }) })
+          ] })
+        ] })
       ] })
-    ] })
-  ] }) });
+    }
+  );
 }
 function NewsPage() {
   const [items2, setItems] = reactExports.useState([]);
   const [loading, setLoading] = reactExports.useState(true);
+  const [error, setError] = reactExports.useState(null);
   reactExports.useEffect(() => {
     let mounted = true;
     async function load() {
       setLoading(true);
+      setError(null);
       try {
-        const data = await apiFetch("/integrations/swedish-alerts?limit=15");
-        if (mounted) setItems(data.items || []);
+        const data = await apiFetch("/integrations/swedish-alerts?limit=20");
+        if (mounted) {
+          setItems(data.items || []);
+        }
       } catch (err) {
         console.error("Failed to load alerts", err);
-        if (mounted) setItems([]);
+        if (mounted) {
+          setError("Failed to load alerts");
+          setItems([]);
+        }
       } finally {
         if (mounted) setLoading(false);
       }
     }
     load();
-    const timer = setInterval(load, 6e4);
+    const timer = setInterval(load, 12e4);
     return () => {
       mounted = false;
       clearInterval(timer);
     };
   }, []);
-  return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "nova-page-grid", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "glass-card p-6", children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "nova-title", children: "Swedish Alerts" }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "nova-subtitle", children: "Polisen, Krisinformation, and SOS Alarm sources" }),
-    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "news-list mt-4", children: [
-      loading && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "news-item", children: "Loading alerts..." }),
-      !loading && items2.length === 0 && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "news-item", children: "No alerts available right now." }),
-      items2.map((item, idx) => /* @__PURE__ */ jsxRuntimeExports.jsxs("a", { className: "news-item", href: item.url || "#", target: "_blank", rel: "noreferrer", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { children: item.source || "Alert" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: item.title })
-      ] }, `${item.title}-${idx}`))
-    ] })
-  ] }) });
+  const getSourceIcon = (source) => {
+    if (source?.toLowerCase().includes("polisen")) return "🚔";
+    if (source?.toLowerCase().includes("krisis")) return "⚠️";
+    if (source?.toLowerCase().includes("sos")) return "🆘";
+    return "📢";
+  };
+  const getSourceColor = (source) => {
+    if (source?.toLowerCase().includes("polisen")) return "border-blue-400/60 bg-blue-500/10";
+    if (source?.toLowerCase().includes("krisis")) return "border-yellow-400/60 bg-yellow-500/10";
+    if (source?.toLowerCase().includes("sos")) return "border-red-400/60 bg-red-500/10";
+    return "border-cyan-400/60 bg-cyan-500/10";
+  };
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+    motion.div,
+    {
+      className: "w-full h-full flex flex-col gap-0 bg-transparent",
+      initial: { opacity: 0, y: 20 },
+      animate: { opacity: 1, y: 0 },
+      transition: { duration: 0.5, ease: "easeOut" },
+      children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex-shrink-0 px-6 py-4 border-b border-cyan-400/20", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-3", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-2xl", children: "🔔" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "text-xl font-bold text-white font-['Plus_Jakarta_Sans']", children: "SWEDISH ALERTS" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-cyan-300/70", children: "Polisen • Krisinformation • SOS Alarm" })
+          ] })
+        ] }) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex-1 overflow-y-auto touch-scroll-y", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "px-6 py-4 space-y-3", children: [
+          loading && /* @__PURE__ */ jsxRuntimeExports.jsxs(
+            motion.div,
+            {
+              className: "text-center py-12",
+              initial: { opacity: 0 },
+              animate: { opacity: 1 },
+              transition: { duration: 0.3 },
+              children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-3xl mb-2 animate-pulse", children: "⏳" }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-cyan-300", children: "Loading alerts..." })
+              ]
+            }
+          ),
+          error && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "bg-red-500/20 border border-red-400/50 rounded-lg p-4 text-red-200 text-sm", children: error }),
+          !loading && items2.length === 0 && /* @__PURE__ */ jsxRuntimeExports.jsxs(
+            motion.div,
+            {
+              className: "text-center py-12",
+              initial: { opacity: 0 },
+              animate: { opacity: 1 },
+              transition: { duration: 0.3 },
+              children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-4xl mb-2", children: "✨" }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-cyan-300/70", children: "No active alerts in Sweden right now" }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-cyan-300/50 mt-1", children: "All systems clear" })
+              ]
+            }
+          ),
+          items2.map((item, idx) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+            motion.a,
+            {
+              href: item.url || "#",
+              target: "_blank",
+              rel: "noreferrer",
+              className: `block p-4 rounded-lg border transition-all hover:border-opacity-100 hover:shadow-lg cursor-pointer ${getSourceColor(item.source)}`,
+              initial: { opacity: 0, x: -20 },
+              animate: { opacity: 1, x: 0 },
+              transition: { duration: 0.4, delay: idx * 0.05 },
+              whileHover: { scale: 1.02, x: 4 },
+              children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex gap-3", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-2xl flex-shrink-0", children: getSourceIcon(item.source) }),
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex-1 min-w-0", children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-sm font-bold text-cyan-200 uppercase tracking-wider", children: item.source || "Alert" }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-sm text-white mt-1 line-clamp-2", children: item.title }),
+                  item.location && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-xs text-cyan-300/60 mt-1 flex items-center gap-1", children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsx(Globe, { size: 12 }),
+                    item.location
+                  ] }),
+                  item.published && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-xs text-cyan-300/50 mt-1 opacity-70", children: new Date(item.published).toLocaleString("sv-SE", {
+                    month: "short",
+                    day: "numeric",
+                    hour: "2-digit",
+                    minute: "2-digit"
+                  }) })
+                ] })
+              ] })
+            },
+            `${item.title}-${idx}`
+          ))
+        ] }) })
+      ]
+    }
+  );
 }
 function WeatherPage() {
   const [weather, setWeather] = reactExports.useState(null);
@@ -37027,27 +37242,47 @@ function WeatherPage() {
   }, []);
   const daily = weather?.daily || {};
   const days = Array.isArray(daily.time) ? daily.time : [];
-  return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "nova-page-grid", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "glass-card p-6", children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "nova-title", children: "Weather" }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "nova-subtitle", children: "Open-Meteo 7 day overview" }),
-    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "weather-grid mt-4", children: [
-      days.length === 0 && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "weather-day", children: "Weather data unavailable." }),
-      days.map((day, index2) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "weather-day", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: day }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-          Math.round(daily.temperature_2m_max?.[index2] ?? 0),
-          "° / ",
-          Math.round(daily.temperature_2m_min?.[index2] ?? 0),
-          "°"
-        ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("small", { children: [
-          "Rain ",
-          Math.round(daily.precipitation_probability_max?.[index2] ?? 0),
-          "%"
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(
+    motion.div,
+    {
+      className: "nova-page-grid",
+      initial: { opacity: 0, y: 20 },
+      animate: { opacity: 1, y: 0 },
+      exit: { opacity: 0, y: -20 },
+      transition: { duration: 0.5, ease: "easeOut" },
+      children: /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "glass-card p-6", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "nova-title", children: "Weather" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "nova-subtitle", children: "Open-Meteo 7 day overview" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "weather-grid mt-4", children: [
+          days.length === 0 && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "weather-day", children: "Weather data unavailable." }),
+          days.map((day, index2) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
+            motion.div,
+            {
+              className: "weather-day",
+              initial: { opacity: 0, scale: 0.9 },
+              animate: { opacity: 1, scale: 1 },
+              transition: { duration: 0.3, delay: index2 * 0.05 },
+              children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: day }),
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+                  Math.round(daily.temperature_2m_max?.[index2] ?? 0),
+                  "° / ",
+                  Math.round(daily.temperature_2m_min?.[index2] ?? 0),
+                  "°"
+                ] }),
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("small", { children: [
+                  "Rain ",
+                  Math.round(daily.precipitation_probability_max?.[index2] ?? 0),
+                  "%"
+                ] })
+              ]
+            },
+            day
+          ))
         ] })
-      ] }, day))
-    ] })
-  ] }) });
+      ] })
+    }
+  );
 }
 function Settings() {
   const navigate = useNavigate();
@@ -37136,16 +37371,20 @@ const toFiniteNumber = (value, fallback = 0) => {
 };
 const StatusBar = () => {
   const [stats, setStats] = reactExports.useState({
-    time: "--:--:--",
+    time: (/* @__PURE__ */ new Date()).toLocaleTimeString("en-GB", { hour12: false }),
     cpu_percent: 0,
     memory_percent: 0,
     temperature: 0,
     wattage: 0
   });
+  const [connected, setConnected] = reactExports.useState(false);
   reactExports.useEffect(() => {
-    let ws;
-    let fallbackInterval;
+    let ws = null;
+    let fallbackInterval = null;
+    let timeInterval = null;
+    let isMounted = true;
     const applyStats = (data) => {
+      if (!isMounted) return;
       setStats({
         time: data.time || (/* @__PURE__ */ new Date()).toLocaleTimeString("en-GB", { hour12: false }),
         cpu_percent: toFiniteNumber(data.cpu_percent ?? data.cpu ?? 0),
@@ -37153,44 +37392,67 @@ const StatusBar = () => {
         temperature: toFiniteNumber(data.temperature ?? data.temp ?? 0),
         wattage: toFiniteNumber(data.wattage ?? data.watts ?? 0)
       });
+      setConnected(true);
     };
     const fetchStats = async () => {
       try {
         const data = await apiFetch("/system/stats");
         applyStats(data);
       } catch (error) {
-        console.error("Failed to fetch system stats:", error);
+        console.error("Stats fetch failed:", error);
+        setConnected(false);
       }
     };
+    fetchStats();
+    timeInterval = setInterval(() => {
+      if (isMounted) {
+        setStats((prev) => ({
+          ...prev,
+          time: (/* @__PURE__ */ new Date()).toLocaleTimeString("en-GB", { hour12: false })
+        }));
+      }
+    }, 1e3);
     try {
       ws = new WebSocket(`${WS_BASE_URL}/ws/system-stats`);
+      ws.onopen = () => {
+        console.log("Stats WebSocket connected");
+        if (isMounted) setConnected(true);
+      };
       ws.onmessage = (event) => {
         try {
           const payload = JSON.parse(event.data);
           applyStats(payload);
         } catch (err) {
-          console.error("Failed to parse stats websocket payload", err);
+          console.error("Stats parse error:", err);
         }
       };
-      ws.onerror = () => {
+      ws.onerror = (error) => {
+        console.error("WebSocket error:", error);
         if (!fallbackInterval) {
-          fetchStats();
-          fallbackInterval = setInterval(fetchStats, 1e3);
+          fallbackInterval = setInterval(fetchStats, 1500);
         }
       };
       ws.onclose = () => {
+        console.log("Stats WebSocket disconnected");
         if (!fallbackInterval) {
-          fetchStats();
-          fallbackInterval = setInterval(fetchStats, 1e3);
+          fallbackInterval = setInterval(fetchStats, 1500);
         }
       };
     } catch (err) {
-      fetchStats();
-      fallbackInterval = setInterval(fetchStats, 1e3);
+      console.error("WebSocket init failed:", err);
+      fallbackInterval = setInterval(fetchStats, 1500);
     }
     return () => {
-      if (ws) ws.close();
-      if (fallbackInterval) clearInterval(fallbackInterval);
+      isMounted = false;
+      if (ws) {
+        ws.close();
+      }
+      if (fallbackInterval) {
+        clearInterval(fallbackInterval);
+      }
+      if (timeInterval) {
+        clearInterval(timeInterval);
+      }
     };
   }, []);
   const getStatusColor = (value, type) => {
@@ -38096,19 +38358,38 @@ function OverlayKeyboard() {
 }
 const AnimatedRoutes = () => {
   const location = useLocation();
-  return /* @__PURE__ */ jsxRuntimeExports.jsx(AnimatePresence, { mode: "wait", children: /* @__PURE__ */ jsxRuntimeExports.jsxs(Routes, { location, children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsx(Route, { path: "/", element: /* @__PURE__ */ jsxRuntimeExports.jsx(Home, {}) }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx(Route, { path: "/chat", element: /* @__PURE__ */ jsxRuntimeExports.jsx(ChatInterface, {}) }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx(Route, { path: "/music", element: /* @__PURE__ */ jsxRuntimeExports.jsx(MusicPage, {}) }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx(Route, { path: "/news", element: /* @__PURE__ */ jsxRuntimeExports.jsx(NewsPage, {}) }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx(Route, { path: "/weather", element: /* @__PURE__ */ jsxRuntimeExports.jsx(WeatherPage, {}) }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx(Route, { path: "/tasks", element: /* @__PURE__ */ jsxRuntimeExports.jsx(TaskManager, {}) }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx(Route, { path: "/tasks/add", element: /* @__PURE__ */ jsxRuntimeExports.jsx(TaskAdd, {}) }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx(Route, { path: "/tasks/edit", element: /* @__PURE__ */ jsxRuntimeExports.jsx(TaskAdd, {}) }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx(Route, { path: "/heartbeat", element: /* @__PURE__ */ jsxRuntimeExports.jsx(HeartbeatManager, {}) }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx(Route, { path: "/gpio", element: /* @__PURE__ */ jsxRuntimeExports.jsx(GPIOControl, {}) }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx(Route, { path: "/settings", element: /* @__PURE__ */ jsxRuntimeExports.jsx(Settings, {}) })
-  ] }, location.pathname) });
+  const [swipeDirection, setSwipeDirection] = React.useState(0);
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(AnimatePresence, { mode: "wait", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+    motion.div,
+    {
+      initial: { opacity: 0, x: swipeDirection * 100 },
+      animate: { opacity: 1, x: 0 },
+      exit: { opacity: 0, x: -swipeDirection * 100 },
+      transition: { type: "spring", stiffness: 300, damping: 30 },
+      onDragEnd: (e, info) => {
+        if (Math.abs(info.offset.x) > 50) {
+          setSwipeDirection(info.offset.x > 0 ? 1 : -1);
+        }
+      },
+      drag: "x",
+      dragConstraints: { left: 0, right: 0 },
+      dragElastic: 0.2,
+      children: /* @__PURE__ */ jsxRuntimeExports.jsxs(Routes, { location, children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(Route, { path: "/", element: /* @__PURE__ */ jsxRuntimeExports.jsx(Home, {}) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(Route, { path: "/chat", element: /* @__PURE__ */ jsxRuntimeExports.jsx(ChatInterface, {}) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(Route, { path: "/music", element: /* @__PURE__ */ jsxRuntimeExports.jsx(MusicPage, {}) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(Route, { path: "/news", element: /* @__PURE__ */ jsxRuntimeExports.jsx(NewsPage, {}) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(Route, { path: "/weather", element: /* @__PURE__ */ jsxRuntimeExports.jsx(WeatherPage, {}) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(Route, { path: "/tasks", element: /* @__PURE__ */ jsxRuntimeExports.jsx(TaskManager, {}) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(Route, { path: "/tasks/add", element: /* @__PURE__ */ jsxRuntimeExports.jsx(TaskAdd, {}) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(Route, { path: "/tasks/edit", element: /* @__PURE__ */ jsxRuntimeExports.jsx(TaskAdd, {}) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(Route, { path: "/heartbeat", element: /* @__PURE__ */ jsxRuntimeExports.jsx(HeartbeatManager, {}) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(Route, { path: "/gpio", element: /* @__PURE__ */ jsxRuntimeExports.jsx(GPIOControl, {}) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(Route, { path: "/settings", element: /* @__PURE__ */ jsxRuntimeExports.jsx(Settings, {}) })
+      ] })
+    },
+    location.pathname
+  ) });
 };
 function RandomScanlineOverlay() {
   const [active, setActive] = reactExports.useState(false);

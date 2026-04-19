@@ -10,18 +10,22 @@ const toFiniteNumber = (value, fallback = 0) => {
 
 const StatusBar = () => {
     const [stats, setStats] = useState({
-        time: '--:--:--',
+        time: new Date().toLocaleTimeString('en-GB', { hour12: false }),
         cpu_percent: 0,
         memory_percent: 0,
         temperature: 0,
         wattage: 0
     });
+    const [connected, setConnected] = useState(false);
 
     useEffect(() => {
-        let ws;
-        let fallbackInterval;
+        let ws = null;
+        let fallbackInterval = null;
+        let timeInterval = null;
+        let isMounted = true;
 
         const applyStats = (data) => {
+            if (!isMounted) return;
             setStats({
                 time: data.time || new Date().toLocaleTimeString('en-GB', { hour12: false }),
                 cpu_percent: toFiniteNumber(data.cpu_percent ?? data.cpu ?? 0),
@@ -29,6 +33,7 @@ const StatusBar = () => {
                 temperature: toFiniteNumber(data.temperature ?? data.temp ?? 0),
                 wattage: toFiniteNumber(data.wattage ?? data.watts ?? 0)
             });
+            setConnected(true);
         };
 
         const fetchStats = async () => {
@@ -36,40 +41,70 @@ const StatusBar = () => {
                 const data = await apiFetch('/system/stats');
                 applyStats(data);
             } catch (error) {
-                console.error('Failed to fetch system stats:', error);
+                console.error('Stats fetch failed:', error);
+                setConnected(false);
             }
         };
 
+        // Immediate first fetch
+        fetchStats();
+
+        // Update time every second
+        timeInterval = setInterval(() => {
+            if (isMounted) {
+                setStats(prev => ({
+                    ...prev,
+                    time: new Date().toLocaleTimeString('en-GB', { hour12: false })
+                }));
+            }
+        }, 1000);
+
+        // Try WebSocket connection
         try {
             ws = new WebSocket(`${WS_BASE_URL}/ws/system-stats`);
+            ws.onopen = () => {
+                console.log('Stats WebSocket connected');
+                if (isMounted) setConnected(true);
+            };
             ws.onmessage = (event) => {
                 try {
                     const payload = JSON.parse(event.data);
                     applyStats(payload);
                 } catch (err) {
-                    console.error('Failed to parse stats websocket payload', err);
+                    console.error('Stats parse error:', err);
                 }
             };
-            ws.onerror = () => {
+            ws.onerror = (error) => {
+                console.error('WebSocket error:', error);
+                // Start fallback polling if WebSocket fails
                 if (!fallbackInterval) {
-                    fetchStats();
-                    fallbackInterval = setInterval(fetchStats, 1000);
+                    fallbackInterval = setInterval(fetchStats, 1500);
                 }
             };
             ws.onclose = () => {
+                console.log('Stats WebSocket disconnected');
+                // Start fallback polling on disconnect
                 if (!fallbackInterval) {
-                    fetchStats();
-                    fallbackInterval = setInterval(fetchStats, 1000);
+                    fallbackInterval = setInterval(fetchStats, 1500);
                 }
             };
         } catch (err) {
-            fetchStats();
-            fallbackInterval = setInterval(fetchStats, 1000);
+            console.error('WebSocket init failed:', err);
+            // Use HTTP polling as fallback
+            fallbackInterval = setInterval(fetchStats, 1500);
         }
 
         return () => {
-            if (ws) ws.close();
-            if (fallbackInterval) clearInterval(fallbackInterval);
+            isMounted = false;
+            if (ws) {
+                ws.close();
+            }
+            if (fallbackInterval) {
+                clearInterval(fallbackInterval);
+            }
+            if (timeInterval) {
+                clearInterval(timeInterval);
+            }
         };
     }, []);
 

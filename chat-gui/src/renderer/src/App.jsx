@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { HashRouter, Routes, Route, useLocation } from 'react-router-dom';
-import { AnimatePresence } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 import Home from './components/Home';
 import ChatInterface from './components/ChatInterface';
 import SideNav from './components/SideNav';
@@ -31,22 +31,39 @@ function OverlayKeyboard() {
 
 const AnimatedRoutes = () => {
   const location = useLocation();
+  const [swipeDirection, setSwipeDirection] = React.useState(0);
 
   return (
     <AnimatePresence mode="wait">
-      <Routes location={location} key={location.pathname}>
-        <Route path="/" element={<Home />} />
-        <Route path="/chat" element={<ChatInterface />} />
-        <Route path="/music" element={<MusicPage />} />
-        <Route path="/news" element={<NewsPage />} />
-        <Route path="/weather" element={<WeatherPage />} />
-        <Route path="/tasks" element={<TaskManager />} />
-        <Route path="/tasks/add" element={<TaskAdd />} />
-        <Route path="/tasks/edit" element={<TaskAdd />} />
-        <Route path="/heartbeat" element={<HeartbeatManager />} />
-        <Route path="/gpio" element={<GPIOControl />} />
-        <Route path="/settings" element={<Settings />} />
-      </Routes>
+      <motion.div
+        key={location.pathname}
+        initial={{ opacity: 0, x: swipeDirection * 100 }}
+        animate={{ opacity: 1, x: 0 }}
+        exit={{ opacity: 0, x: -swipeDirection * 100 }}
+        transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+        onDragEnd={(e, info) => {
+          if (Math.abs(info.offset.x) > 50) {
+            setSwipeDirection(info.offset.x > 0 ? 1 : -1);
+          }
+        }}
+        drag="x"
+        dragConstraints={{ left: 0, right: 0 }}
+        dragElastic={0.2}
+      >
+        <Routes location={location}>
+          <Route path="/" element={<Home />} />
+          <Route path="/chat" element={<ChatInterface />} />
+          <Route path="/music" element={<MusicPage />} />
+          <Route path="/news" element={<NewsPage />} />
+          <Route path="/weather" element={<WeatherPage />} />
+          <Route path="/tasks" element={<TaskManager />} />
+          <Route path="/tasks/add" element={<TaskAdd />} />
+          <Route path="/tasks/edit" element={<TaskAdd />} />
+          <Route path="/heartbeat" element={<HeartbeatManager />} />
+          <Route path="/gpio" element={<GPIOControl />} />
+          <Route path="/settings" element={<Settings />} />
+        </Routes>
+      </motion.div>
     </AnimatePresence>
   );
 };

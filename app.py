@@ -307,13 +307,13 @@ def _fetch_rss_items(url: str, source: str, limit: int = 8) -> list[dict]:
 
 @app.get("/integrations/weather")
 async def weather_open_meteo(latitude: float = 59.3293, longitude: float = 18.0686, timezone: str = "auto"):
-    """Weather for dashboard cards via Open-Meteo (current + 7-day forecast)."""
+    """Weather for dashboard cards via Open-Meteo (current + 7-day forecast + full stats)."""
     params = urllib.parse.urlencode(
         {
             "latitude": latitude,
             "longitude": longitude,
-            "current": "temperature_2m,apparent_temperature,weather_code",
-            "daily": "weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max",
+            "current": "temperature_2m,apparent_temperature,weather_code,wind_speed_10m,relative_humidity_2m,uv_index",
+            "daily": "weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,wind_speed_10m_max,uv_index_max",
             "forecast_days": 7,
             "timezone": timezone,
         }
@@ -352,8 +352,11 @@ async def swedish_alerts(limit: int = 12):
                     "location": entry.get("location", {}).get("name") or "",
                 }
             )
+        logger.debug("Polisen: fetched %d items", len(polisen_data or []))
     except Exception as exc:
-        errors.append(f"Polisen: {str(exc)[:40]}")
+        error_msg = str(exc)[:40]
+        logger.warning("Polisen API failed: %s", error_msg)
+        errors.append(f"Polisen: {error_msg}")
 
     # 2) Krisinformation API - https://api.krisinformation.se/
     try:
@@ -367,8 +370,11 @@ async def swedish_alerts(limit: int = 12):
                     "published": entry.get("updated") or entry.get("created") or "",
                 }
             )
+        logger.debug("Krisinformation: fetched %d items", len(krisis_data.get("events") or []))
     except Exception as exc:
-        errors.append(f"Krisinformation: {str(exc)[:40]}")
+        error_msg = str(exc)[:40]
+        logger.warning("Krisinformation API failed: %s", error_msg)
+        errors.append(f"Krisinformation: {error_msg}")
 
     # 3) SOS Alarm API via henrikhjelm.se proxy - https://henrikhjelm.se/api/sos/
     try:
@@ -383,21 +389,24 @@ async def swedish_alerts(limit: int = 12):
                         "published": entry.get("timestamp") or entry.get("updated") or "",
                     }
                 )
+        logger.debug("SOS Alarm: fetched %d items", len(sos_data) if isinstance(sos_data, list) else 0)
     except Exception as exc:
-        errors.append(f"SOS Alarm: {str(exc)[:40]}")
+        error_msg = str(exc)[:40]
+        logger.warning("SOS Alarm API failed: %s", error_msg)
+        errors.append(f"SOS Alarm: {error_msg}")
 
-    # 4) Trafikverket traffic data (optional, light parsing) - https://www.trafikverket.se/api/
-    try:
-        traffic_data = _fetch_json("https://www.trafikverket.se/e-tjanster/trafikverkets-oppna-api-for-trafikinformation/")
-        # Trafikverket API requires API key and complex parsing; skip for now with graceful fallback
-    except Exception:
-        pass  # Skip if unavailable; already have 3 sources
-
-    return {
+    # Return results with error log
+    result = {
         "items": items[:limit],
-        "errors": errors,
+        "count": len(items),
+        "errors": errors if errors else [],
         "sources": ["Polisen", "Krisinformation", "SOS Alarm"],
     }
+    
+    if not items:
+        logger.warning("No Swedish alerts fetched. Errors: %s", errors)
+    
+    return result
 
 
 def _send_magic_packet(mac: str, broadcast_ip: str, port: int = 9) -> None:
