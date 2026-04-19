@@ -1,186 +1,134 @@
-import React from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { MessageCircle, Settings, Code } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
-import Avatar from './Avatar';
+import React, { useEffect, useState } from 'react';
+import { motion } from 'framer-motion';
+import { SkipBack, Play, Pause, SkipForward, House, Power } from 'lucide-react';
 import { useWebSocket } from '../contexts/WebSocketContext.jsx';
-import { useRef, useState, useEffect } from 'react';
-
-const MenuButton = ({ icon: Icon, label, onClick, color }) => (
-    <motion.button
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
-        onClick={onClick}
-        className="group relative overflow-hidden flex flex-col items-center justify-center gap-3 w-full min-h-[100px] flex-1 min-w-0 border-4 bg-[var(--pixel-surface)] px-6 py-4 font-['Press_Start_2P'] text-sm transition-all active:translate-y-1 active:shadow-none focus:outline-none"
-        style={{ borderColor: color, color: color, boxShadow: '4px 4px 0 0 rgba(0, 0, 0, 0.5)' }}
-    >
-        <div className="absolute inset-0 bg-current opacity-0 transition-opacity duration-150 group-hover:opacity-10" />
-        <Icon size={40} className="relative z-10" />
-        <span className="relative z-10 text-sm">{label}</span>
-    </motion.button>
-);
+import { apiFetch } from '../apiClient.js';
+import NovaOrb from './NovaOrb';
 
 export default function Home() {
-    const navigate = useNavigate();
-    const {
-        toggleVoice,
-        startVosk,
-        stopVosk,
-        isRecording,
-        isVoskRecording,
-        voiceStatus,
-        voskText,
-        voiceStreamText,
-        isVoiceStreaming
-    } = useWebSocket();
-
-    const [showBubble, setShowBubble] = useState(false);
-    const bubbleTimeoutRef = useRef(null);
+    const { voiceStatus } = useWebSocket();
+    const [weather, setWeather] = useState(null);
+    const [alerts, setAlerts] = useState([]);
+    const [wakeState, setWakeState] = useState('idle');
 
     useEffect(() => {
-        const active = isVoiceStreaming || voiceStatus === 'speaking';
-        if (active) {
-            if (bubbleTimeoutRef.current) clearTimeout(bubbleTimeoutRef.current);
-            setShowBubble(true);
-        } else if (showBubble) {
-            bubbleTimeoutRef.current = setTimeout(() => {
-                setShowBubble(false);
-            }, 1000);
+        let mounted = true;
+        async function loadData() {
+            try {
+                const [weatherData, alertsData] = await Promise.all([
+                    apiFetch('/integrations/weather?latitude=59.3293&longitude=18.0686'),
+                    apiFetch('/integrations/swedish-alerts?limit=6')
+                ]);
+                if (!mounted) return;
+                setWeather(weatherData);
+                setAlerts(alertsData.items || []);
+            } catch (err) {
+                console.error('Dashboard load failed', err);
+            }
         }
+        loadData();
+        const timer = setInterval(loadData, 120000);
         return () => {
-            if (bubbleTimeoutRef.current) clearTimeout(bubbleTimeoutRef.current);
+            mounted = false;
+            clearInterval(timer);
         };
-    }, [isVoiceStreaming, voiceStatus, showBubble]);
+    }, []);
 
-    const displayVoiceText = voiceStreamText.trim();
+    const currentTemp = Math.round(weather?.current?.temperature_2m ?? 0);
+    const forecastDays = weather?.daily?.time || [];
 
-    const pressTimer = useRef(null);
-    const [isHoldMode, setIsHoldMode] = useState(false);
-
-    const handleMouseDown = () => {
-        setIsHoldMode(false);
-        pressTimer.current = setTimeout(() => {
-            setIsHoldMode(true);
-            startVosk();
-        }, 400); // 400ms threshold for hold
-    };
-
-    const handleMouseUp = () => {
-        if (pressTimer.current) {
-            clearTimeout(pressTimer.current);
-            pressTimer.current = null;
+    const onWakePc = async () => {
+        setWakeState('loading');
+        try {
+            const result = await apiFetch('/actions/wake-pc', { method: 'POST' });
+            setWakeState(result.status === 'sent' ? 'sent' : 'error');
+        } catch (err) {
+            console.error('Wake PC failed', err);
+            setWakeState('error');
         }
-
-        if (isHoldMode) {
-            stopVosk();
-            setIsHoldMode(false);
-        } else {
-            // It was a quick tap
-            toggleVoice();
-        }
-    };
-
-    // Also handle mouse leave to prevent getting stuck in hold mode
-    const handleMouseLeave = () => {
-        if (isHoldMode) {
-            stopVosk();
-            setIsHoldMode(false);
-        }
-        if (pressTimer.current) {
-            clearTimeout(pressTimer.current);
-            pressTimer.current = null;
-        }
+        setTimeout(() => setWakeState('idle'), 2500);
     };
 
     return (
-        <div className="relative w-full h-full overflow-hidden bg-[var(--pixel-bg)] flex flex-col items-center justify-center p-4">
+        <div className="nova-page-grid">
+            <section className="glass-card p-6 relative overflow-hidden">
+                <div className="flex items-start justify-between gap-4">
+                    <div>
+                        <h1 className="text-5xl font-semibold tracking-tight">Good afternoon</h1>
+                        <p className="nova-subtitle mt-2">Welcome back, ZydroHub</p>
+                    </div>
+                    <div className="flex items-center gap-2 text-cyan-100/80">
+                        <House size={20} />
+                        <span>NOVA Home</span>
+                    </div>
+                </div>
 
-            {/* Settings button top left */}
-            <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => navigate('/settings')}
-                className="absolute top-3 left-3 z-30 p-4 rounded-lg border-2 border-[var(--pixel-border)] bg-[var(--pixel-surface)] shadow-[4px_4px_0_0_rgba(0,0,0,0.5)]"
-                style={{ color: '#7dcfff' }}
-                aria-label="Settings"
-            >
-                <Settings size={36} />
-            </motion.button>
+                <div className="mt-6 flex justify-center">
+                    <NovaOrb voiceState={voiceStatus} />
+                </div>
+            </section>
 
-            {/* Avatar name + status */}
-            <div className="flex flex-col items-center gap-2 mb-4 z-10">
-                <h1 className="text-2xl font-['Press_Start_2P'] tracking-tight text-[var(--pixel-primary)]">
-                    NOVA
-                </h1>
-                <span className="text-xs font-['Press_Start_2P'] tracking-widest text-[var(--pixel-accent)]">
-                    SYSTEMS ONLINE
-                </span>
-            </div>
+            <section className="glass-card p-6">
+                <h3 className="nova-title">Weather</h3>
+                <div className="mt-4 text-6xl font-bold text-cyan-200">{currentTemp}°</div>
+                <p className="nova-subtitle">Stockholm via Open-Meteo</p>
+                <div className="weather-grid mt-5">
+                    {forecastDays.slice(0, 7).map((day, idx) => (
+                        <div key={day} className="weather-day">
+                            <h4>{day.slice(5)}</h4>
+                            <div>
+                                {Math.round(weather?.daily?.temperature_2m_max?.[idx] ?? 0)}°
+                            </div>
+                            <small>{Math.round(weather?.daily?.precipitation_probability_max?.[idx] ?? 0)}% rain</small>
+                        </div>
+                    ))}
+                </div>
+            </section>
 
-            {/* Avatar - Centered (higher z when bubble visible so it's not covered by buttons) */}
-            <div
-                className={`mb-12 relative ${showBubble ? 'z-20' : 'z-10'}`}
-                onMouseDown={handleMouseDown}
-                onMouseUp={handleMouseUp}
-                onMouseLeave={handleMouseLeave}
-            >
-                <Avatar
-                    variant="xl"
-                    animate={true}
-                    expression={voiceStatus}
-                    className={`cursor-pointer transition-all duration-300 ${isRecording ? 'scale-110' : 'hover:scale-105'}`}
-                />
+            <section className="glass-card p-6">
+                <h3 className="nova-title">PC Control</h3>
+                <p className="nova-subtitle">Acer Predator · PC-Oscar</p>
+                <motion.button
+                    whileTap={{ scale: 0.97 }}
+                    onClick={onWakePc}
+                    className={`wake-btn mt-6 ${wakeState}`}
+                >
+                    <Power size={26} />
+                    <span>
+                        {wakeState === 'loading' && 'Sending Magic Packet...'}
+                        {wakeState === 'sent' && 'Wake Signal Sent'}
+                        {wakeState === 'error' && 'Wake Failed'}
+                        {wakeState === 'idle' && 'Wake PC'}
+                    </span>
+                </motion.button>
+            </section>
 
-                {/* Vosk Real-time Transcription Overlay */}
-                <AnimatePresence>
-                    {isVoskRecording && voskText && (
-                        <motion.div
-                            initial={{ opacity: 0, scale: 0.8, y: -10 }}
-                            animate={{ opacity: 1, scale: 1, y: 0 }}
-                            exit={{ opacity: 0, scale: 0.8 }}
-                            className="absolute left-[90px] top-[70px] w-[180px] bg-black/80 backdrop-blur-md p-3 border-2 border-[var(--pixel-accent)] shadow-[4px_4px_0_0_rgba(0,0,0,0.5)] z-50 rounded-lg rounded-tl-none"
-                        >
-                            <p className="text-[var(--pixel-accent)] text-[10px] leading-relaxed break-words whitespace-pre-wrap max-h-[120px] overflow-y-auto touch-scroll-y">
-                                {voskText}
-                            </p>
-                            {/* Decorative pointer arrow (top left pointing to avatar) */}
-                            <div className="absolute left-[-10px] top-[-2px] w-0 h-0 border-r-[10px] border-r-[var(--pixel-accent)] border-b-[10px] border-b-transparent" />
-                        </motion.div>
-                    )}
-                </AnimatePresence>
+            <section className="glass-card p-6">
+                <h3 className="nova-title">Music</h3>
+                <p className="nova-subtitle">Spotify-style controls</p>
+                <div className="music-card mt-5">
+                    <div className="music-progress" />
+                    <div className="music-controls">
+                        <button className="round-btn" aria-label="Previous"><SkipBack size={22} /></button>
+                        <button className="round-btn round-btn-main" aria-label="Play"><Play size={24} /></button>
+                        <button className="round-btn" aria-label="Pause"><Pause size={22} /></button>
+                        <button className="round-btn" aria-label="Next"><SkipForward size={22} /></button>
+                    </div>
+                </div>
+            </section>
 
-                {/* AI Response Bubble - below avatar, pointer up toward avatar */}
-                <AnimatePresence>
-                    {showBubble && displayVoiceText && (
-                        <motion.div
-                            initial={{ opacity: 0, x: -20, scale: 0.9 }}
-                            animate={{ opacity: 1, x: 0, scale: 1 }}
-                            exit={{ opacity: 0, scale: 0.9 }}
-                            className="absolute left-1/2 top-[150px] -translate-x-1/2 w-[220px] bg-[var(--pixel-surface)] p-4 border-4 border-[var(--pixel-primary)] shadow-[6px_6px_0_0_rgba(0,0,0,0.5)] z-50 rounded-xl"
-                        >
-                            {/* Pointer arrow at top center pointing up to avatar */}
-                            <div className="absolute left-1/2 top-[-14px] -translate-x-1/2 w-0 h-0 border-l-[12px] border-l-transparent border-r-[12px] border-r-transparent border-b-[14px] border-b-[var(--pixel-primary)]" />
-                            <p className="text-[var(--pixel-primary)] text-sm font-['VT323'] leading-tight break-words">
-                                {displayVoiceText}
-                            </p>
-                        </motion.div>
-                    )}
-                </AnimatePresence>
-            </div>
-
-            {/* Main Menu - Chat and Agent buttons */}
-            <div className="flex gap-4 justify-center z-10 w-full max-w-[520px] flex-1 min-h-0">
-                <MenuButton icon={MessageCircle} label="CHAT" onClick={() => navigate('/chat')} color="var(--pixel-primary)" />
-                <MenuButton icon={Code} label="AGENT" onClick={() => navigate('/tasks')} color="#f7768e" />
-            </div>
-
-            {/* Decorative BG Elements */}
-            <div className="absolute inset-0 pointer-events-none opacity-10"
-                style={{
-                    backgroundImage: 'linear-gradient(var(--pixel-border) 1px, transparent 1px), linear-gradient(90deg, var(--pixel-border) 1px, transparent 1px)',
-                    backgroundSize: '40px 40px'
-                }}
-            />
+            <section className="glass-card p-6 col-span-2">
+                <h3 className="nova-title">Swedish Alerts</h3>
+                <div className="news-list mt-4">
+                    {alerts.length === 0 && <div className="news-item">No alert feed data yet.</div>}
+                    {alerts.map((item, index) => (
+                        <a key={`${item.title}-${index}`} className="news-item" href={item.url || '#'} target="_blank" rel="noreferrer">
+                            <strong>{item.source || 'Alert'}</strong>
+                            <span>{item.title}</span>
+                        </a>
+                    ))}
+                </div>
+            </section>
         </div>
     );
 }

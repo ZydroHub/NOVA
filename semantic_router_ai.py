@@ -81,6 +81,7 @@ def _get_router():
             "scan my local network", "scan the network",
             "what is the stock price of TSLA?", "current price of AAPL",
             "get weather for Boston", "web search for something",
+            "wake my gaming pc", "wake pc oscar", "turn on my acer predator",
         ],
     )
     _router = SemanticRouter(encoder=encoder, routes=[qwen_basic, qwen_thinking, function_gemma], auto_sync="local")

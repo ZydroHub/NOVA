@@ -1,15 +1,26 @@
-@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700&family=Rajdhani:wght@400;500;600;700&display=swap');
 
 @import "tailwindcss";
 
 :root {
-  --pixel-bg: #1a1b26;
-  --pixel-surface: #24283b;
-  --pixel-primary: #7aa2f7;
-  --pixel-secondary: #bb9af7;
-  --pixel-accent: #9ece6a;
-  --pixel-text: #c0caf5;
-  --pixel-border: #414868;
+  --nova-bg: #070b22;
+  --nova-bg-2: #0b1635;
+  --nova-surface: rgba(20, 40, 84, 0.14);
+  --nova-glass: rgba(16, 33, 74, 0.13);
+  --nova-primary: #27a9ff;
+  --nova-cyan: #1ad1ff;
+  --nova-electric: #2f6dff;
+  --nova-text: #e4f7ff;
+  --nova-border: rgba(124, 224, 255, 0.24);
+
+  /* Keep legacy variables mapped for existing chat/task views. */
+  --pixel-bg: var(--nova-bg);
+  --pixel-surface: rgba(20, 40, 84, 0.3);
+  --pixel-primary: var(--nova-primary);
+  --pixel-secondary: #6ad6ff;
+  --pixel-accent: #5ff4b2;
+  --pixel-text: var(--nova-text);
+  --pixel-border: rgba(124, 224, 255, 0.3);
 }
 
 @layer base {
@@ -18,10 +29,11 @@
   body,
   #root {
     @apply w-full h-full overflow-hidden m-0 p-0;
-    font-family: 'VT323', monospace;
-    background-color: var(--pixel-bg);
-    color: var(--pixel-text);
-    image-rendering: pixelated;
+    font-family: 'Rajdhani', sans-serif;
+    background: radial-gradient(circle at 12% 15%, #143f91 0%, transparent 30%),
+      radial-gradient(circle at 80% 20%, #0e5ea4 0%, transparent 24%),
+      linear-gradient(145deg, var(--nova-bg) 0%, var(--nova-bg-2) 45%, #071128 100%);
+    color: var(--nova-text);
   }
 
   body {
@@ -29,7 +41,7 @@
   }
 
   h1, h2, h3, h4, h5, h6 {
-    font-family: 'Press Start 2P', cursive;
+    font-family: 'Orbitron', sans-serif;
   }
 }
 
@@ -235,6 +247,268 @@
 .scanline-sweep.active {
   opacity: 0.28;
   animation: scanSweep 8s linear 1 both;
+}
+
+.glass-card {
+  background: var(--nova-surface);
+  border: 1px solid var(--nova-border);
+  border-radius: 20px;
+  backdrop-filter: blur(25px);
+  -webkit-backdrop-filter: blur(25px);
+  box-shadow: 0 10px 36px rgba(2, 13, 34, 0.45);
+}
+
+.nova-title {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 1.2rem;
+  letter-spacing: 0.02em;
+  color: #dbf6ff;
+}
+
+.nova-subtitle {
+  color: rgba(208, 239, 255, 0.72);
+  font-size: 0.98rem;
+}
+
+.nova-page-grid {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+  gap: 14px;
+  padding: 14px;
+  overflow: auto;
+}
+
+.nova-side-nav {
+  width: 90px;
+  min-width: 90px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 12px;
+  border-right: 1px solid rgba(145, 224, 255, 0.2);
+  background: var(--nova-glass);
+  backdrop-filter: blur(25px);
+  -webkit-backdrop-filter: blur(25px);
+}
+
+.nova-side-btn {
+  min-width: 48px;
+  min-height: 74px;
+  border-radius: 14px;
+  border: 1px solid rgba(155, 227, 255, 0.2);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  color: rgba(209, 245, 255, 0.78);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.84rem;
+  transition: all 180ms ease;
+}
+
+.nova-side-btn.active,
+.nova-side-btn:hover {
+  color: #eaffff;
+  border-color: rgba(65, 214, 255, 0.6);
+  box-shadow: inset 0 0 24px rgba(35, 194, 255, 0.23);
+}
+
+.nova-orb-wrap {
+  position: relative;
+  width: 320px;
+  height: 320px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.nova-orb {
+  width: 240px;
+  height: 240px;
+  border-radius: 999px;
+  border: 1px solid rgba(110, 232, 255, 0.45);
+  background: radial-gradient(circle at 35% 35%, rgba(183, 232, 255, 0.3), rgba(24, 128, 255, 0.32) 34%, rgba(10, 31, 68, 0.9));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.nova-orb-core {
+  width: 104px;
+  height: 104px;
+  border-radius: 999px;
+  border: 1px solid rgba(177, 236, 255, 0.45);
+  background: rgba(188, 229, 255, 0.18);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  color: #f0fbff;
+}
+
+.nova-orb-ring {
+  position: absolute;
+  width: 288px;
+  height: 288px;
+  border-radius: 999px;
+  border: 1px dashed rgba(116, 227, 255, 0.3);
+}
+
+.nova-orb-ring-slow {
+  animation: novaSpin 18s linear infinite;
+}
+
+.nova-orb-ring-fast {
+  animation: novaSpin 5s linear infinite;
+}
+
+@keyframes novaSpin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.wake-btn {
+  width: 100%;
+  min-height: 58px;
+  border-radius: 16px;
+  border: 1px solid rgba(128, 228, 255, 0.42);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #eafcff;
+  background: rgba(31, 84, 188, 0.35);
+}
+
+.wake-btn.sent {
+  background: rgba(25, 144, 109, 0.45);
+}
+
+.wake-btn.error {
+  background: rgba(181, 37, 70, 0.44);
+}
+
+.music-card {
+  border: 1px solid rgba(140, 226, 255, 0.24);
+  border-radius: 16px;
+  padding: 14px;
+  background: rgba(14, 33, 68, 0.45);
+}
+
+.music-progress {
+  height: 10px;
+  border-radius: 10px;
+  background: linear-gradient(90deg, rgba(26, 209, 255, 0.9) 0%, rgba(31, 125, 255, 0.8) 42%, rgba(255, 255, 255, 0.16) 42%);
+}
+
+.music-controls {
+  margin-top: 16px;
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.round-btn {
+  width: 52px;
+  height: 52px;
+  min-width: 48px;
+  min-height: 48px;
+  border-radius: 999px;
+  border: 1px solid rgba(124, 219, 255, 0.4);
+  background: rgba(26, 75, 150, 0.46);
+  color: #ebfcff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.round-btn-main {
+  background: linear-gradient(145deg, rgba(27, 210, 255, 0.75), rgba(31, 112, 255, 0.75));
+}
+
+.news-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 240px;
+  overflow: auto;
+}
+
+.news-item {
+  min-height: 48px;
+  border-radius: 14px;
+  padding: 10px 12px;
+  border: 1px solid rgba(120, 214, 255, 0.24);
+  display: flex;
+  flex-direction: column;
+  color: #ecfbff;
+  text-decoration: none;
+  background: rgba(17, 47, 92, 0.42);
+}
+
+.weather-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(82px, 1fr));
+  gap: 8px;
+}
+
+.weather-day {
+  min-height: 74px;
+  border-radius: 12px;
+  padding: 8px;
+  border: 1px solid rgba(123, 222, 255, 0.22);
+  background: rgba(13, 41, 80, 0.45);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.weather-day h4 {
+  font-size: 0.78rem;
+  margin: 0;
+}
+
+@media (max-width: 980px) {
+  .nova-side-nav {
+    width: 78px;
+    min-width: 78px;
+  }
+
+  .nova-page-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .nova-page-grid .col-span-2 {
+    grid-column: span 1 / span 1;
+  }
+
+  .nova-orb-wrap {
+    width: 250px;
+    height: 250px;
+  }
+
+  .nova-orb {
+    width: 180px;
+    height: 180px;
+  }
+
+  .nova-orb-ring {
+    width: 226px;
+    height: 226px;
+  }
 }
 
 /* Small-screen typography: slightly tighter for 4.3" / low height */

@@ -1,8 +1,17 @@
 import logging
 import math
 import os
+import json
+import re
+import socket
+import struct
 import subprocess
 import sys
+import urllib.error
+import urllib.parse
+import urllib.request
+import xml.etree.ElementTree as ET
+from asyncio import sleep
 from datetime import datetime
 
 import psutil
@@ -24,16 +33,20 @@ def _pip_reinstall(packages):
 def _import_fastapi_components():
     try:
         from fastapi import FastAPI as _FastAPI
+        from fastapi import WebSocket as _WebSocket
+        from fastapi import WebSocketDisconnect as _WebSocketDisconnect
         from fastapi.middleware.cors import CORSMiddleware as _CORSMiddleware
-        return _FastAPI, _CORSMiddleware
+        return _FastAPI, _CORSMiddleware, _WebSocket, _WebSocketDisconnect
     except Exception as exc:
         msg = str(exc).lower()
         if "annotated_doc" in msg or "cannot import name 'doc'" in msg:
             repaired = _pip_reinstall(["annotated-doc==0.0.4", "fastapi==0.129.2"])
             if repaired:
                 from fastapi import FastAPI as _FastAPI
+                from fastapi import WebSocket as _WebSocket
+                from fastapi import WebSocketDisconnect as _WebSocketDisconnect
                 from fastapi.middleware.cors import CORSMiddleware as _CORSMiddleware
-                return _FastAPI, _CORSMiddleware
+                return _FastAPI, _CORSMiddleware, _WebSocket, _WebSocketDisconnect
         raise
 
 
@@ -54,7 +67,7 @@ def _import_chat_state():
         raise
 
 
-FastAPI, CORSMiddleware = _import_fastapi_components()
+FastAPI, CORSMiddleware, WebSocket, WebSocketDisconnect = _import_fastapi_components()
 chat_router, ai_state = _import_chat_state()
 
 setup_logging()
@@ -82,17 +95,19 @@ async def health():
 
 @app.get("/system/stats")
 async def system_stats():
-    """Get current system stats (CPU, RAM, Temperature)."""
+    """Get current system stats (CPU, RAM, temperature, wattage)."""
     try:
-        cpu_percent = psutil.cpu_percent(interval=0.1)
+        cpu_percent = psutil.cpu_percent(interval=0.05)
         ram = psutil.virtual_memory()
         ram_percent = ram.percent
 
         temp = _read_temperature_celsius()
+        watts = _read_power_watts()
         now = datetime.now().strftime("%H:%M:%S")
         cpu_value = _finite_float(cpu_percent)
         ram_value = _finite_float(ram_percent)
         temp_value = _finite_float(temp)
+        watts_value = _finite_float(watts)
 
         stats = {
             # Canonical keys used by the renderer.
@@ -100,10 +115,12 @@ async def system_stats():
             "cpu_percent": round(cpu_value, 1),
             "memory_percent": round(ram_value, 1),
             "temperature": round(temp_value, 1),
+            "wattage": round(watts_value, 2),
             # Backward-compatible aliases.
             "cpu": round(cpu_value, 1),
             "ram": round(ram_value, 1),
-            "temp": round(temp_value, 1)
+            "temp": round(temp_value, 1),
+            "watts": round(watts_value, 2),
         }
         logger.debug("System stats sampled: %s", stats)
         return stats
@@ -114,10 +131,26 @@ async def system_stats():
             "cpu_percent": 0,
             "memory_percent": 0,
             "temperature": 0,
+            "wattage": 0,
             "cpu": 0,
             "ram": 0,
-            "temp": 0
+            "temp": 0,
+            "watts": 0,
         }
+
+
+@app.websocket("/ws/system-stats")
+async def system_stats_websocket(websocket):
+    """Push system stats once per second to avoid polling overhead on the Pi."""
+    await websocket.accept()
+    try:
+        while True:
+            await websocket.send_json(await system_stats())
+            await sleep(1)
+    except WebSocketDisconnect:
+        logger.info("System stats websocket disconnected")
+    except Exception as exc:
+        logger.debug("System stats websocket closed with error: %s", exc)
 
 
 def _read_temperature_celsius() -> float:
@@ -162,6 +195,84 @@ def _read_temperature_celsius() -> float:
     return 0.0
 
 
+def _run_cmd(args: list[str], timeout: float = 1.0) -> str:
+    try:
+        result = subprocess.run(
+            args,
+            capture_output=True,
+            text=True,
+            timeout=timeout,
+            check=False,
+        )
+        return (result.stdout or "").strip()
+    except (OSError, subprocess.TimeoutExpired):
+        return ""
+
+
+def _parse_first_float(text: str) -> float | None:
+    match = re.search(r"[-+]?\d*\.?\d+", text)
+    if not match:
+        return None
+    try:
+        return float(match.group(0))
+    except ValueError:
+        return None
+
+
+def _parse_measure_volts() -> float | None:
+    output = _run_cmd(["vcgencmd", "measure_volts"])
+    # Expected: volt=0.7200V
+    if not output:
+        return None
+    return _parse_first_float(output)
+
+
+def _read_power_watts() -> float:
+    """Estimate Pi 5 power from PMIC rails via vcgencmd pmic_read_adc."""
+    pmic_output = _run_cmd(["vcgencmd", "pmic_read_adc"], timeout=1.5)
+    if not pmic_output:
+        return 0.0
+
+    # Parse lines like:
+    # 3V3_SYS_A current(0)=0.453A
+    # 3V3_SYS_V volt(0)=3.305V
+    currents: dict[str, float] = {}
+    voltages: dict[str, float] = {}
+
+    for raw_line in pmic_output.splitlines():
+        line = raw_line.strip()
+        if not line:
+            continue
+        key_match = re.match(r"([A-Za-z0-9_]+)", line)
+        if not key_match:
+            continue
+        key = key_match.group(1)
+        value = _parse_first_float(line)
+        if value is None:
+            continue
+        if key.endswith("_A") or "current" in line.lower():
+            rail = key[:-2] if key.endswith("_A") else key
+            currents[rail] = value
+        elif key.endswith("_V") or "volt" in line.lower():
+            rail = key[:-2] if key.endswith("_V") else key
+            voltages[rail] = value
+
+    watts = 0.0
+    for rail, current in currents.items():
+        voltage = voltages.get(rail)
+        if voltage is not None:
+            watts += current * voltage
+
+    if watts > 0:
+        return watts
+
+    # Fallback: use the core voltage as a very rough estimate when PMIC rails are incomplete.
+    core_v = _parse_measure_volts() or 0.8
+    core_a = currents.get("VDD_CORE") or currents.get("VDD_CORE_N") or 0.0
+    approx = core_v * core_a
+    return approx if approx > 0 else 0.0
+
+
 def _finite_float(value: float, fallback: float = 0.0) -> float:
     """Convert numeric-like values to a finite float, with fallback on NaN/inf/errors."""
     try:
@@ -169,6 +280,121 @@ def _finite_float(value: float, fallback: float = 0.0) -> float:
         return number if math.isfinite(number) else fallback
     except (TypeError, ValueError):
         return fallback
+
+
+def _fetch_json(url: str, timeout: float = 8.0) -> dict:
+    req = urllib.request.Request(url, headers={"User-Agent": "NOVA/1.0"})
+    with urllib.request.urlopen(req, timeout=timeout) as resp:
+        return json.loads(resp.read().decode("utf-8", errors="replace"))
+
+
+def _fetch_rss_items(url: str, source: str, limit: int = 8) -> list[dict]:
+    req = urllib.request.Request(url, headers={"User-Agent": "NOVA/1.0"})
+    with urllib.request.urlopen(req, timeout=8.0) as resp:
+        xml_text = resp.read().decode("utf-8", errors="replace")
+    root = ET.fromstring(xml_text)
+    items: list[dict] = []
+    for item in root.findall(".//item")[:limit]:
+        title = (item.findtext("title") or "").strip()
+        link = (item.findtext("link") or "").strip()
+        pub_date = (item.findtext("pubDate") or "").strip()
+        if not title:
+            continue
+        items.append({"source": source, "title": title, "url": link, "published": pub_date})
+    return items
+
+
+@app.get("/integrations/weather")
+async def weather_open_meteo(latitude: float = 59.3293, longitude: float = 18.0686, timezone: str = "auto"):
+    """Weather for dashboard cards via Open-Meteo (current + 7-day forecast)."""
+    params = urllib.parse.urlencode(
+        {
+            "latitude": latitude,
+            "longitude": longitude,
+            "current": "temperature_2m,apparent_temperature,weather_code",
+            "daily": "weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max",
+            "forecast_days": 7,
+            "timezone": timezone,
+        }
+    )
+    url = f"https://api.open-meteo.com/v1/forecast?{params}"
+    try:
+        data = _fetch_json(url)
+        return {
+            "provider": "open-meteo",
+            "latitude": latitude,
+            "longitude": longitude,
+            "current": data.get("current", {}),
+            "daily": data.get("daily", {}),
+        }
+    except (urllib.error.URLError, json.JSONDecodeError) as exc:
+        logger.warning("Weather fetch failed: %s", exc)
+        return {"provider": "open-meteo", "error": str(exc), "current": {}, "daily": {}}
+
+
+@app.get("/integrations/swedish-alerts")
+async def swedish_alerts(limit: int = 12):
+    """Aggregate Sweden-focused alerts/news for sidebar ticker cards."""
+    items: list[dict] = []
+    errors: list[str] = []
+
+    # 1) Polisen events API (JSON)
+    try:
+        polisen_data = _fetch_json("https://polisen.se/api/events")
+        for entry in (polisen_data or [])[:limit]:
+            items.append(
+                {
+                    "source": "Polisen",
+                    "title": (entry.get("name") or "Polisen event").strip(),
+                    "url": entry.get("url") or "https://polisen.se/aktuellt/",
+                    "published": entry.get("datetime") or "",
+                    "location": entry.get("location", {}).get("name") or "",
+                }
+            )
+    except Exception as exc:
+        errors.append(f"Polisen: {exc}")
+
+    # 2) Krisinformation RSS
+    try:
+        items.extend(_fetch_rss_items("https://www.krisinformation.se/nyheter?rss=1", "Krisinformation", limit=limit))
+    except Exception as exc:
+        errors.append(f"Krisinformation: {exc}")
+
+    # 3) SOS Alarm RSS (if unavailable, endpoint still succeeds with remaining sources)
+    try:
+        items.extend(_fetch_rss_items("https://www.sosalarm.se/rss", "SOS Alarm", limit=limit))
+    except Exception as exc:
+        errors.append(f"SOS Alarm: {exc}")
+
+    return {
+        "items": items[:limit],
+        "errors": errors,
+        "sources": ["Polisen", "Krisinformation", "SOS Alarm"],
+    }
+
+
+def _send_magic_packet(mac: str, broadcast_ip: str, port: int = 9) -> None:
+    cleaned_mac = mac.replace(":", "").replace("-", "").strip()
+    if len(cleaned_mac) != 12:
+        raise ValueError("MAC address must be 12 hex characters")
+    mac_bytes = struct.pack("!6B", *[int(cleaned_mac[i : i + 2], 16) for i in range(0, 12, 2)])
+    payload = b"\xff" * 6 + mac_bytes * 16
+    with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as sock:
+        sock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
+        sock.sendto(payload, (broadcast_ip, port))
+
+
+@app.post("/actions/wake-pc")
+async def wake_pc():
+    """Wake PC-Oscar over LAN using a magic packet broadcast."""
+    target_mac = "1C:69:7A:9E:54:06"
+    broadcast_ip = "192.168.1.255"
+    try:
+        _send_magic_packet(target_mac, broadcast_ip)
+        return {"status": "sent", "target": "PC-Oscar", "mac": target_mac, "broadcast": broadcast_ip}
+    except Exception as exc:
+        logger.warning("Wake-on-LAN failed: %s", exc)
+        return {"status": "error", "target": "PC-Oscar", "error": str(exc)}
 
 
 @app.on_event("startup")

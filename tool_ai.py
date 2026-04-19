@@ -8,6 +8,8 @@ import json
 import logging
 import os
 import re
+import socket
+import struct
 import subprocess
 import sys
 import time
@@ -251,6 +253,22 @@ def run_get_weather(arguments: dict) -> str:
         return f"Weather for {location}: error — {e}"
 
 
+def run_wake_pc(arguments: dict) -> str:
+    logger.info("[tool] wake_pc()")
+    mac = "1C:69:7A:9E:54:06"
+    broadcast_ip = "192.168.1.255"
+    try:
+        cleaned = mac.replace(":", "").replace("-", "")
+        mac_bytes = struct.pack("!6B", *[int(cleaned[i : i + 2], 16) for i in range(0, 12, 2)])
+        packet = b"\xff" * 6 + mac_bytes * 16
+        with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as sock:
+            sock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
+            sock.sendto(packet, (broadcast_ip, 9))
+        return "Wake-on-LAN packet sent to PC-Oscar."
+    except Exception as e:
+        return f"Wake-on-LAN failed: {e}"
+
+
 def run_activate_security_mode(arguments: dict) -> str:
     logger.info("[tool] activate_security_mode()")
     return "Security mode activated"
@@ -371,6 +389,7 @@ def run_get_stock_price(arguments: dict) -> str:
 
 TOOL_RUNNERS = {
     "get_weather": run_get_weather,
+    "wake_pc": run_wake_pc,
     "activate_security_mode": run_activate_security_mode,
     "web_search": run_web_search,
     "network_scan": run_network_scan,

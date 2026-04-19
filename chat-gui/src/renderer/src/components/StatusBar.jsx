@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Activity, Thermometer, Cpu, Clock } from 'lucide-react';
+import { Thermometer, Clock, Zap } from 'lucide-react';
 import { apiFetch } from '../apiClient.js';
+import { WS_BASE_URL } from '../config.js';
 
 const toFiniteNumber = (value, fallback = 0) => {
     const parsed = Number(value);
@@ -12,28 +13,64 @@ const StatusBar = () => {
         time: '--:--:--',
         cpu_percent: 0,
         memory_percent: 0,
-        temperature: 0
+        temperature: 0,
+        wattage: 0
     });
 
     useEffect(() => {
+        let ws;
+        let fallbackInterval;
+
+        const applyStats = (data) => {
+            setStats({
+                time: data.time || new Date().toLocaleTimeString('en-GB', { hour12: false }),
+                cpu_percent: toFiniteNumber(data.cpu_percent ?? data.cpu ?? 0),
+                memory_percent: toFiniteNumber(data.memory_percent ?? data.ram ?? 0),
+                temperature: toFiniteNumber(data.temperature ?? data.temp ?? 0),
+                wattage: toFiniteNumber(data.wattage ?? data.watts ?? 0)
+            });
+        };
+
         const fetchStats = async () => {
             try {
                 const data = await apiFetch('/system/stats');
-                setStats({
-                    time: data.time || new Date().toLocaleTimeString('en-GB', { hour12: false }),
-                    cpu_percent: toFiniteNumber(data.cpu_percent ?? data.cpu ?? 0),
-                    memory_percent: toFiniteNumber(data.memory_percent ?? data.ram ?? 0),
-                    temperature: toFiniteNumber(data.temperature ?? data.temp ?? 0)
-                });
+                applyStats(data);
             } catch (error) {
                 console.error('Failed to fetch system stats:', error);
             }
         };
 
-        fetchStats();
-        const interval = setInterval(fetchStats, 1000);
+        try {
+            ws = new WebSocket(`${WS_BASE_URL}/ws/system-stats`);
+            ws.onmessage = (event) => {
+                try {
+                    const payload = JSON.parse(event.data);
+                    applyStats(payload);
+                } catch (err) {
+                    console.error('Failed to parse stats websocket payload', err);
+                }
+            };
+            ws.onerror = () => {
+                if (!fallbackInterval) {
+                    fetchStats();
+                    fallbackInterval = setInterval(fetchStats, 1000);
+                }
+            };
+            ws.onclose = () => {
+                if (!fallbackInterval) {
+                    fetchStats();
+                    fallbackInterval = setInterval(fetchStats, 1000);
+                }
+            };
+        } catch (err) {
+            fetchStats();
+            fallbackInterval = setInterval(fetchStats, 1000);
+        }
 
-        return () => clearInterval(interval);
+        return () => {
+            if (ws) ws.close();
+            if (fallbackInterval) clearInterval(fallbackInterval);
+        };
     }, []);
 
     // Helper to determine color based on usage/temp
@@ -50,39 +87,45 @@ const StatusBar = () => {
     };
 
     return (
-        <div className="w-full h-7 bg-[var(--pixel-surface)] z-50 flex items-center justify-between px-2 text-[10px] uppercase font-['Press_Start_2P'] border-b-4 border-[var(--pixel-border)] select-none">
+        <div className="w-full h-11 bg-[var(--nova-glass)] z-50 flex items-center justify-between px-4 text-sm border-b border-white/20 select-none backdrop-blur-xl">
 
             {/* Time */}
-            <div className="flex items-center gap-2 text-[var(--pixel-primary)]">
-                <Clock size={12} />
-                <span className="tracking-widest">{stats.time}</span>
+            <div className="flex items-center gap-2 text-cyan-200/90">
+                <Clock size={16} />
+                <span className="tracking-wide">{stats.time}</span>
             </div>
 
             {/* System Stats Container */}
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-5">
 
                 {/* CPU */}
-                <div className="flex items-center gap-1 text-[var(--pixel-text)]">
-                    <span className="text-[var(--pixel-secondary)]">CPU:</span>
+                <div className="flex items-center gap-1 text-[var(--nova-text)]">
+                    <span className="text-cyan-200/70">CPU:</span>
                     <span className={`${getStatusColor(stats.cpu_percent, 'usage')}`}>
                         {Math.round(stats.cpu_percent)}%
                     </span>
                 </div>
 
                 {/* RAM */}
-                <div className="flex items-center gap-1 text-[var(--pixel-text)]">
-                    <span className="text-[var(--pixel-secondary)]">RAM:</span>
+                <div className="flex items-center gap-1 text-[var(--nova-text)]">
+                    <span className="text-cyan-200/70">RAM:</span>
                     <span className={`${getStatusColor(stats.memory_percent, 'usage')}`}>
                         {Math.round(stats.memory_percent)}%
                     </span>
                 </div>
 
                 {/* Temp */}
-                <div className="flex items-center gap-1 text-[var(--pixel-text)]">
-                    <span className="text-[var(--pixel-secondary)]">TMP:</span>
+                <div className="flex items-center gap-1 text-[var(--nova-text)]">
+                    <Thermometer size={14} className="text-cyan-200/70" />
                     <span className={`${getStatusColor(stats.temperature, 'temp')}`}>
                         {Math.round(stats.temperature)}°
                     </span>
+                </div>
+
+                {/* Watts */}
+                <div className="flex items-center gap-1 text-[var(--nova-text)]">
+                    <Zap size={14} className="text-cyan-200/70" />
+                    <span className="text-cyan-100">{stats.wattage.toFixed(1)}W</span>
                 </div>
 
             </div>

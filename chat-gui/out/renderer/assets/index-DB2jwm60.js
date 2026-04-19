@@ -22628,7 +22628,7 @@ const createLucideIcon = (iconName, iconNode) => {
   Component.displayName = toPascalCase(iconName);
   return Component;
 };
-const __iconNode$o = [
+const __iconNode$q = [
   [
     "path",
     {
@@ -22637,52 +22637,40 @@ const __iconNode$o = [
     }
   ]
 ];
-const Activity = createLucideIcon("activity", __iconNode$o);
-const __iconNode$n = [
+const Activity = createLucideIcon("activity", __iconNode$q);
+const __iconNode$p = [
   ["path", { d: "m12 19-7-7 7-7", key: "1l729n" }],
   ["path", { d: "M19 12H5", key: "x3x0zl" }]
 ];
-const ArrowLeft = createLucideIcon("arrow-left", __iconNode$n);
-const __iconNode$m = [
-  [
-    "path",
-    {
-      d: "M13.997 4a2 2 0 0 1 1.76 1.05l.486.9A2 2 0 0 0 18.003 7H20a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2h1.997a2 2 0 0 0 1.759-1.048l.489-.904A2 2 0 0 1 10.004 4z",
-      key: "18u6gg"
-    }
-  ],
-  ["circle", { cx: "12", cy: "13", r: "3", key: "1vg3eu" }]
-];
-const Camera = createLucideIcon("camera", __iconNode$m);
-const __iconNode$l = [["path", { d: "M20 6 9 17l-5-5", key: "1gmf2c" }]];
-const Check = createLucideIcon("check", __iconNode$l);
-const __iconNode$k = [["path", { d: "m15 18-6-6 6-6", key: "1wnfg3" }]];
-const ChevronLeft = createLucideIcon("chevron-left", __iconNode$k);
-const __iconNode$j = [["path", { d: "m9 18 6-6-6-6", key: "mthhwq" }]];
-const ChevronRight = createLucideIcon("chevron-right", __iconNode$j);
-const __iconNode$i = [
-  ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }],
-  ["line", { x1: "12", x2: "12", y1: "8", y2: "12", key: "1pkeuh" }],
-  ["line", { x1: "12", x2: "12.01", y1: "16", y2: "16", key: "4dfq90" }]
-];
-const CircleAlert = createLucideIcon("circle-alert", __iconNode$i);
-const __iconNode$h = [
+const ArrowLeft = createLucideIcon("arrow-left", __iconNode$p);
+const __iconNode$o = [["path", { d: "M20 6 9 17l-5-5", key: "1gmf2c" }]];
+const Check = createLucideIcon("check", __iconNode$o);
+const __iconNode$n = [
   ["path", { d: "M12 6v6l4 2", key: "mmk7yg" }],
   ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }]
 ];
-const Clock = createLucideIcon("clock", __iconNode$h);
-const __iconNode$g = [
-  ["path", { d: "m16 18 6-6-6-6", key: "eg8j8" }],
-  ["path", { d: "m8 6-6 6 6 6", key: "ppft3o" }]
+const Clock = createLucideIcon("clock", __iconNode$n);
+const __iconNode$m = [
+  ["path", { d: "M12 2v2", key: "tus03m" }],
+  ["path", { d: "m4.93 4.93 1.41 1.41", key: "149t6j" }],
+  ["path", { d: "M20 12h2", key: "1q8mjw" }],
+  ["path", { d: "m19.07 4.93-1.41 1.41", key: "1shlcs" }],
+  ["path", { d: "M15.947 12.65a4 4 0 0 0-5.925-4.128", key: "dpwdj0" }],
+  ["path", { d: "M13 22H7a5 5 0 1 1 4.9-6H13a3 3 0 0 1 0 6Z", key: "s09mg5" }]
 ];
-const Code = createLucideIcon("code", __iconNode$g);
-const __iconNode$f = [
-  ["rect", { width: "18", height: "18", x: "3", y: "3", rx: "2", ry: "2", key: "1m3agn" }],
-  ["circle", { cx: "9", cy: "9", r: "2", key: "af1f0g" }],
-  ["path", { d: "m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21", key: "1xmnt7" }]
+const CloudSun = createLucideIcon("cloud-sun", __iconNode$m);
+const __iconNode$l = [
+  ["path", { d: "M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8", key: "5wwlr5" }],
+  [
+    "path",
+    {
+      d: "M3 10a2 2 0 0 1 .709-1.528l7-6a2 2 0 0 1 2.582 0l7 6A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z",
+      key: "r6nss1"
+    }
+  ]
 ];
-const Image = createLucideIcon("image", __iconNode$f);
-const __iconNode$e = [
+const House = createLucideIcon("house", __iconNode$l);
+const __iconNode$k = [
   ["path", { d: "M10 8h.01", key: "1r9ogq" }],
   ["path", { d: "M12 12h.01", key: "1mp3jc" }],
   ["path", { d: "M14 8h.01", key: "1primd" }],
@@ -22693,14 +22681,14 @@ const __iconNode$e = [
   ["path", { d: "M8 12h.01", key: "czm47f" }],
   ["rect", { width: "20", height: "16", x: "2", y: "4", rx: "2", key: "18n3k1" }]
 ];
-const Keyboard = createLucideIcon("keyboard", __iconNode$e);
-const __iconNode$d = [
+const Keyboard = createLucideIcon("keyboard", __iconNode$k);
+const __iconNode$j = [
   ["path", { d: "M4 5h16", key: "1tepv9" }],
   ["path", { d: "M4 12h16", key: "1lakjw" }],
   ["path", { d: "M4 19h16", key: "1djgab" }]
 ];
-const Menu = createLucideIcon("menu", __iconNode$d);
-const __iconNode$c = [
+const Menu = createLucideIcon("menu", __iconNode$j);
+const __iconNode$i = [
   [
     "path",
     {
@@ -22709,8 +22697,8 @@ const __iconNode$c = [
     }
   ]
 ];
-const MessageCircle = createLucideIcon("message-circle", __iconNode$c);
-const __iconNode$b = [
+const MessageCircle = createLucideIcon("message-circle", __iconNode$i);
+const __iconNode$h = [
   [
     "path",
     {
@@ -22719,14 +22707,37 @@ const __iconNode$b = [
     }
   ]
 ];
-const MessageSquare = createLucideIcon("message-square", __iconNode$b);
-const __iconNode$a = [
+const MessageSquare = createLucideIcon("message-square", __iconNode$h);
+const __iconNode$g = [
   ["path", { d: "M12 19v3", key: "npa21l" }],
   ["path", { d: "M19 10v2a7 7 0 0 1-14 0v-2", key: "1vc78b" }],
   ["rect", { x: "9", y: "2", width: "6", height: "13", rx: "3", key: "s6n7sd" }]
 ];
-const Mic = createLucideIcon("mic", __iconNode$a);
-const __iconNode$9 = [
+const Mic = createLucideIcon("mic", __iconNode$g);
+const __iconNode$f = [
+  ["circle", { cx: "8", cy: "18", r: "4", key: "1fc0mg" }],
+  ["path", { d: "M12 18V2l7 4", key: "g04rme" }]
+];
+const Music2 = createLucideIcon("music-2", __iconNode$f);
+const __iconNode$e = [
+  ["path", { d: "M15 18h-5", key: "95g1m2" }],
+  ["path", { d: "M18 14h-8", key: "sponae" }],
+  [
+    "path",
+    {
+      d: "M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-4 0v-9a2 2 0 0 1 2-2h2",
+      key: "39pd36"
+    }
+  ],
+  ["rect", { width: "8", height: "4", x: "10", y: "6", rx: "1", key: "aywv1n" }]
+];
+const Newspaper = createLucideIcon("newspaper", __iconNode$e);
+const __iconNode$d = [
+  ["rect", { x: "14", y: "3", width: "5", height: "18", rx: "1", key: "kaeet6" }],
+  ["rect", { x: "5", y: "3", width: "5", height: "18", rx: "1", key: "1wsw3u" }]
+];
+const Pause = createLucideIcon("pause", __iconNode$d);
+const __iconNode$c = [
   [
     "path",
     {
@@ -22736,25 +22747,35 @@ const __iconNode$9 = [
   ],
   ["path", { d: "m15 5 4 4", key: "1mk7zo" }]
 ];
-const Pencil = createLucideIcon("pencil", __iconNode$9);
-const __iconNode$8 = [
+const Pencil = createLucideIcon("pencil", __iconNode$c);
+const __iconNode$b = [
+  [
+    "path",
+    {
+      d: "M5 5a2 2 0 0 1 3.008-1.728l11.997 6.998a2 2 0 0 1 .003 3.458l-12 7A2 2 0 0 1 5 19z",
+      key: "10ikf1"
+    }
+  ]
+];
+const Play = createLucideIcon("play", __iconNode$b);
+const __iconNode$a = [
   ["path", { d: "M5 12h14", key: "1ays0h" }],
   ["path", { d: "M12 5v14", key: "s699le" }]
 ];
-const Plus = createLucideIcon("plus", __iconNode$8);
-const __iconNode$7 = [
+const Plus = createLucideIcon("plus", __iconNode$a);
+const __iconNode$9 = [
   ["path", { d: "M12 2v10", key: "mnfbl" }],
   ["path", { d: "M18.4 6.6a9 9 0 1 1-12.77.04", key: "obofu9" }]
 ];
-const Power = createLucideIcon("power", __iconNode$7);
-const __iconNode$6 = [
-  ["path", { d: "M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8", key: "v9h5vc" }],
-  ["path", { d: "M21 3v5h-5", key: "1q7to0" }],
-  ["path", { d: "M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16", key: "3uifl3" }],
-  ["path", { d: "M8 16H3v5", key: "1cv678" }]
+const Power = createLucideIcon("power", __iconNode$9);
+const __iconNode$8 = [
+  ["path", { d: "m17 2 4 4-4 4", key: "nntrym" }],
+  ["path", { d: "M3 11v-1a4 4 0 0 1 4-4h14", key: "84bu3i" }],
+  ["path", { d: "m7 22-4-4 4-4", key: "1wqhfi" }],
+  ["path", { d: "M21 13v1a4 4 0 0 1-4 4H3", key: "1rx37r" }]
 ];
-const RefreshCw = createLucideIcon("refresh-cw", __iconNode$6);
-const __iconNode$5 = [
+const Repeat = createLucideIcon("repeat", __iconNode$8);
+const __iconNode$7 = [
   [
     "path",
     {
@@ -22765,25 +22786,41 @@ const __iconNode$5 = [
   ["path", { d: "M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7", key: "1ydtos" }],
   ["path", { d: "M7 3v4a1 1 0 0 0 1 1h7", key: "t51u73" }]
 ];
-const Save = createLucideIcon("save", __iconNode$5);
-const __iconNode$4 = [
-  ["path", { d: "M3 7V5a2 2 0 0 1 2-2h2", key: "aa7l1z" }],
-  ["path", { d: "M17 3h2a2 2 0 0 1 2 2v2", key: "4qcy5o" }],
-  ["path", { d: "M21 17v2a2 2 0 0 1-2 2h-2", key: "6vwrx8" }],
-  ["path", { d: "M7 21H5a2 2 0 0 1-2-2v-2", key: "ioqczr" }]
+const Save = createLucideIcon("save", __iconNode$7);
+const __iconNode$6 = [
+  ["path", { d: "m18 14 4 4-4 4", key: "10pe0f" }],
+  ["path", { d: "m18 2 4 4-4 4", key: "pucp1d" }],
+  ["path", { d: "M2 18h1.973a4 4 0 0 0 3.3-1.7l5.454-8.6a4 4 0 0 1 3.3-1.7H22", key: "1ailkh" }],
+  ["path", { d: "M2 6h1.972a4 4 0 0 1 3.6 2.2", key: "km57vx" }],
+  ["path", { d: "M22 18h-6.041a4 4 0 0 1-3.3-1.8l-.359-.45", key: "os18l9" }]
 ];
-const Scan = createLucideIcon("scan", __iconNode$4);
-const __iconNode$3 = [
+const Shuffle = createLucideIcon("shuffle", __iconNode$6);
+const __iconNode$5 = [
   [
     "path",
     {
-      d: "M9.671 4.136a2.34 2.34 0 0 1 4.659 0 2.34 2.34 0 0 0 3.319 1.915 2.34 2.34 0 0 1 2.33 4.033 2.34 2.34 0 0 0 0 3.831 2.34 2.34 0 0 1-2.33 4.033 2.34 2.34 0 0 0-3.319 1.915 2.34 2.34 0 0 1-4.659 0 2.34 2.34 0 0 0-3.32-1.915 2.34 2.34 0 0 1-2.33-4.033 2.34 2.34 0 0 0 0-3.831A2.34 2.34 0 0 1 6.35 6.051a2.34 2.34 0 0 0 3.319-1.915",
-      key: "1i5ecw"
+      d: "M17.971 4.285A2 2 0 0 1 21 6v12a2 2 0 0 1-3.029 1.715l-9.997-5.998a2 2 0 0 1-.003-3.432z",
+      key: "15892j"
     }
   ],
-  ["circle", { cx: "12", cy: "12", r: "3", key: "1v7zrd" }]
+  ["path", { d: "M3 20V4", key: "1ptbpl" }]
 ];
-const Settings$1 = createLucideIcon("settings", __iconNode$3);
+const SkipBack = createLucideIcon("skip-back", __iconNode$5);
+const __iconNode$4 = [
+  ["path", { d: "M21 4v16", key: "7j8fe9" }],
+  [
+    "path",
+    {
+      d: "M6.029 4.285A2 2 0 0 0 3 6v12a2 2 0 0 0 3.029 1.715l9.997-5.998a2 2 0 0 0 .003-3.432z",
+      key: "zs4d6"
+    }
+  ]
+];
+const SkipForward = createLucideIcon("skip-forward", __iconNode$4);
+const __iconNode$3 = [
+  ["path", { d: "M14 4v10.54a4 4 0 1 1-4 0V4a2 2 0 0 1 4 0Z", key: "17jzev" }]
+];
+const Thermometer = createLucideIcon("thermometer", __iconNode$3);
 const __iconNode$2 = [
   ["path", { d: "M10 11v6", key: "nco0om" }],
   ["path", { d: "M14 11v6", key: "outv1u" }],
@@ -22807,344 +22844,6 @@ const __iconNode = [
   ]
 ];
 const Zap = createLucideIcon("zap", __iconNode);
-function Avatar({
-  className = "",
-  variant = "lg",
-  // 'sm' | 'lg'
-  onClick,
-  animate = true,
-  expression: externalExpression
-}) {
-  const isSmall = variant === "sm";
-  const isXl = variant === "xl";
-  const scale2 = isSmall ? 0.4 : isXl ? 1.3 : 1;
-  const [expression, setExpression] = reactExports.useState("neutral");
-  const [blink, setBlink] = reactExports.useState(false);
-  const [glitch, setGlitch] = reactExports.useState(false);
-  reactExports.useEffect(() => {
-    if (externalExpression) {
-      setExpression(externalExpression);
-    }
-  }, [externalExpression]);
-  reactExports.useEffect(() => {
-    if (!animate || expression === "listening") return;
-    const interval = setInterval(() => {
-      if (Math.random() > 0.7) {
-        setBlink(true);
-        setTimeout(() => setBlink(false), 150);
-      }
-    }, 2e3);
-    return () => clearInterval(interval);
-  }, [animate, expression]);
-  reactExports.useEffect(() => {
-    if (!animate || expression !== "neutral" && expression !== "idle") return;
-    const interval = setInterval(() => {
-      const rand = Math.random();
-      if (rand > 0.8) {
-        const exprs = ["happy", "thinking", "surprised", "neutral"];
-        const nextExpr = exprs[Math.floor(Math.random() * exprs.length)];
-        setExpression(nextExpr);
-        setTimeout(() => setExpression("neutral"), 2e3 + Math.random() * 2e3);
-      }
-    }, 4e3);
-    return () => clearInterval(interval);
-  }, [animate, expression]);
-  reactExports.useEffect(() => {
-    if (!animate || expression === "speaking") return;
-    const interval = setInterval(() => {
-      if (Math.random() > 0.95) {
-        setGlitch(true);
-        setTimeout(() => setGlitch(false), 200);
-      }
-    }, 5e3);
-    return () => clearInterval(interval);
-  }, [animate, expression]);
-  const containerStyle = {
-    width: isSmall ? "48px" : isXl ? "176px" : "160px",
-    height: isSmall ? "48px" : isXl ? "176px" : "160px",
-    position: "relative",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    cursor: onClick ? "pointer" : "default"
-  };
-  const floatVariants = {
-    animate: {
-      y: [0, -4, 0],
-      transition: {
-        duration: 4,
-        repeat: Infinity,
-        ease: "easeInOut"
-      }
-    },
-    speaking: {
-      y: [0, -2, 0],
-      transition: {
-        duration: 0.2,
-        repeat: Infinity,
-        ease: "linear"
-      }
-    }
-  };
-  const glitchVariants = {
-    idle: { x: 0, opacity: 1 },
-    glitch: {
-      x: [-2, 2, -1, 1, 0],
-      opacity: [1, 0.8, 1, 0.9, 1],
-      transition: { duration: 0.2 }
-    }
-  };
-  const antennaVariants = {
-    animate: {
-      rotate: [-5, 5, -5],
-      transition: {
-        duration: 2,
-        repeat: Infinity,
-        ease: "easeInOut"
-      }
-    },
-    listening: {
-      scale: [1, 1.3, 1],
-      rotate: [-15, 15, -15],
-      transition: {
-        duration: 0.4,
-        repeat: Infinity,
-        ease: "easeInOut"
-      }
-    }
-  };
-  const effectiveExpression = externalExpression != null && externalExpression !== "" ? externalExpression : expression;
-  const isThinking = effectiveExpression === "thinking" || effectiveExpression === "processing";
-  const getEyeScale = (side) => {
-    if (blink) return { scaleY: 0.1 };
-    switch (expression) {
-      case "happy":
-        return { scaleY: 0.5, translateY: -5, borderRadius: "50%" };
-      // squinty/happy
-      case "listening":
-        return {
-          scale: [1, 1.1, 1],
-          background: "#ff4444",
-          boxShadow: [
-            "0 0 10px #ff0000",
-            "0 0 25px #ff0000",
-            "0 0 10px #ff0000"
-          ]
-        };
-      case "speaking":
-        return { scaleY: [1, 0.8, 1] };
-      default:
-        return { scaleY: 1 };
-    }
-  };
-  return /* @__PURE__ */ jsxRuntimeExports.jsxs(
-    motion.div,
-    {
-      className: `${className}`,
-      style: containerStyle,
-      onClick,
-      initial: { scale: 0 },
-      animate: { scale: 1 },
-      whileHover: onClick ? { scale: 1.1 } : {},
-      whileTap: onClick ? { scale: 0.95 } : {},
-      children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsxs(
-          motion.div,
-          {
-            style: {
-              scale: scale2,
-              width: "128px",
-              height: "128px",
-              position: "relative"
-            },
-            variants: floatVariants,
-            animate: animate ? expression === "speaking" ? "speaking" : expression === "thinking" || expression === "processing" ? "animate" : "animate" : "initial",
-            children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsxs(
-                motion.div,
-                {
-                  variants: glitchVariants,
-                  animate: glitch ? "glitch" : "idle",
-                  className: "relative w-full h-full",
-                  children: [
-                    /* @__PURE__ */ jsxRuntimeExports.jsxs(
-                      motion.div,
-                      {
-                        className: "absolute left-1/2 top-0",
-                        style: { x: "-50%", transformOrigin: "bottom center" },
-                        variants: antennaVariants,
-                        animate: animate ? expression === "listening" ? "listening" : "animate" : "initial",
-                        children: [
-                          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-1 h-6 bg-[var(--pixel-secondary)] mx-auto" }),
-                          /* @__PURE__ */ jsxRuntimeExports.jsx(
-                            "div",
-                            {
-                              className: `w-3 h-3 relative -top-1 rounded-none ${effectiveExpression === "listening" ? "bg-[#ff0000] animate-pulse duration-75" : isThinking ? "bg-[#ffff00]" : "bg-[var(--pixel-accent)] animate-pulse"}`
-                            }
-                          )
-                        ]
-                      }
-                    ),
-                    /* @__PURE__ */ jsxRuntimeExports.jsxs(
-                      "div",
-                      {
-                        className: "absolute top-6 left-12 right-12 bottom-20 bg-[var(--pixel-primary)] shadow-[4px_4px_0_0_rgba(0,0,0,0.5)] z-0",
-                        style: {
-                          left: "24px",
-                          right: "24px",
-                          top: "24px",
-                          bottom: "24px",
-                          clipPath: "polygon(10% 0, 90% 0, 100% 10%, 100% 90%, 90% 100%, 10% 100%, 0 90%, 0 10%)"
-                        },
-                        children: [
-                          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute top-2 left-2 w-4 h-4 bg-white/30" }),
-                          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute top-2 right-2 w-full h-2 bg-black/10" })
-                        ]
-                      }
-                    ),
-                    /* @__PURE__ */ jsxRuntimeExports.jsxs(
-                      "div",
-                      {
-                        className: "absolute bg-[var(--pixel-surface)]",
-                        style: {
-                          left: "32px",
-                          right: "32px",
-                          top: "40px",
-                          bottom: "40px",
-                          boxShadow: "inset 2px 2px 4px rgba(0,0,0,0.5)"
-                        },
-                        children: [
-                          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full flex justify-center items-center gap-4", children: isThinking ? /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
-                            /* @__PURE__ */ jsxRuntimeExports.jsx(
-                              motion.div,
-                              {
-                                className: "flex items-center justify-center flex-shrink-0",
-                                style: { width: 24, height: 24, transformOrigin: "center" },
-                                animate: { rotate: 360 },
-                                transition: { duration: 1.5, repeat: Infinity, ease: "linear" },
-                                children: /* @__PURE__ */ jsxRuntimeExports.jsx("svg", { width: "24", height: "24", viewBox: "0 0 24 24", className: "block", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-                                  "circle",
-                                  {
-                                    cx: "12",
-                                    cy: "12",
-                                    r: "10",
-                                    fill: "none",
-                                    stroke: "#00ffff",
-                                    strokeWidth: "3",
-                                    strokeLinecap: "round",
-                                    strokeDasharray: "16 50"
-                                  }
-                                ) })
-                              }
-                            ),
-                            /* @__PURE__ */ jsxRuntimeExports.jsx(
-                              motion.div,
-                              {
-                                className: "flex items-center justify-center flex-shrink-0",
-                                style: { width: 24, height: 24, transformOrigin: "center" },
-                                animate: { rotate: 360 },
-                                transition: { duration: 1.5, repeat: Infinity, ease: "linear" },
-                                children: /* @__PURE__ */ jsxRuntimeExports.jsx("svg", { width: "24", height: "24", viewBox: "0 0 24 24", className: "block", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-                                  "circle",
-                                  {
-                                    cx: "12",
-                                    cy: "12",
-                                    r: "10",
-                                    fill: "none",
-                                    stroke: "#00ffff",
-                                    strokeWidth: "3",
-                                    strokeLinecap: "round",
-                                    strokeDasharray: "16 50"
-                                  }
-                                ) })
-                              }
-                            )
-                          ] }) : /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
-                            /* @__PURE__ */ jsxRuntimeExports.jsx(
-                              motion.div,
-                              {
-                                className: "w-5 h-8 bg-[#00ffff] shadow-[0_0_10px_#00ffff]",
-                                animate: getEyeScale(),
-                                transition: {
-                                  type: "spring",
-                                  stiffness: 300,
-                                  damping: 20,
-                                  repeat: expression === "listening" || expression === "speaking" ? Infinity : 0
-                                }
-                              }
-                            ),
-                            /* @__PURE__ */ jsxRuntimeExports.jsx(
-                              motion.div,
-                              {
-                                className: "w-5 h-8 bg-[#00ffff] shadow-[0_0_10px_#00ffff]",
-                                animate: getEyeScale(),
-                                transition: {
-                                  type: "spring",
-                                  stiffness: 300,
-                                  damping: 20,
-                                  repeat: expression === "listening" || expression === "speaking" ? Infinity : 0
-                                }
-                              }
-                            )
-                          ] }) }),
-                          /* @__PURE__ */ jsxRuntimeExports.jsx(
-                            motion.div,
-                            {
-                              className: "absolute bottom-3 left-1/2 transform -translate-x-1/2 bg-[#00ffff] opacity-80",
-                              animate: {
-                                height: expression === "speaking" ? [2, 6, 2, 4, 1] : expression === "happy" ? 4 : 2,
-                                width: expression === "happy" ? 24 : 12,
-                                opacity: expression === "neutral" ? 0 : 0.8
-                              },
-                              transition: expression === "speaking" ? {
-                                duration: 0.3,
-                                repeat: Infinity,
-                                ease: "easeInOut"
-                              } : {}
-                            }
-                          )
-                        ]
-                      }
-                    ),
-                    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute left-2 top-1/2 transform -translate-y-1/2 w-4 h-12 bg-[var(--pixel-border)] shadow-[-2px_2px_0_0_rgba(0,0,0,0.3)]" }),
-                    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute right-2 top-1/2 transform -translate-y-1/2 w-4 h-12 bg-[var(--pixel-border)] shadow-[2px_2px_0_0_rgba(0,0,0,0.3)]" })
-                  ]
-                }
-              ),
-              !isSmall && animate && /* @__PURE__ */ jsxRuntimeExports.jsx(jsxRuntimeExports.Fragment, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-                motion.div,
-                {
-                  className: "absolute -inset-4 border-2 border-[var(--pixel-primary)] opacity-20",
-                  animate: {
-                    rotate: 360,
-                    scale: [1, 1.05, 1]
-                  },
-                  transition: { duration: 10, repeat: Infinity, ease: "linear" },
-                  style: { borderRadius: "40%" }
-                }
-              ) })
-            ]
-          }
-        ),
-        !isSmall && /* @__PURE__ */ jsxRuntimeExports.jsx(
-          motion.div,
-          {
-            className: "absolute -bottom-4 w-24 h-4 bg-black/20 rounded-[50%]",
-            animate: {
-              scaleX: [1, 0.8, 1],
-              opacity: [0.3, 0.5, 0.3]
-            },
-            transition: {
-              duration: 4,
-              repeat: Infinity,
-              ease: "easeInOut"
-            }
-          }
-        )
-      ]
-    }
-  );
-}
 const __vite_import_meta_env__ = {};
 const host = typeof import.meta !== "undefined" && __vite_import_meta_env__?.VITE_API_HOST != null ? void 0 : typeof window !== "undefined" ? window.location?.hostname || "127.0.0.1" : "127.0.0.1";
 const port = typeof import.meta !== "undefined" && __vite_import_meta_env__?.VITE_API_PORT != null ? String(void 0) : "8000";
@@ -23520,160 +23219,150 @@ function WebSocketProvider({ children }) {
 function useWebSocket() {
   return reactExports.useContext(WebSocketContext);
 }
-const MenuButton = ({ icon: Icon2, label, onClick, color: color2 }) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
-  motion.button,
-  {
-    whileHover: { scale: 1.05 },
-    whileTap: { scale: 0.95 },
-    onClick,
-    className: "pixel-btn flex flex-col items-center justify-center gap-3 w-full min-h-[100px] flex-1 min-w-0",
-    style: { borderColor: color2, color: color2 },
-    children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx(Icon2, { size: 40 }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-sm", children: label })
-    ]
-  }
-);
+const ACTIVE_STATES = /* @__PURE__ */ new Set(["listening", "speaking"]);
+function NovaOrb({ voiceState = "idle" }) {
+  const isActive = ACTIVE_STATES.has(voiceState);
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "nova-orb-wrap", "aria-label": "NOVA core orb", children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsx(
+      motion.div,
+      {
+        className: `nova-orb ${isActive ? "nova-orb-active" : "nova-orb-idle"}`,
+        animate: {
+          scale: isActive ? [1, 1.07, 1] : [1, 1.02, 1],
+          boxShadow: isActive ? [
+            "0 0 30px rgba(26,209,255,0.25), inset 0 0 40px rgba(39,123,255,0.22)",
+            "0 0 48px rgba(26,209,255,0.45), inset 0 0 52px rgba(39,123,255,0.32)",
+            "0 0 30px rgba(26,209,255,0.25), inset 0 0 40px rgba(39,123,255,0.22)"
+          ] : [
+            "0 0 24px rgba(26,209,255,0.18), inset 0 0 30px rgba(39,123,255,0.16)",
+            "0 0 32px rgba(26,209,255,0.24), inset 0 0 40px rgba(39,123,255,0.2)",
+            "0 0 24px rgba(26,209,255,0.18), inset 0 0 30px rgba(39,123,255,0.16)"
+          ]
+        },
+        transition: { duration: isActive ? 1.05 : 3.6, repeat: Infinity, ease: "easeInOut" },
+        children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "nova-orb-core", children: "NOVA" })
+      }
+    ),
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: `nova-orb-ring ${isActive ? "nova-orb-ring-fast" : "nova-orb-ring-slow"}` })
+  ] });
+}
 function Home() {
-  const navigate = useNavigate();
-  const {
-    toggleVoice,
-    startVosk,
-    stopVosk,
-    isRecording,
-    isVoskRecording,
-    voiceStatus,
-    voskText,
-    voiceStreamText,
-    isVoiceStreaming
-  } = useWebSocket();
-  const [showBubble, setShowBubble] = reactExports.useState(false);
-  const bubbleTimeoutRef = reactExports.useRef(null);
+  const { voiceStatus } = useWebSocket();
+  const [weather, setWeather] = reactExports.useState(null);
+  const [alerts, setAlerts] = reactExports.useState([]);
+  const [wakeState, setWakeState] = reactExports.useState("idle");
   reactExports.useEffect(() => {
-    const active = isVoiceStreaming || voiceStatus === "speaking";
-    if (active) {
-      if (bubbleTimeoutRef.current) clearTimeout(bubbleTimeoutRef.current);
-      setShowBubble(true);
-    } else if (showBubble) {
-      bubbleTimeoutRef.current = setTimeout(() => {
-        setShowBubble(false);
-      }, 1e3);
+    let mounted = true;
+    async function loadData() {
+      try {
+        const [weatherData, alertsData] = await Promise.all([
+          apiFetch("/integrations/weather?latitude=59.3293&longitude=18.0686"),
+          apiFetch("/integrations/swedish-alerts?limit=6")
+        ]);
+        if (!mounted) return;
+        setWeather(weatherData);
+        setAlerts(alertsData.items || []);
+      } catch (err) {
+        console.error("Dashboard load failed", err);
+      }
     }
+    loadData();
+    const timer = setInterval(loadData, 12e4);
     return () => {
-      if (bubbleTimeoutRef.current) clearTimeout(bubbleTimeoutRef.current);
+      mounted = false;
+      clearInterval(timer);
     };
-  }, [isVoiceStreaming, voiceStatus, showBubble]);
-  const displayVoiceText = voiceStreamText.trim();
-  const pressTimer = reactExports.useRef(null);
-  const [isHoldMode, setIsHoldMode] = reactExports.useState(false);
-  const handleMouseDown = () => {
-    setIsHoldMode(false);
-    pressTimer.current = setTimeout(() => {
-      setIsHoldMode(true);
-      startVosk();
-    }, 400);
+  }, []);
+  const currentTemp = Math.round(weather?.current?.temperature_2m ?? 0);
+  const forecastDays = weather?.daily?.time || [];
+  const onWakePc = async () => {
+    setWakeState("loading");
+    try {
+      const result = await apiFetch("/actions/wake-pc", { method: "POST" });
+      setWakeState(result.status === "sent" ? "sent" : "error");
+    } catch (err) {
+      console.error("Wake PC failed", err);
+      setWakeState("error");
+    }
+    setTimeout(() => setWakeState("idle"), 2500);
   };
-  const handleMouseUp = () => {
-    if (pressTimer.current) {
-      clearTimeout(pressTimer.current);
-      pressTimer.current = null;
-    }
-    if (isHoldMode) {
-      stopVosk();
-      setIsHoldMode(false);
-    } else {
-      toggleVoice();
-    }
-  };
-  const handleMouseLeave = () => {
-    if (isHoldMode) {
-      stopVosk();
-      setIsHoldMode(false);
-    }
-    if (pressTimer.current) {
-      clearTimeout(pressTimer.current);
-      pressTimer.current = null;
-    }
-  };
-  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "relative w-full h-full overflow-hidden bg-[var(--pixel-bg)] flex flex-col items-center justify-center p-4", children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsx(
-      motion.button,
-      {
-        whileHover: { scale: 1.05 },
-        whileTap: { scale: 0.95 },
-        onClick: () => navigate("/settings"),
-        className: "absolute top-3 left-3 z-30 p-4 rounded-lg border-2 border-[var(--pixel-border)] bg-[var(--pixel-surface)] shadow-[4px_4px_0_0_rgba(0,0,0,0.5)]",
-        style: { color: "#7dcfff" },
-        "aria-label": "Settings",
-        children: /* @__PURE__ */ jsxRuntimeExports.jsx(Settings$1, { size: 36 })
-      }
-    ),
-    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col items-center gap-2 mb-4 z-10", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("h1", { className: "text-2xl font-['Press_Start_2P'] tracking-tight text-[var(--pixel-primary)]", children: "POCKET AI" }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-xs font-['Press_Start_2P'] tracking-widest text-[var(--pixel-accent)]", children: "SYSTEMS ONLINE" })
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "nova-page-grid", children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "glass-card p-6 relative overflow-hidden", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-start justify-between gap-4", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("h1", { className: "text-5xl font-semibold tracking-tight", children: "Good afternoon" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "nova-subtitle mt-2", children: "Welcome back, ZydroHub" })
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2 text-cyan-100/80", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(House, { size: 20 }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: "NOVA Home" })
+        ] })
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mt-6 flex justify-center", children: /* @__PURE__ */ jsxRuntimeExports.jsx(NovaOrb, { voiceState: voiceStatus }) })
     ] }),
-    /* @__PURE__ */ jsxRuntimeExports.jsxs(
-      "div",
-      {
-        className: `mb-12 relative ${showBubble ? "z-20" : "z-10"}`,
-        onMouseDown: handleMouseDown,
-        onMouseUp: handleMouseUp,
-        onMouseLeave: handleMouseLeave,
-        children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx(
-            Avatar,
-            {
-              variant: "xl",
-              animate: true,
-              expression: voiceStatus,
-              className: `cursor-pointer transition-all duration-300 ${isRecording ? "scale-110" : "hover:scale-105"}`
-            }
-          ),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(AnimatePresence, { children: isVoskRecording && voskText && /* @__PURE__ */ jsxRuntimeExports.jsxs(
-            motion.div,
-            {
-              initial: { opacity: 0, scale: 0.8, y: -10 },
-              animate: { opacity: 1, scale: 1, y: 0 },
-              exit: { opacity: 0, scale: 0.8 },
-              className: "absolute left-[90px] top-[70px] w-[180px] bg-black/80 backdrop-blur-md p-3 border-2 border-[var(--pixel-accent)] shadow-[4px_4px_0_0_rgba(0,0,0,0.5)] z-50 rounded-lg rounded-tl-none",
-              children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-[var(--pixel-accent)] text-[10px] leading-relaxed break-words whitespace-pre-wrap max-h-[120px] overflow-y-auto touch-scroll-y", children: voskText }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute left-[-10px] top-[-2px] w-0 h-0 border-r-[10px] border-r-[var(--pixel-accent)] border-b-[10px] border-b-transparent" })
-              ]
-            }
-          ) }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(AnimatePresence, { children: showBubble && displayVoiceText && /* @__PURE__ */ jsxRuntimeExports.jsxs(
-            motion.div,
-            {
-              initial: { opacity: 0, x: -20, scale: 0.9 },
-              animate: { opacity: 1, x: 0, scale: 1 },
-              exit: { opacity: 0, scale: 0.9 },
-              className: "absolute left-1/2 top-[150px] -translate-x-1/2 w-[220px] bg-[var(--pixel-surface)] p-4 border-4 border-[var(--pixel-primary)] shadow-[6px_6px_0_0_rgba(0,0,0,0.5)] z-50 rounded-xl",
-              children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute left-1/2 top-[-14px] -translate-x-1/2 w-0 h-0 border-l-[12px] border-l-transparent border-r-[12px] border-r-transparent border-b-[14px] border-b-[var(--pixel-primary)]" }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-[var(--pixel-primary)] text-sm font-['VT323'] leading-tight break-words", children: displayVoiceText })
-              ]
-            }
-          ) })
-        ]
-      }
-    ),
-    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid grid-cols-2 grid-rows-[1fr_1fr] gap-3 z-10 w-full max-w-[520px] flex-1 min-h-0", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx(MenuButton, { icon: MessageCircle, label: "CHAT", onClick: () => navigate("/chat"), color: "var(--pixel-primary)" }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx(MenuButton, { icon: Camera, label: "VISION", onClick: () => navigate("/camera"), color: "var(--pixel-accent)" }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx(MenuButton, { icon: Code, label: "AGENT", onClick: () => navigate("/tasks"), color: "#f7768e" }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx(MenuButton, { icon: Image, label: "GALLERY", onClick: () => navigate("/gallery"), color: "var(--pixel-secondary)" })
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "glass-card p-6", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "nova-title", children: "Weather" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mt-4 text-6xl font-bold text-cyan-200", children: [
+        currentTemp,
+        "°"
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "nova-subtitle", children: "Stockholm via Open-Meteo" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "weather-grid mt-5", children: forecastDays.slice(0, 7).map((day, idx) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "weather-day", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: day.slice(5) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+          Math.round(weather?.daily?.temperature_2m_max?.[idx] ?? 0),
+          "°"
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("small", { children: [
+          Math.round(weather?.daily?.precipitation_probability_max?.[idx] ?? 0),
+          "% rain"
+        ] })
+      ] }, day)) })
     ] }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx(
-      "div",
-      {
-        className: "absolute inset-0 pointer-events-none opacity-10",
-        style: {
-          backgroundImage: "linear-gradient(var(--pixel-border) 1px, transparent 1px), linear-gradient(90deg, var(--pixel-border) 1px, transparent 1px)",
-          backgroundSize: "40px 40px"
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "glass-card p-6", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "nova-title", children: "PC Control" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "nova-subtitle", children: "Acer Predator · PC-Oscar" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs(
+        motion.button,
+        {
+          whileTap: { scale: 0.97 },
+          onClick: onWakePc,
+          className: `wake-btn mt-6 ${wakeState}`,
+          children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(Power, { size: 26 }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { children: [
+              wakeState === "loading" && "Sending Magic Packet...",
+              wakeState === "sent" && "Wake Signal Sent",
+              wakeState === "error" && "Wake Failed",
+              wakeState === "idle" && "Wake PC"
+            ] })
+          ]
         }
-      }
-    )
+      )
+    ] }),
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "glass-card p-6", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "nova-title", children: "Music" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "nova-subtitle", children: "Spotify-style controls" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "music-card mt-5", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "music-progress" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "music-controls", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("button", { className: "round-btn", "aria-label": "Previous", children: /* @__PURE__ */ jsxRuntimeExports.jsx(SkipBack, { size: 22 }) }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("button", { className: "round-btn round-btn-main", "aria-label": "Play", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Play, { size: 24 }) }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("button", { className: "round-btn", "aria-label": "Pause", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Pause, { size: 22 }) }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("button", { className: "round-btn", "aria-label": "Next", children: /* @__PURE__ */ jsxRuntimeExports.jsx(SkipForward, { size: 22 }) })
+        ] })
+      ] })
+    ] }),
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "glass-card p-6 col-span-2", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "nova-title", children: "Swedish Alerts" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "news-list mt-4", children: [
+        alerts.length === 0 && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "news-item", children: "No alert feed data yet." }),
+        alerts.map((item, index2) => /* @__PURE__ */ jsxRuntimeExports.jsxs("a", { className: "news-item", href: item.url || "#", target: "_blank", rel: "noreferrer", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { children: item.source || "Alert" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: item.title })
+        ] }, `${item.title}-${index2}`))
+      ] })
+    ] })
   ] });
 }
 function ChatHeader({ connected, onToggleSidebar, onCloseKeyboard }) {
@@ -23693,7 +23382,7 @@ function ChatHeader({ connected, onToggleSidebar, onCloseKeyboard }) {
       }
     ) }),
     /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col items-center justify-center text-center", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-xl font-['Press_Start_2P'] tracking-tight text-[var(--pixel-primary)] leading-none mb-1", children: "POCKET AI" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-xl font-['Press_Start_2P'] tracking-tight text-[var(--pixel-primary)] leading-none mb-1", children: "NOVA" }),
       /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-xs text-[var(--pixel-secondary)] font-['VT323'] leading-none tracking-widest uppercase", children: connected ? "Chat Engine Online" : "Connecting to AI..." })
     ] }),
     /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex justify-end", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -25834,7 +25523,7 @@ function decodeNamedCharacterReference(value) {
   }
   return character === characterReference2 ? false : character;
 }
-function splice(list2, start, remove, items) {
+function splice(list2, start, remove, items2) {
   const end = list2.length;
   let chunkStart = 0;
   let parameters;
@@ -25844,14 +25533,14 @@ function splice(list2, start, remove, items) {
     start = start > end ? end : start;
   }
   remove = remove > 0 ? remove : 0;
-  if (items.length < 1e4) {
-    parameters = Array.from(items);
+  if (items2.length < 1e4) {
+    parameters = Array.from(items2);
     parameters.unshift(start, remove);
     list2.splice(...parameters);
   } else {
     if (remove) list2.splice(start, remove);
-    while (chunkStart < items.length) {
-      parameters = items.slice(chunkStart, chunkStart + 1e4);
+    while (chunkStart < items2.length) {
+      parameters = items2.slice(chunkStart, chunkStart + 1e4);
       parameters.unshift(start, 0);
       list2.splice(...parameters);
       chunkStart += 1e4;
@@ -25859,12 +25548,12 @@ function splice(list2, start, remove, items) {
     }
   }
 }
-function push(list2, items) {
+function push(list2, items2) {
   if (list2.length > 0) {
-    splice(list2, list2.length, 0, items);
+    splice(list2, list2.length, 0, items2);
     return list2;
   }
-  return items;
+  return items2;
 }
 const hasOwnProperty = {}.hasOwnProperty;
 function combineExtensions(extensions) {
@@ -27082,11 +26771,11 @@ class SpliceBuffer {
    * @return {Array<T>}
    *   Any removed items.
    */
-  splice(start, deleteCount, items) {
+  splice(start, deleteCount, items2) {
     const count = deleteCount || 0;
     this.setCursor(Math.trunc(start));
     const removed = this.right.splice(this.right.length - count, Number.POSITIVE_INFINITY);
-    if (items) chunkedPush(this.left, items);
+    if (items2) chunkedPush(this.left, items2);
     return removed.reverse();
   }
   /**
@@ -27123,9 +26812,9 @@ class SpliceBuffer {
    * @returns {undefined}
    *   Nothing.
    */
-  pushMany(items) {
+  pushMany(items2) {
     this.setCursor(Number.POSITIVE_INFINITY);
-    chunkedPush(this.left, items);
+    chunkedPush(this.left, items2);
   }
   /**
    * Inserts a single item to the low-numbered side of the array;
@@ -27149,9 +26838,9 @@ class SpliceBuffer {
    * @returns {undefined}
    *   Nothing.
    */
-  unshiftMany(items) {
+  unshiftMany(items2) {
     this.setCursor(0);
-    chunkedPush(this.right, items.reverse());
+    chunkedPush(this.right, items2.reverse());
   }
   /**
    * Move the cursor to a specific position in the array. Requires
@@ -37190,658 +36879,132 @@ function ChatInterface() {
     }
   );
 }
-const pendingStopTimeoutRef = { current: null };
-const STOP_DELAY_MS = 500;
-const STREAM_IMAGE_WIDTH = 480;
-const STREAM_IMAGE_HEIGHT = 800;
-function CameraView() {
-  const navigate = useNavigate();
-  const [status, setStatus] = reactExports.useState("connecting");
-  const [detections, setDetections] = reactExports.useState([]);
-  const [detectionActive, setDetectionActive] = reactExports.useState(false);
-  const [detectionError, setDetectionError] = reactExports.useState(null);
-  const [flash, setFlash] = reactExports.useState(false);
-  const wsRef = reactExports.useRef(null);
-  const videoContainerRef = reactExports.useRef(null);
-  const [containerSize, setContainerSize] = reactExports.useState({ width: 1, height: 1 });
-  const videoFeedUrl = `${API_BASE_URL}/video_feed`;
-  const wsUrl = `${WS_BASE_URL}/ws/detections`;
-  const startUrl = `${API_BASE_URL}/camera/start`;
-  const stopUrl = `${API_BASE_URL}/camera/stop`;
-  const detectionStartUrl = `${API_BASE_URL}/camera/detection/start`;
-  const detectionStopUrl = `${API_BASE_URL}/camera/detection/stop`;
-  const captureUrl = `${API_BASE_URL}/camera/capture`;
-  reactExports.useEffect(() => {
-    let isMounted = true;
-    const sessionId = Math.random().toString(36).substring(7);
-    const startCamera = async () => {
-      try {
-        console.log(`Starting camera session: ${sessionId}`);
-        const res = await fetch(startUrl, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ session_id: sessionId })
-        });
-        if (res.ok) {
-          if (pendingStopTimeoutRef.current) {
-            clearTimeout(pendingStopTimeoutRef.current);
-            pendingStopTimeoutRef.current = null;
-          }
-          setStatus("connected");
-          console.log("Camera started");
-        } else {
-          const err = await res.json().catch(() => ({}));
-          console.error("Camera start failed:", err.message || res.status);
-          if (isMounted) setStatus("error");
-        }
-      } catch (error) {
-        console.error("Failed to start camera:", error);
-        if (isMounted) setStatus("error");
-      }
-    };
-    const connectWebSocket = () => {
-      console.log("Connecting to WebSocket:", wsUrl);
-      const ws = new WebSocket(wsUrl);
-      wsRef.current = ws;
-      ws.onopen = () => {
-        if (isMounted) console.log("WebSocket connected (detections)");
-      };
-      ws.onmessage = (event) => {
-        try {
-          const message = JSON.parse(event.data);
-          if (message.type === "detections" && isMounted) {
-            setDetections(Array.isArray(message.data) ? message.data : []);
-          }
-        } catch (e) {
-          console.error("Error parsing WebSocket message:", e);
-        }
-      };
-      ws.onerror = (error) => {
-        console.error("WebSocket error:", error);
-        if (isMounted) setStatus("error");
-      };
-      ws.onclose = () => {
-        console.log("WebSocket disconnected (detections may stop)");
-      };
-    };
-    startCamera().then(() => {
-      connectWebSocket();
-    });
-    return () => {
-      isMounted = false;
-      if (wsRef.current) {
-        wsRef.current.close();
-      }
-      const sendStop = () => {
-        fetch(detectionStopUrl, {
-          method: "POST",
-          keepalive: true,
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ session_id: sessionId })
-        }).catch(console.error);
-        fetch(stopUrl, {
-          method: "POST",
-          keepalive: true,
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ session_id: sessionId })
-        }).catch(console.error);
-      };
-      if (pendingStopTimeoutRef.current) {
-        clearTimeout(pendingStopTimeoutRef.current);
-      }
-      pendingStopTimeoutRef.current = setTimeout(() => {
-        pendingStopTimeoutRef.current = null;
-        sendStop();
-      }, STOP_DELAY_MS);
-    };
-  }, []);
-  reactExports.useEffect(() => {
-    const el = videoContainerRef.current;
-    if (!el) return;
-    const updateSize = () => {
-      const { width, height } = el.getBoundingClientRect();
-      setContainerSize({ width, height });
-    };
-    updateSize();
-    const ro = new ResizeObserver((entries) => {
-      if (!entries.length) return;
-      const { width, height } = entries[0].contentRect;
-      setContainerSize({ width, height });
-    });
-    ro.observe(el);
-    return () => ro.disconnect();
-  }, []);
-  const toggleDetection = async () => {
-    setDetectionError(null);
-    if (detectionActive) {
-      setDetectionActive(false);
-      setDetections([]);
-      try {
-        await fetch(detectionStopUrl, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ session_id: "default" })
-        });
-      } catch (e) {
-        console.error("Failed to stop detection:", e);
-      }
-    } else {
-      try {
-        const res = await fetch(detectionStartUrl, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ session_id: "default" })
-        });
-        const data = await res.json().catch(() => ({}));
-        if (data.status === "started") {
-          setDetectionActive(true);
-        } else {
-          const msg = data.message || data.error || "Detection failed to start";
-          setDetectionError(msg);
-          console.error("Detection start failed:", msg);
-        }
-      } catch (e) {
-        const msg = e.message || "Network error";
-        setDetectionError(msg);
-        console.error("Failed to start detection:", e);
-      }
-    }
-  };
-  const captureFrame = async () => {
-    setFlash(true);
-    setTimeout(() => setFlash(false), 150);
-    try {
-      const res = await fetch(captureUrl, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ session_id: "default" })
-      });
-      const data = await res.json();
-      if (data.status === "success") {
-        console.log("Image captured:", data.filename);
-      } else {
-        console.error("Capture failed:", data.message);
-      }
-    } catch (error) {
-      console.error("Error capturing frame:", error);
-    }
-  };
-  const imageNormToContainerNorm = (xImgNorm, yImgNorm) => {
-    const { width: cw, height: ch } = containerSize;
-    if (cw <= 0 || ch <= 0) return { x: xImgNorm, y: yImgNorm };
-    const scale2 = Math.max(cw / STREAM_IMAGE_WIDTH, ch / STREAM_IMAGE_HEIGHT);
-    const displayedW = STREAM_IMAGE_WIDTH * scale2;
-    const displayedH = STREAM_IMAGE_HEIGHT * scale2;
-    const offsetLeft = (cw - displayedW) / 2;
-    const offsetTop = (ch - displayedH) / 2;
-    const xContainer = (offsetLeft + xImgNorm * displayedW) / cw;
-    const yContainer = (offsetTop + yImgNorm * displayedH) / ch;
-    return { x: xContainer, y: yContainer };
-  };
-  const renderBoundingBoxes = () => {
-    const { width: cw, height: ch } = containerSize;
-    if (cw < 10 || ch < 10) return null;
-    return detections.map((det, index2) => {
-      const [oxMin, oyMin, oxMax, oyMax] = det.bbox;
-      const sxMin = 1 - oyMax;
-      const syMin = oxMin;
-      const sxMax = 1 - oyMin;
-      const syMax = oxMax;
-      const tl = imageNormToContainerNorm(sxMin, syMin);
-      const br = imageNormToContainerNorm(sxMax, syMax);
-      const left = Math.max(0, Math.min(1, tl.x));
-      const top = Math.max(0, Math.min(1, tl.y));
-      const right = Math.max(0, Math.min(1, br.x));
-      const bottom = Math.max(0, Math.min(1, br.y));
-      const leftPct = `${left * 100}%`;
-      const topPct = `${top * 100}%`;
-      const widthPct = `${Math.max(0, (right - left) * 100)}%`;
-      const heightPct = `${Math.max(0, (bottom - top) * 100)}%`;
-      const borderColor = "rgba(0, 255, 255, 1)";
-      return /* @__PURE__ */ jsxRuntimeExports.jsx(
-        "div",
-        {
-          className: "absolute border-2 flex flex-col items-start justify-start pointer-events-none",
-          style: {
-            left: leftPct,
-            top: topPct,
-            width: widthPct,
-            height: heightPct,
-            borderColor,
-            boxShadow: "0 0 10px rgba(0,255,255,0.3)"
-          },
-          children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
-            "div",
-            {
-              className: "bg-cyan-500 text-black text-[10px] font-bold px-1 py-0.5",
-              style: { marginTop: "-18px" },
-              children: [
-                det.label,
-                " ",
-                Math.round(det.confidence * 100),
-                "%"
-              ]
-            }
-          )
-        },
-        index2
-      );
-    });
-  };
-  return /* @__PURE__ */ jsxRuntimeExports.jsxs(
-    motion.div,
-    {
-      initial: { opacity: 0 },
-      animate: { opacity: 1 },
-      exit: { opacity: 0 },
-      className: "relative w-full h-full overflow-hidden bg-black",
-      children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(AnimatePresence, { children: flash && /* @__PURE__ */ jsxRuntimeExports.jsx(
-          motion.div,
-          {
-            initial: { opacity: 0 },
-            animate: { opacity: 1 },
-            exit: { opacity: 0 },
-            transition: { duration: 0.05 },
-            className: "absolute inset-0 z-[100] bg-white pointer-events-none"
-          }
-        ) }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "absolute top-0 left-0 right-0 z-50 p-6 flex justify-between items-start pointer-events-none", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx(
-            "button",
-            {
-              onClick: () => navigate("/"),
-              className: "pointer-events-auto pixel-btn p-3 flex items-center justify-center bg-black/50 border-white/50 text-white backdrop-blur-md hover:bg-white hover:text-black hover:border-white transition-all shadow-[0_4px_10px_rgba(0,0,0,0.5)]",
-              children: /* @__PURE__ */ jsxRuntimeExports.jsx(ArrowLeft, { size: 24 })
-            }
-          ),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col items-end pointer-events-auto", children: [
-            status === "connecting" && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2 px-3 py-1 bg-black/60 backdrop-blur border border-white/20 rounded-full text-[10px] text-white font-['Press_Start_2P'] animate-pulse", children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx(RefreshCw, { size: 12, className: "animate-spin" }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: "CONNECTING" })
-            ] }),
-            status === "error" && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2 px-3 py-1 bg-red-500/80 backdrop-blur border border-red-400 rounded-full text-[10px] text-white font-['Press_Start_2P']", children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx(CircleAlert, { size: 12 }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: "OFFLINE" })
-            ] })
-          ] })
-        ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { ref: videoContainerRef, className: "absolute inset-0 z-0 flex items-center justify-center bg-black", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx(
-            "img",
-            {
-              src: videoFeedUrl,
-              className: "w-full h-full object-cover",
-              alt: "Live Camera Feed",
-              onLoad: () => setStatus((s) => s === "connecting" ? "connected" : s),
-              onError: (e) => {
-                console.error("Video feed error", e);
-                setStatus("error");
-              }
-            }
-          ),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute inset-0 pointer-events-none z-10", children: detectionActive && renderBoundingBoxes() }),
-          status === "error" && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute inset-0 z-20 flex flex-col items-center justify-center bg-black/80 backdrop-blur-sm", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "p-8 border-4 border-red-500 bg-black flex flex-col items-center gap-4 shadow-[8px_8px_0_rgba(0,0,0,0.5)]", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(CircleAlert, { size: 48, className: "text-red-500 animate-bounce" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-red-500 font-['Press_Start_2P'] text-sm", children: "CAMERA OFFLINE" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx(
-              "button",
-              {
-                onClick: () => window.location.reload(),
-                className: "pixel-btn bg-red-500 text-white border-white hover:bg-red-600 px-6 py-3 text-xs",
-                children: "RETRY"
-              }
-            )
-          ] }) })
-        ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "absolute bottom-0 left-0 right-0 p-8 pb-10 flex justify-between items-end z-50 bg-gradient-to-t from-black/80 via-black/40 to-transparent h-48 pointer-events-none", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsxs(
-            "button",
-            {
-              onClick: () => navigate("/gallery"),
-              className: "pointer-events-auto flex flex-col items-center gap-2 group transition-transform active:scale-95",
-              children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-16 h-16 bg-black/50 backdrop-blur border-2 border-white/50 rounded-2xl flex items-center justify-center group-hover:bg-white/20 group-hover:border-white transition-all shadow-[0_4px_10px_rgba(0,0,0,0.3)]", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Image, { size: 28, className: "text-white drop-shadow-md" }) }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[10px] font-['Press_Start_2P'] text-white/80 drop-shadow-md tracking-wider", children: "GALLERY" })
-              ]
-            }
-          ),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(
-            "button",
-            {
-              onClick: captureFrame,
-              className: "pointer-events-auto relative group transition-transform active:scale-95 mx-auto -translate-y-2",
-              "aria-label": "Capture",
-              children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-24 h-24 rounded-full border-[6px] border-white bg-transparent flex items-center justify-center shadow-[0_0_20px_rgba(0,0,0,0.4)]", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-20 h-20 rounded-full bg-white group-active:scale-90 transition-transform duration-100 shadow-[inset_0_-4px_8px_rgba(0,0,0,0.2)]" }) })
-            }
-          ),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs(
-            "button",
-            {
-              onClick: toggleDetection,
-              title: detectionActive ? "Stop object detection" : "Start object detection",
-              className: `pointer-events-auto flex flex-col items-center gap-2 group transition-transform active:scale-95 ${detectionActive ? "opacity-100" : "opacity-80"}`,
-              children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: `w-16 h-16 rounded-2xl flex items-center justify-center border-2 transition-all shadow-lg ${detectionActive ? "bg-cyan-500 border-cyan-400 shadow-cyan-500/30" : "bg-black/50 backdrop-blur border-white/50 group-hover:bg-white/20 group-hover:border-white"}`, children: /* @__PURE__ */ jsxRuntimeExports.jsx(Scan, { size: 28, className: detectionActive ? "text-white" : "text-white drop-shadow-md" }) }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[10px] font-['Press_Start_2P'] text-white/80 drop-shadow-md tracking-wider", children: detectionActive ? "DETECT ON" : "DETECT" }),
-                detectionError && /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[8px] text-red-400 max-w-[80px] truncate", children: detectionError })
-              ]
-            }
-          )
-        ] })
-      ]
-    }
-  );
+const items = [
+  { to: "/", label: "Home", icon: House },
+  { to: "/chat", label: "Chat", icon: MessageCircle },
+  { to: "/music", label: "Music", icon: Music2 },
+  { to: "/news", label: "News", icon: Newspaper },
+  { to: "/weather", label: "Weather", icon: CloudSun }
+];
+function SideNav() {
+  return /* @__PURE__ */ jsxRuntimeExports.jsx("aside", { className: "nova-side-nav", "aria-label": "NOVA navigation", children: items.map((item) => {
+    const Icon2 = item.icon;
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+      NavLink,
+      {
+        to: item.to,
+        className: ({ isActive }) => `nova-side-btn ${isActive ? "active" : ""}`,
+        title: item.label,
+        children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(Icon2, { size: 28 }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: item.label })
+        ]
+      },
+      item.to
+    );
+  }) });
 }
-function LoadingSpinner({ label = "LOADING...", className = "" }) {
-  return /* @__PURE__ */ jsxRuntimeExports.jsxs(
-    "div",
-    {
-      className: `flex flex-col items-center justify-center gap-3 text-[var(--pixel-text)] font-['Press_Start_2P'] animate-pulse ${className}`,
-      role: "status",
-      "aria-label": label,
-      children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "div",
-          {
-            className: "w-10 h-10 border-4 border-[var(--pixel-border)] border-t-[var(--pixel-primary)] rounded-full animate-spin",
-            style: { animationDuration: "0.8s" }
-          }
-        ),
-        label && /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[10px] uppercase tracking-wider", children: label })
-      ]
-    }
-  );
+function MusicPage() {
+  return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "nova-page-grid", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "glass-card p-6", children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "nova-title", children: "Music Control" }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "nova-subtitle", children: "Spotify-style controls are ready for integration." }),
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "music-card mt-6", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xl font-semibold", children: "No Track Selected" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm opacity-70", children: "Connect playback source later" })
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "music-progress" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "music-controls", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("button", { className: "round-btn", "aria-label": "Shuffle", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Shuffle, { size: 22 }) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("button", { className: "round-btn", "aria-label": "Previous", children: /* @__PURE__ */ jsxRuntimeExports.jsx(SkipBack, { size: 22 }) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("button", { className: "round-btn round-btn-main", "aria-label": "Play", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Play, { size: 24 }) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("button", { className: "round-btn", "aria-label": "Pause", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Pause, { size: 22 }) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("button", { className: "round-btn", "aria-label": "Next", children: /* @__PURE__ */ jsxRuntimeExports.jsx(SkipForward, { size: 22 }) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("button", { className: "round-btn", "aria-label": "Repeat", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Repeat, { size: 22 }) })
+      ] })
+    ] })
+  ] }) });
 }
-function ErrorMessage({ message, onRetry, className = "" }) {
-  return /* @__PURE__ */ jsxRuntimeExports.jsxs(
-    "div",
-    {
-      className: `p-4 bg-red-500/20 border-b-2 border-red-500 text-red-200 text-[10px] font-['Press_Start_2P'] flex items-center justify-between gap-2 ${className}`,
-      role: "alert",
-      children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "flex-1 truncate", title: message, children: message }),
-        onRetry && /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "button",
-          {
-            type: "button",
-            onClick: onRetry,
-            className: "pixel-btn px-2 py-1 text-[8px]",
-            children: "RETRY"
-          }
-        )
-      ]
-    }
-  );
-}
-function Gallery() {
-  const { onFocus: onKeyboardFocus, onBlur: onKeyboardBlur } = useFocusableInput(false);
-  const navigate = useNavigate();
-  const [images, setImages] = reactExports.useState([]);
+function NewsPage() {
+  const [items2, setItems] = reactExports.useState([]);
   const [loading, setLoading] = reactExports.useState(true);
-  const [error, setError] = reactExports.useState(null);
-  const [selectedImageIndex, setSelectedImageIndex] = reactExports.useState(null);
-  const [showChatModal, setShowChatModal] = reactExports.useState(false);
-  const [chatPrompt, setChatPrompt] = reactExports.useState("");
   reactExports.useEffect(() => {
-    fetchImages();
+    let mounted = true;
+    async function load() {
+      setLoading(true);
+      try {
+        const data = await apiFetch("/integrations/swedish-alerts?limit=15");
+        if (mounted) setItems(data.items || []);
+      } catch (err) {
+        console.error("Failed to load alerts", err);
+        if (mounted) setItems([]);
+      } finally {
+        if (mounted) setLoading(false);
+      }
+    }
+    load();
+    const timer = setInterval(load, 6e4);
+    return () => {
+      mounted = false;
+      clearInterval(timer);
+    };
   }, []);
-  const fetchImages = async () => {
-    setError(null);
-    try {
-      const data = await apiFetch("/gallery/images");
-      if (data.status === "success") {
-        setImages(data.images || []);
+  return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "nova-page-grid", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "glass-card p-6", children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "nova-title", children: "Swedish Alerts" }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "nova-subtitle", children: "Polisen, Krisinformation, and SOS Alarm sources" }),
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "news-list mt-4", children: [
+      loading && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "news-item", children: "Loading alerts..." }),
+      !loading && items2.length === 0 && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "news-item", children: "No alerts available right now." }),
+      items2.map((item, idx) => /* @__PURE__ */ jsxRuntimeExports.jsxs("a", { className: "news-item", href: item.url || "#", target: "_blank", rel: "noreferrer", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { children: item.source || "Alert" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: item.title })
+      ] }, `${item.title}-${idx}`))
+    ] })
+  ] }) });
+}
+function WeatherPage() {
+  const [weather, setWeather] = reactExports.useState(null);
+  reactExports.useEffect(() => {
+    let mounted = true;
+    async function load() {
+      try {
+        const data = await apiFetch("/integrations/weather?latitude=59.3293&longitude=18.0686");
+        if (mounted) setWeather(data);
+      } catch (err) {
+        console.error("Weather fetch failed", err);
+        if (mounted) setWeather(null);
       }
-    } catch (err) {
-      setError(err?.message || "Failed to load images");
-      console.error("Failed to load images:", err);
-    } finally {
-      setLoading(false);
     }
-  };
-  const handleImageClick = (index2) => {
-    setSelectedImageIndex(index2);
-  };
-  const closeImage = () => {
-    setSelectedImageIndex(null);
-    setShowChatModal(false);
-    setChatPrompt("");
-  };
-  const handleDelete2 = async (e) => {
-    e.stopPropagation();
-    if (selectedImageIndex === null) return;
-    const img = images[selectedImageIndex];
-    if (!confirm("Are you sure you want to delete this image?")) return;
-    try {
-      setError(null);
-      const data = await apiFetch(`/gallery/images/${img.filename}`, { method: "DELETE" });
-      if (data.status === "success") {
-        const newImages = images.filter((_, i) => i !== selectedImageIndex);
-        setImages(newImages);
-        if (newImages.length === 0) {
-          closeImage();
-        } else if (selectedImageIndex >= newImages.length) {
-          setSelectedImageIndex(newImages.length - 1);
-        }
-      } else {
-        setError(data.message || "Failed to delete image");
-      }
-    } catch (err) {
-      setError(err?.message || "Error deleting image");
-      console.error("Error deleting image:", err);
-    }
-  };
-  const handleChatClick = (e) => {
-    e.stopPropagation();
-    setShowChatModal(true);
-  };
-  const handleSendToChat = () => {
-    if (!chatPrompt.trim()) return;
-    const img = images[selectedImageIndex];
-    navigate("/chat", {
-      state: {
-        prompt: chatPrompt,
-        image: img.filename
-      }
-    });
-  };
-  const handleNext = (e) => {
-    e && e.stopPropagation();
-    if (selectedImageIndex !== null && selectedImageIndex < images.length - 1) {
-      setSelectedImageIndex(selectedImageIndex + 1);
-    }
-  };
-  const handlePrev = (e) => {
-    e && e.stopPropagation();
-    if (selectedImageIndex !== null && selectedImageIndex > 0) {
-      setSelectedImageIndex(selectedImageIndex - 1);
-    }
-  };
-  const swipeConfidenceThreshold = 1e4;
-  const swipePower = (offset, velocity) => {
-    return Math.abs(offset) * velocity;
-  };
-  return /* @__PURE__ */ jsxRuntimeExports.jsxs(
-    motion.div,
-    {
-      initial: { opacity: 0, scale: 0.95 },
-      animate: { opacity: 1, scale: 1 },
-      exit: { opacity: 0, scale: 0.95 },
-      className: "relative w-full h-full max-w-full mx-auto overflow-hidden bg-[var(--pixel-bg)] flex flex-col",
-      children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "p-4 z-10 flex justify-between items-center bg-[var(--pixel-surface)] border-b-4 border-[var(--pixel-border)]", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx(
-            "button",
-            {
-              onClick: () => navigate("/"),
-              className: "pixel-btn p-3 flex items-center justify-center",
-              children: /* @__PURE__ */ jsxRuntimeExports.jsx(ArrowLeft, { size: 24 })
-            }
-          ),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("h1", { className: "text-xl font-['Press_Start_2P'] text-[var(--pixel-primary)]", children: "GALLERY" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-12" }),
-          " "
+    load();
+    const timer = setInterval(load, 12e4);
+    return () => {
+      mounted = false;
+      clearInterval(timer);
+    };
+  }, []);
+  const daily = weather?.daily || {};
+  const days = Array.isArray(daily.time) ? daily.time : [];
+  return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "nova-page-grid", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "glass-card p-6", children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "nova-title", children: "Weather" }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "nova-subtitle", children: "Open-Meteo 7 day overview" }),
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "weather-grid mt-4", children: [
+      days.length === 0 && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "weather-day", children: "Weather data unavailable." }),
+      days.map((day, index2) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "weather-day", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: day }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+          Math.round(daily.temperature_2m_max?.[index2] ?? 0),
+          "° / ",
+          Math.round(daily.temperature_2m_min?.[index2] ?? 0),
+          "°"
         ] }),
-        error && /* @__PURE__ */ jsxRuntimeExports.jsx(ErrorMessage, { message: error, onRetry: () => {
-          setError(null);
-          fetchImages();
-        } }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex-1 min-h-0 overflow-y-auto p-4 scroller-pixel touch-scroll-y", children: loading ? /* @__PURE__ */ jsxRuntimeExports.jsx(LoadingSpinner, { label: "LOADING...", className: "h-full" }) : images.length === 0 ? /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex flex-col items-center justify-center h-full text-[var(--pixel-secondary)] font-['VT323'] text-xl", children: /* @__PURE__ */ jsxRuntimeExports.jsx("p", { children: "NO IMAGES FOUND_" }) }) : /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "grid grid-cols-3 gap-3", children: images.map((img, index2) => /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "div",
-          {
-            onClick: () => handleImageClick(index2),
-            className: "aspect-[9/16] bg-[var(--pixel-surface)] border-2 border-[var(--pixel-border)] relative cursor-pointer hover:border-[var(--pixel-primary)] transition-colors",
-            children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-              "img",
-              {
-                src: `${API_BASE_URL}${img.url}`,
-                alt: img.filename,
-                className: "w-full h-full object-cover pixelated",
-                loading: "lazy"
-              }
-            )
-          },
-          img.filename
-        )) }) }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(AnimatePresence, { children: selectedImageIndex !== null && images[selectedImageIndex] && /* @__PURE__ */ jsxRuntimeExports.jsxs(
-          motion.div,
-          {
-            initial: { opacity: 0 },
-            animate: { opacity: 1 },
-            exit: { opacity: 0 },
-            className: "absolute inset-0 z-50 bg-black/90 flex flex-col",
-            onClick: closeImage,
-            children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute top-4 left-4 right-4 z-50 flex justify-between", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-                "button",
-                {
-                  onClick: closeImage,
-                  className: "pixel-btn flex items-center justify-center p-2 bg-red-500 hover:bg-red-600 text-white border-white",
-                  children: /* @__PURE__ */ jsxRuntimeExports.jsx(X, { size: 20 })
-                }
-              ) }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute bottom-6 left-6 z-50", children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
-                "button",
-                {
-                  onClick: handleChatClick,
-                  className: "pixel-btn flex items-center gap-2 bg-[var(--pixel-primary)] text-black",
-                  children: [
-                    /* @__PURE__ */ jsxRuntimeExports.jsx(MessageSquare, { size: 16 }),
-                    "CHAT"
-                  ]
-                }
-              ) }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute bottom-6 right-6 z-50", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-                "button",
-                {
-                  onClick: handleDelete2,
-                  className: "pixel-btn bg-red-500 text-white hover:bg-red-600 border-white",
-                  children: "DELETE"
-                }
-              ) }),
-              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex-1 flex items-center justify-center relative w-full h-full p-8", children: [
-                selectedImageIndex > 0 && /* @__PURE__ */ jsxRuntimeExports.jsx(
-                  "button",
-                  {
-                    onClick: handlePrev,
-                    className: "absolute left-4 z-40 pixel-btn p-2",
-                    children: /* @__PURE__ */ jsxRuntimeExports.jsx(ChevronLeft, { size: 20 })
-                  }
-                ),
-                selectedImageIndex < images.length - 1 && /* @__PURE__ */ jsxRuntimeExports.jsx(
-                  "button",
-                  {
-                    onClick: handleNext,
-                    className: "absolute right-4 z-40 pixel-btn p-2",
-                    children: /* @__PURE__ */ jsxRuntimeExports.jsx(ChevronRight, { size: 20 })
-                  }
-                ),
-                /* @__PURE__ */ jsxRuntimeExports.jsx(
-                  motion.img,
-                  {
-                    src: `${API_BASE_URL}${images[selectedImageIndex].url}`,
-                    alt: images[selectedImageIndex].filename,
-                    className: "max-w-full max-h-full object-contain border-4 border-[var(--pixel-border)] bg-[var(--pixel-bg)] shadow-[8px_8px_0_0_rgba(255,255,255,0.2)]",
-                    initial: { x: 300, opacity: 0 },
-                    animate: { x: 0, opacity: 1 },
-                    exit: { x: -300, opacity: 0 },
-                    drag: "x",
-                    dragConstraints: { left: 0, right: 0 },
-                    dragElastic: 0.2,
-                    onDragEnd: (e, { offset, velocity }) => {
-                      const swipe = swipePower(offset.x, velocity.x);
-                      if (swipe < -swipeConfidenceThreshold) {
-                        handleNext();
-                      } else if (swipe > swipeConfidenceThreshold) {
-                        handlePrev();
-                      }
-                    },
-                    onClick: (e) => e.stopPropagation()
-                  },
-                  images[selectedImageIndex].filename
-                )
-              ] })
-            ]
-          }
-        ) }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(AnimatePresence, { children: showChatModal && /* @__PURE__ */ jsxRuntimeExports.jsx(
-          motion.div,
-          {
-            initial: { opacity: 0 },
-            animate: { opacity: 1 },
-            exit: { opacity: 0 },
-            className: "absolute inset-0 z-[60] bg-black/80 flex items-center justify-center p-6",
-            onClick: () => setShowChatModal(false),
-            children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
-              motion.div,
-              {
-                initial: { scale: 0.9, y: 20 },
-                animate: { scale: 1, y: 0 },
-                exit: { scale: 0.9, y: 20 },
-                className: "bg-[var(--pixel-surface)] border-4 border-[var(--pixel-border)] p-6 w-full max-w-sm shadow-[8px_8px_0_0_rgba(0,0,0,1)]",
-                onClick: (e) => e.stopPropagation(),
-                children: [
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "text-sm font-['Press_Start_2P'] text-[var(--pixel-primary)] mb-4 uppercase leading-relaxed", children: "QUERY IMAGE DATA" }),
-                  /* @__PURE__ */ jsxRuntimeExports.jsx(
-                    "textarea",
-                    {
-                      className: "w-full h-32 p-3 bg-[var(--pixel-bg)] border-2 border-[var(--pixel-border)] text-[var(--pixel-text)] font-['VT323'] text-xl resize-none focus:outline-none focus:border-[var(--pixel-primary)]",
-                      placeholder: "INPUT QUERY...",
-                      value: chatPrompt,
-                      onChange: (e) => setChatPrompt(e.target.value),
-                      onFocus: onKeyboardFocus,
-                      onBlur: onKeyboardBlur,
-                      autoFocus: true
-                    }
-                  ),
-                  /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex justify-end gap-4 mt-6", children: [
-                    /* @__PURE__ */ jsxRuntimeExports.jsx(
-                      "button",
-                      {
-                        onClick: () => setShowChatModal(false),
-                        className: "pixel-btn bg-[var(--pixel-surface)] text-[var(--pixel-text)]",
-                        children: "CANCEL"
-                      }
-                    ),
-                    /* @__PURE__ */ jsxRuntimeExports.jsx(
-                      "button",
-                      {
-                        onClick: handleSendToChat,
-                        disabled: !chatPrompt.trim(),
-                        className: "pixel-btn bg-[var(--pixel-primary)] text-black disabled:opacity-50",
-                        children: "SEND"
-                      }
-                    )
-                  ] })
-                ]
-              }
-            )
-          }
-        ) })
-      ]
-    }
-  );
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("small", { children: [
+          "Rain ",
+          Math.round(daily.precipitation_probability_max?.[index2] ?? 0),
+          "%"
+        ] })
+      ] }, day))
+    ] })
+  ] }) });
 }
 function Settings() {
   const navigate = useNavigate();
@@ -37924,25 +37087,68 @@ function Settings() {
     }
   );
 }
+const toFiniteNumber = (value, fallback = 0) => {
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : fallback;
+};
 const StatusBar = () => {
   const [stats, setStats] = reactExports.useState({
     time: "--:--:--",
     cpu_percent: 0,
     memory_percent: 0,
-    temperature: 0
+    temperature: 0,
+    wattage: 0
   });
   reactExports.useEffect(() => {
+    let ws;
+    let fallbackInterval;
+    const applyStats = (data) => {
+      setStats({
+        time: data.time || (/* @__PURE__ */ new Date()).toLocaleTimeString("en-GB", { hour12: false }),
+        cpu_percent: toFiniteNumber(data.cpu_percent ?? data.cpu ?? 0),
+        memory_percent: toFiniteNumber(data.memory_percent ?? data.ram ?? 0),
+        temperature: toFiniteNumber(data.temperature ?? data.temp ?? 0),
+        wattage: toFiniteNumber(data.wattage ?? data.watts ?? 0)
+      });
+    };
     const fetchStats = async () => {
       try {
         const data = await apiFetch("/system/stats");
-        setStats(data);
+        applyStats(data);
       } catch (error) {
         console.error("Failed to fetch system stats:", error);
       }
     };
-    fetchStats();
-    const interval = setInterval(fetchStats, 2e3);
-    return () => clearInterval(interval);
+    try {
+      ws = new WebSocket(`${WS_BASE_URL}/ws/system-stats`);
+      ws.onmessage = (event) => {
+        try {
+          const payload = JSON.parse(event.data);
+          applyStats(payload);
+        } catch (err) {
+          console.error("Failed to parse stats websocket payload", err);
+        }
+      };
+      ws.onerror = () => {
+        if (!fallbackInterval) {
+          fetchStats();
+          fallbackInterval = setInterval(fetchStats, 1e3);
+        }
+      };
+      ws.onclose = () => {
+        if (!fallbackInterval) {
+          fetchStats();
+          fallbackInterval = setInterval(fetchStats, 1e3);
+        }
+      };
+    } catch (err) {
+      fetchStats();
+      fallbackInterval = setInterval(fetchStats, 1e3);
+    }
+    return () => {
+      if (ws) ws.close();
+      if (fallbackInterval) clearInterval(fallbackInterval);
+    };
   }, []);
   const getStatusColor = (value, type) => {
     if (type === "temp") {
@@ -37954,31 +37160,38 @@ const StatusBar = () => {
     if (value > 50) return "text-yellow-500";
     return "text-green-500";
   };
-  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "w-full h-7 bg-[var(--pixel-surface)] z-50 flex items-center justify-between px-2 text-[10px] uppercase font-['Press_Start_2P'] border-b-4 border-[var(--pixel-border)] select-none", children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2 text-[var(--pixel-primary)]", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx(Clock, { size: 12 }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "tracking-widest", children: stats.time })
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "w-full h-11 bg-[var(--nova-glass)] z-50 flex items-center justify-between px-4 text-sm border-b border-white/20 select-none backdrop-blur-xl", children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2 text-cyan-200/90", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx(Clock, { size: 16 }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "tracking-wide", children: stats.time })
     ] }),
-    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-4", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-1 text-[var(--pixel-text)]", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[var(--pixel-secondary)]", children: "CPU:" }),
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-5", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-1 text-[var(--nova-text)]", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-cyan-200/70", children: "CPU:" }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: `${getStatusColor(stats.cpu_percent, "usage")}`, children: [
           Math.round(stats.cpu_percent),
           "%"
         ] })
       ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-1 text-[var(--pixel-text)]", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[var(--pixel-secondary)]", children: "RAM:" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-1 text-[var(--nova-text)]", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-cyan-200/70", children: "RAM:" }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: `${getStatusColor(stats.memory_percent, "usage")}`, children: [
           Math.round(stats.memory_percent),
           "%"
         ] })
       ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-1 text-[var(--pixel-text)]", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[var(--pixel-secondary)]", children: "TMP:" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-1 text-[var(--nova-text)]", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(Thermometer, { size: 14, className: "text-cyan-200/70" }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: `${getStatusColor(stats.temperature, "temp")}`, children: [
           Math.round(stats.temperature),
           "°"
+        ] })
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-1 text-[var(--nova-text)]", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(Zap, { size: 14, className: "text-cyan-200/70" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-cyan-100", children: [
+          stats.wattage.toFixed(1),
+          "W"
         ] })
       ] })
     ] })
@@ -38594,6 +37807,26 @@ function HeartbeatManager() {
     ] })
   ] });
 }
+function LoadingSpinner({ label = "LOADING...", className = "" }) {
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+    "div",
+    {
+      className: `flex flex-col items-center justify-center gap-3 text-[var(--pixel-text)] font-['Press_Start_2P'] animate-pulse ${className}`,
+      role: "status",
+      "aria-label": label,
+      children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "div",
+          {
+            className: "w-10 h-10 border-4 border-[var(--pixel-border)] border-t-[var(--pixel-primary)] rounded-full animate-spin",
+            style: { animationDuration: "0.8s" }
+          }
+        ),
+        label && /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[10px] uppercase tracking-wider", children: label })
+      ]
+    }
+  );
+}
 const GPIOControl = () => {
   const { sendMessage, addEventListener, connStatus } = useWebSocket();
   const isConnected = connStatus === "connected";
@@ -38822,15 +38055,10 @@ const AnimatedRoutes = () => {
   const location = useLocation();
   return /* @__PURE__ */ jsxRuntimeExports.jsx(AnimatePresence, { mode: "wait", children: /* @__PURE__ */ jsxRuntimeExports.jsxs(Routes, { location, children: [
     /* @__PURE__ */ jsxRuntimeExports.jsx(Route, { path: "/", element: /* @__PURE__ */ jsxRuntimeExports.jsx(Home, {}) }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx(
-      Route,
-      {
-        path: "/chat",
-        element: /* @__PURE__ */ jsxRuntimeExports.jsx(ChatInterface, {})
-      }
-    ),
-    /* @__PURE__ */ jsxRuntimeExports.jsx(Route, { path: "/camera", element: /* @__PURE__ */ jsxRuntimeExports.jsx(CameraView, {}) }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx(Route, { path: "/gallery", element: /* @__PURE__ */ jsxRuntimeExports.jsx(Gallery, {}) }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx(Route, { path: "/chat", element: /* @__PURE__ */ jsxRuntimeExports.jsx(ChatInterface, {}) }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx(Route, { path: "/music", element: /* @__PURE__ */ jsxRuntimeExports.jsx(MusicPage, {}) }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx(Route, { path: "/news", element: /* @__PURE__ */ jsxRuntimeExports.jsx(NewsPage, {}) }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx(Route, { path: "/weather", element: /* @__PURE__ */ jsxRuntimeExports.jsx(WeatherPage, {}) }),
     /* @__PURE__ */ jsxRuntimeExports.jsx(Route, { path: "/tasks", element: /* @__PURE__ */ jsxRuntimeExports.jsx(TaskManager, {}) }),
     /* @__PURE__ */ jsxRuntimeExports.jsx(Route, { path: "/tasks/add", element: /* @__PURE__ */ jsxRuntimeExports.jsx(TaskAdd, {}) }),
     /* @__PURE__ */ jsxRuntimeExports.jsx(Route, { path: "/tasks/edit", element: /* @__PURE__ */ jsxRuntimeExports.jsx(TaskAdd, {}) }),
@@ -38839,10 +38067,41 @@ const AnimatedRoutes = () => {
     /* @__PURE__ */ jsxRuntimeExports.jsx(Route, { path: "/settings", element: /* @__PURE__ */ jsxRuntimeExports.jsx(Settings, {}) })
   ] }, location.pathname) });
 };
+function RandomScanlineOverlay() {
+  const [active, setActive] = reactExports.useState(false);
+  const delayRef = reactExports.useRef(null);
+  const burstRef = reactExports.useRef(null);
+  reactExports.useEffect(() => {
+    const triggerBurst = () => {
+      setActive(true);
+      burstRef.current = setTimeout(() => {
+        setActive(false);
+        scheduleNext();
+      }, 8e3);
+    };
+    const scheduleNext = () => {
+      const nextDelayMs = (20 + Math.random() * 10) * 1e3;
+      delayRef.current = setTimeout(triggerBurst, nextDelayMs);
+    };
+    delayRef.current = setTimeout(triggerBurst, 1200);
+    return () => {
+      if (delayRef.current) clearTimeout(delayRef.current);
+      if (burstRef.current) clearTimeout(burstRef.current);
+    };
+  }, []);
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: `scanline-overlay ${active ? "active" : ""}` }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: `scanline-sweep ${active ? "active" : ""}` })
+  ] });
+}
 function App() {
-  return /* @__PURE__ */ jsxRuntimeExports.jsx(HashRouter, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(WebSocketProvider, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(KeyboardProvider, { children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col h-screen w-screen overflow-hidden bg-[var(--pixel-bg)] text-[var(--pixel-text)]", children: [
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(HashRouter, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(WebSocketProvider, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(KeyboardProvider, { children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col h-screen w-screen overflow-hidden bg-[var(--nova-bg)] text-[var(--nova-text)]", children: [
     /* @__PURE__ */ jsxRuntimeExports.jsx(StatusBar, {}),
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex-1 overflow-hidden relative w-full", children: /* @__PURE__ */ jsxRuntimeExports.jsx(ErrorBoundary, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(AnimatedRoutes, {}) }) }),
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex-1 overflow-hidden relative w-full flex", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx(RandomScanlineOverlay, {}),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(SideNav, {}),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(ErrorBoundary, { children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex-1 min-w-0 min-h-0", children: /* @__PURE__ */ jsxRuntimeExports.jsx(AnimatedRoutes, {}) }) })
+    ] }),
     /* @__PURE__ */ jsxRuntimeExports.jsx(OverlayKeyboard, {})
   ] }) }) }) });
 }

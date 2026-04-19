@@ -3,6 +3,10 @@ import { HashRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 import Home from './components/Home';
 import ChatInterface from './components/ChatInterface';
+import SideNav from './components/SideNav';
+import MusicPage from './components/MusicPage';
+import NewsPage from './components/NewsPage';
+import WeatherPage from './components/WeatherPage';
 import Settings from './components/Settings';
 import StatusBar from './components/StatusBar';
 import TaskManager from './components/TaskManager';
@@ -32,10 +36,10 @@ const AnimatedRoutes = () => {
     <AnimatePresence mode="wait">
       <Routes location={location} key={location.pathname}>
         <Route path="/" element={<Home />} />
-        <Route
-          path="/chat"
-          element={<ChatInterface />}
-        />
+        <Route path="/chat" element={<ChatInterface />} />
+        <Route path="/music" element={<MusicPage />} />
+        <Route path="/news" element={<NewsPage />} />
+        <Route path="/weather" element={<WeatherPage />} />
         <Route path="/tasks" element={<TaskManager />} />
         <Route path="/tasks/add" element={<TaskAdd />} />
         <Route path="/tasks/edit" element={<TaskAdd />} />
@@ -88,13 +92,16 @@ export default function App() {
     <HashRouter>
       <WebSocketProvider>
         <KeyboardProvider>
-          <div className="flex flex-col h-screen w-screen overflow-hidden bg-[var(--pixel-bg)] text-[var(--pixel-text)]">
+          <div className="flex flex-col h-screen w-screen overflow-hidden bg-[var(--nova-bg)] text-[var(--nova-text)]">
             <StatusBar />
-            <div className="flex-1 overflow-hidden relative w-full">
+            <div className="flex-1 overflow-hidden relative w-full flex">
               {/* CRT scanline overlay only for the route content area */}
               <RandomScanlineOverlay />
+              <SideNav />
               <ErrorBoundary>
-                <AnimatedRoutes />
+                <div className="flex-1 min-w-0 min-h-0">
+                  <AnimatedRoutes />
+                </div>
               </ErrorBoundary>
             </div>
             <OverlayKeyboard />

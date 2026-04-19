@@ -16,6 +16,15 @@
     }
   },
   {
+    "name": "wake_pc",
+    "description": "Sends a Wake-on-LAN magic packet to power on PC-Oscar.",
+    "parameters": {
+      "type": "object",
+      "properties": {},
+      "required": []
+    }
+  },
+  {
     "name": "web_search",
     "description": "Performs a live internet search to retrieve snippets for current events or facts.",
     "parameters": {
