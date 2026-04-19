@@ -7,13 +7,13 @@ export default function MusicPage() {
 
     return (
         <motion.div
-            className="nova-page-grid"
+            className="w-full h-full min-h-0 overflow-y-auto touch-scroll-y p-4"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.5, ease: 'easeOut' }}
         >
-            <section className="glass-card p-6">
+            <section className="glass-card p-6 max-w-3xl w-full mx-auto">
                 <h2 className="nova-title">Music Control</h2>
                 <p className="nova-subtitle">Spotify-style controls are ready for integration.</p>
                 <div className="music-card mt-6">

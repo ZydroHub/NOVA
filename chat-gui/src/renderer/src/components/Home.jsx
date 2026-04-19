@@ -1,14 +1,15 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useMemo, useState, useCallback } from 'react';
 import { motion } from 'framer-motion';
-import { SkipBack, Play, Pause, SkipForward, House, Power, Wind, Droplets, Sun, Eye } from 'lucide-react';
+import { Power } from 'lucide-react';
 import { useWebSocket } from '../contexts/WebSocketContext.jsx';
 import { apiFetch } from '../apiClient.js';
 import NovaOrb from './NovaOrb';
 
 export default function Home() {
-    const { voiceStatus, toggleVoice } = useWebSocket();
+    const { voiceStatus, voiceStage, toggleVoice } = useWebSocket();
     const [weather, setWeather] = useState(null);
     const [alerts, setAlerts] = useState([]);
+    const [alertsError, setAlertsError] = useState(null);
     const [wakeState, setWakeState] = useState('idle');
 
     useEffect(() => {
@@ -17,13 +18,16 @@ export default function Home() {
             try {
                 const [weatherData, alertsData] = await Promise.all([
                     apiFetch('/integrations/weather?latitude=59.3293&longitude=18.0686'),
-                    apiFetch('/integrations/swedish-alerts?limit=6')
+                    apiFetch('/integrations/swedish-alerts?limit=12')
                 ]);
                 if (!mounted) return;
                 setWeather(weatherData);
                 setAlerts(alertsData.items || []);
+                setAlertsError(null);
             } catch (err) {
                 console.error('Dashboard load failed', err);
+                if (!mounted) return;
+                setAlertsError('Could not load alerts right now.');
             }
         }
         loadData();
@@ -36,6 +40,10 @@ export default function Home() {
 
     const currentTemp = weather?.current?.temperature_2m ?? '-';
     const currentWeatherCode = weather?.current?.weather_code ?? 0;
+    const hourly = weather?.hourly || {};
+    const hourlyTimes = Array.isArray(hourly.time) ? hourly.time : [];
+    const hourlyTemps = Array.isArray(hourly.temperature_2m) ? hourly.temperature_2m : [];
+    const hourlyCodes = Array.isArray(hourly.weather_code) ? hourly.weather_code : [];
     const forecastDays = weather?.daily?.time || [];
     const forecastTempsMax = weather?.daily?.temperature_2m_max || [];
     const forecastTempsMin = weather?.daily?.temperature_2m_min || [];
@@ -69,6 +77,37 @@ export default function Home() {
         toggleVoice();
     }, [toggleVoice]);
 
+    const todayHours = useMemo(() => {
+        const slots = [];
+        for (let i = 0; i < Math.min(6, hourlyTimes.length); i += 1) {
+            const timestamp = hourlyTimes[i] || '';
+            const hour = timestamp.includes('T') ? timestamp.split('T')[1]?.slice(0, 5) : '--:--';
+            slots.push({
+                key: `${timestamp}-${i}`,
+                hour,
+                temp: hourlyTemps[i],
+                code: hourlyCodes[i] ?? currentWeatherCode,
+            });
+        }
+        return slots;
+    }, [hourlyTimes, hourlyTemps, hourlyCodes, currentWeatherCode]);
+
+    const formatDay = (dateText, idx) => {
+        if (!dateText) return `Day ${idx + 1}`;
+        const date = new Date(dateText);
+        if (Number.isNaN(date.getTime())) return `Day ${idx + 1}`;
+        return date.toLocaleDateString('en-US', { weekday: 'short' });
+    };
+
+    const stageLabel = {
+        idle: '• SYSTEMS ONLINE',
+        listening: '• LISTENING FOR VOICE...',
+        transcribing: '• TURNING SPEECH INTO TEXT...',
+        thinking: '• THINKING ABOUT RESPONSE...',
+        generating: '• GENERATING RESPONSE TEXT...',
+        speaking: '• TURNING TEXT INTO SPEECH...',
+    }[voiceStage] || '• SYSTEMS ONLINE';
+
     return (
         <motion.div 
             className="nova-home touch-scroll-y"
@@ -88,15 +127,12 @@ export default function Home() {
                         <NovaOrb voiceState={voiceStatus} onClick={onNovaClick} />
                     </div>
                     <div className="nova-orb-status">
-                        {voiceStatus === 'idle' && '• SYSTEMS ONLINE'}
-                        {voiceStatus === 'listening' && '• LISTENING...'}
-                        {voiceStatus === 'speaking' && '• SPEAKING...'}
-                        {voiceStatus === 'thinking' && '• PROCESSING...'}
+                        {stageLabel}
                     </div>
                 </div>
 
                 {/* Weather Card */}
-                <section className="weather-card">
+                <section className="weather-card home-weather-remake">
                     <div className="weather-main-container">
                         <div className="weather-left">
                             <div className="weather-location">Stockholm</div>
@@ -107,16 +143,15 @@ export default function Home() {
                         <div className="weather-hourly-section">
                             <div className="weather-hourly-title">TODAY'S FORECAST</div>
                             <div className="weather-hourly-grid">
-                                {forecastDays.length > 0 ? forecastDays.slice(0, 6).map((day, idx) => {
-                                    const hourDisplay = `${String(idx * 4).padStart(2, '0')}:00`;
+                                {todayHours.length > 0 ? todayHours.map((entry) => {
                                     return (
-                                        <div key={`${day}-${idx}`} className="weather-hour-col">
-                                            <div className="hour-time">{hourDisplay}</div>
-                                            <div className="hour-emoji">{getWeatherEmoji(currentWeatherCode)}</div>
-                                            <div className="hour-temp">{forecastTempsMax[idx] ? Math.round(forecastTempsMax[idx]) : '-'}°</div>
+                                        <div key={entry.key} className="weather-hour-col">
+                                            <div className="hour-time">{entry.hour}</div>
+                                            <div className="hour-emoji">{getWeatherEmoji(entry.code)}</div>
+                                            <div className="hour-temp">{typeof entry.temp === 'number' ? Math.round(entry.temp) : '-'}°</div>
                                         </div>
                                     );
-                                }) : <div className="opacity-50 text-xs col-span-6">Loading...</div>}
+                                }) : <div className="opacity-50 text-xs col-span-6">Loading hourly weather...</div>}
                             </div>
                         </div>
                     </div>
@@ -156,7 +191,7 @@ export default function Home() {
                         {forecastDays.length > 0 ? forecastDays.slice(0, 7).map((day, idx) => {
                             const maxTemp = forecastTempsMax[idx] ? Math.round(forecastTempsMax[idx]) : '-';
                             const minTemp = forecastTempsMin[idx] ? Math.round(forecastTempsMin[idx]) : '-';
-                            const dayName = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'][idx] || `Day+${idx}`;
+                            const dayName = formatDay(day, idx);
                             const dayWeatherCode = weather?.daily?.weather_code?.[idx] || currentWeatherCode;
                             return (
                                 <div key={day} className="forecast-row">
@@ -194,14 +229,15 @@ export default function Home() {
                     animate={{ opacity: 1 }}
                     transition={{ duration: 0.4, delay: 0.4 }}
                 >
-                    <div className="text-xs opacity-70 mb-2 font-semibold">ALERTS</div>
+                    <div className="text-xs opacity-70 mb-2 font-semibold">LATEST NEWS & ALERTS</div>
                     <div className="space-y-1">
+                        {alertsError && <div className="text-xs opacity-70">{alertsError}</div>}
                         {alerts.length > 0 ? alerts.slice(0, 4).map((item, idx) => (
                             <a key={`${item.title}-${idx}`} href={item.url || '#'} target="_blank" rel="noreferrer" className="alert-item">
                                 <span className="alert-source">{item.source || 'Alert'}</span>
                                 <span className="alert-title">{item.title.slice(0, 50)}</span>
                             </a>
-                        )) : <div className="text-xs opacity-50">No alerts</div>}
+                        )) : <div className="text-xs opacity-50">No items yet</div>}
                     </div>
                 </motion.div>
             </motion.section>

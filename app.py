@@ -307,14 +307,16 @@ def _fetch_rss_items(url: str, source: str, limit: int = 8) -> list[dict]:
 
 @app.get("/integrations/weather")
 async def weather_open_meteo(latitude: float = 59.3293, longitude: float = 18.0686, timezone: str = "auto"):
-    """Weather for dashboard cards via Open-Meteo (current + 7-day forecast + full stats)."""
+    """Weather for dashboard cards via Open-Meteo (current + hourly + 7-day forecast)."""
     params = urllib.parse.urlencode(
         {
             "latitude": latitude,
             "longitude": longitude,
             "current": "temperature_2m,apparent_temperature,weather_code,wind_speed_10m,relative_humidity_2m,uv_index",
+            "hourly": "temperature_2m,weather_code,precipitation_probability",
             "daily": "weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,wind_speed_10m_max,uv_index_max",
             "forecast_days": 7,
+            "forecast_hours": 24,
             "timezone": timezone,
         }
     )
@@ -326,11 +328,12 @@ async def weather_open_meteo(latitude: float = 59.3293, longitude: float = 18.06
             "latitude": latitude,
             "longitude": longitude,
             "current": data.get("current", {}),
+            "hourly": data.get("hourly", {}),
             "daily": data.get("daily", {}),
         }
     except (urllib.error.URLError, json.JSONDecodeError) as exc:
         logger.warning("Weather fetch failed: %s", exc)
-        return {"provider": "open-meteo", "error": str(exc), "current": {}, "daily": {}}
+        return {"provider": "open-meteo", "error": str(exc), "current": {}, "hourly": {}, "daily": {}}
 
 
 @app.get("/integrations/swedish-alerts")
@@ -395,15 +398,45 @@ async def swedish_alerts(limit: int = 12):
         logger.warning("SOS Alarm API failed: %s", error_msg)
         errors.append(f"SOS Alarm: {error_msg}")
 
+    # 4) RSS fallback so UI still shows items even if JSON APIs fail
+    if not items:
+        fallback_feeds = [
+            ("https://www.svt.se/nyheter/rss.xml", "SVT Nyheter"),
+            ("https://feeds.expressen.se/nyheter", "Expressen"),
+            ("https://www.svd.se/?service=rss", "Svenska Dagbladet"),
+        ]
+        for feed_url, source in fallback_feeds:
+            try:
+                feed_items = _fetch_rss_items(feed_url, source, limit=limit)
+                items.extend(feed_items)
+                if len(items) >= limit:
+                    break
+            except Exception as exc:
+                error_msg = str(exc)[:40]
+                logger.warning("%s RSS failed: %s", source, error_msg)
+                errors.append(f"{source}: {error_msg}")
+
+    # Deduplicate by title and source, keep first seen entries
+    deduped: list[dict] = []
+    seen: set[tuple[str, str]] = set()
+    for item in items:
+        key = ((item.get("source") or "").strip(), (item.get("title") or "").strip())
+        if key in seen:
+            continue
+        seen.add(key)
+        deduped.append(item)
+        if len(deduped) >= limit:
+            break
+
     # Return results with error log
     result = {
-        "items": items[:limit],
-        "count": len(items),
+        "items": deduped,
+        "count": len(deduped),
         "errors": errors if errors else [],
         "sources": ["Polisen", "Krisinformation", "SOS Alarm"],
     }
     
-    if not items:
+    if not deduped:
         logger.warning("No Swedish alerts fetched. Errors: %s", errors)
     
     return result

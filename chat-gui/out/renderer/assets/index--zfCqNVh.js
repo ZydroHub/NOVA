@@ -22899,6 +22899,7 @@ function WebSocketProvider({ children }) {
   const [isRecording, setIsRecording] = reactExports.useState(false);
   const [isVoskRecording, setIsVoskRecording] = reactExports.useState(false);
   const [voiceStatus, setVoiceStatus] = reactExports.useState("idle");
+  const [voiceStage, setVoiceStage] = reactExports.useState("idle");
   const [voskText, setVoskText] = reactExports.useState("");
   const [thinking, setThinking] = reactExports.useState(false);
   const [conversations, setConversations] = reactExports.useState([]);
@@ -22907,6 +22908,20 @@ function WebSocketProvider({ children }) {
   const eventListeners = reactExports.useRef({});
   const wsRef = reactExports.useRef(null);
   const reconnectTimer = reactExports.useRef(null);
+  const stageResetTimerRef = reactExports.useRef(null);
+  const setStageWithAutoReset = reactExports.useCallback((stage, timeoutMs = 0) => {
+    if (stageResetTimerRef.current) {
+      clearTimeout(stageResetTimerRef.current);
+      stageResetTimerRef.current = null;
+    }
+    setVoiceStage(stage);
+    if (timeoutMs > 0) {
+      stageResetTimerRef.current = setTimeout(() => {
+        setVoiceStage((prev) => prev === stage ? "idle" : prev);
+        stageResetTimerRef.current = null;
+      }, timeoutMs);
+    }
+  }, []);
   const addEventListener = reactExports.useCallback((type, callback) => {
     if (!eventListeners.current[type]) {
       eventListeners.current[type] = [];
@@ -22972,38 +22987,49 @@ function WebSocketProvider({ children }) {
       case "voice_status":
         setVoiceStatus(data.status);
         setIsRecording(data.status === "listening");
+        if (data.status === "listening") setStageWithAutoReset("listening");
+        if (data.status === "thinking") setStageWithAutoReset("thinking");
+        if (data.status === "speaking") setStageWithAutoReset("speaking");
         if (data.status === "idle") {
+          setStageWithAutoReset("idle");
           setIsVoiceStreaming(false);
           setVoiceStreamText("");
         }
         break;
       case "voice_transcription":
+        setStageWithAutoReset("transcribing", 1200);
         setMessages((prev) => [...prev, { role: "user", text: data.text }]);
         setVoskText("");
         break;
       case "vosk_partial":
+        setStageWithAutoReset("transcribing", 1200);
         setVoskText(data.text || "");
         break;
       case "vosk_final":
+        setStageWithAutoReset("transcribing", 1200);
         setMessages((prev) => [...prev, { role: "user", text: data.text }]);
         setVoskText("");
         break;
       case "ai_start":
+        setStageWithAutoReset("thinking");
         setVoiceStreamText("");
         setIsVoiceStreaming(true);
         break;
       case "ai_delta":
+        setStageWithAutoReset("generating");
         setVoiceStreamText(data.text || "");
         break;
       case "ai_final":
+        setStageWithAutoReset(voiceStatus === "speaking" ? "speaking" : "generating", 1200);
         setVoiceStreamText(data.text || "");
         break;
       case "ai_aborted":
+        setStageWithAutoReset("idle");
         setVoiceStreamText((prev) => prev + " [aborted]");
         setTimeout(() => setIsVoiceStreaming(false), 2e3);
         break;
     }
-  }, []);
+  }, [setStageWithAutoReset, voiceStatus]);
   const connect = reactExports.useCallback(() => {
     if (reconnectTimer.current) {
       clearTimeout(reconnectTimer.current);
@@ -23137,6 +23163,7 @@ function WebSocketProvider({ children }) {
     return () => {
       clearTimeout(reconnectTimer.current);
       clearTimeout(chatReconnectTimer.current);
+      if (stageResetTimerRef.current) clearTimeout(stageResetTimerRef.current);
       if (wsRef.current) wsRef.current.close();
       if (chatWsRef.current) chatWsRef.current.close();
     };
@@ -23199,6 +23226,7 @@ function WebSocketProvider({ children }) {
     isRecording: isRecording || isVoskRecording,
     isVoskRecording,
     voiceStatus,
+    voiceStage,
     voskText,
     conversations,
     currentConvId,
@@ -23225,7 +23253,7 @@ function WebSocketProvider({ children }) {
 function useWebSocket() {
   return reactExports.useContext(WebSocketContext);
 }
-const ACTIVE_STATES = /* @__PURE__ */ new Set(["listening", "speaking"]);
+const ACTIVE_STATES = /* @__PURE__ */ new Set(["listening", "transcribing", "thinking", "generating", "speaking"]);
 function NovaOrb({ voiceState = "idle", onClick }) {
   const isActive = ACTIVE_STATES.has(voiceState);
   return /* @__PURE__ */ jsxRuntimeExports.jsxs(
@@ -23271,9 +23299,10 @@ function NovaOrb({ voiceState = "idle", onClick }) {
   );
 }
 function Home() {
-  const { voiceStatus, toggleVoice } = useWebSocket();
+  const { voiceStatus, voiceStage, toggleVoice } = useWebSocket();
   const [weather, setWeather] = reactExports.useState(null);
   const [alerts, setAlerts] = reactExports.useState([]);
+  const [alertsError, setAlertsError] = reactExports.useState(null);
   const [wakeState, setWakeState] = reactExports.useState("idle");
   reactExports.useEffect(() => {
     let mounted = true;
@@ -23281,13 +23310,16 @@ function Home() {
       try {
         const [weatherData, alertsData] = await Promise.all([
           apiFetch("/integrations/weather?latitude=59.3293&longitude=18.0686"),
-          apiFetch("/integrations/swedish-alerts?limit=6")
+          apiFetch("/integrations/swedish-alerts?limit=12")
         ]);
         if (!mounted) return;
         setWeather(weatherData);
         setAlerts(alertsData.items || []);
+        setAlertsError(null);
       } catch (err) {
         console.error("Dashboard load failed", err);
+        if (!mounted) return;
+        setAlertsError("Could not load alerts right now.");
       }
     }
     loadData();
@@ -23299,6 +23331,10 @@ function Home() {
   }, []);
   const currentTemp = weather?.current?.temperature_2m ?? "-";
   const currentWeatherCode = weather?.current?.weather_code ?? 0;
+  const hourly = weather?.hourly || {};
+  const hourlyTimes = Array.isArray(hourly.time) ? hourly.time : [];
+  const hourlyTemps = Array.isArray(hourly.temperature_2m) ? hourly.temperature_2m : [];
+  const hourlyCodes = Array.isArray(hourly.weather_code) ? hourly.weather_code : [];
   const forecastDays = weather?.daily?.time || [];
   const forecastTempsMax = weather?.daily?.temperature_2m_max || [];
   const forecastTempsMin = weather?.daily?.temperature_2m_min || [];
@@ -23328,6 +23364,34 @@ function Home() {
   const onNovaClick = reactExports.useCallback(() => {
     toggleVoice();
   }, [toggleVoice]);
+  const todayHours = reactExports.useMemo(() => {
+    const slots = [];
+    for (let i = 0; i < Math.min(6, hourlyTimes.length); i += 1) {
+      const timestamp = hourlyTimes[i] || "";
+      const hour = timestamp.includes("T") ? timestamp.split("T")[1]?.slice(0, 5) : "--:--";
+      slots.push({
+        key: `${timestamp}-${i}`,
+        hour,
+        temp: hourlyTemps[i],
+        code: hourlyCodes[i] ?? currentWeatherCode
+      });
+    }
+    return slots;
+  }, [hourlyTimes, hourlyTemps, hourlyCodes, currentWeatherCode]);
+  const formatDay = (dateText, idx) => {
+    if (!dateText) return `Day ${idx + 1}`;
+    const date = new Date(dateText);
+    if (Number.isNaN(date.getTime())) return `Day ${idx + 1}`;
+    return date.toLocaleDateString("en-US", { weekday: "short" });
+  };
+  const stageLabel = {
+    idle: "• SYSTEMS ONLINE",
+    listening: "• LISTENING FOR VOICE...",
+    transcribing: "• TURNING SPEECH INTO TEXT...",
+    thinking: "• THINKING ABOUT RESPONSE...",
+    generating: "• GENERATING RESPONSE TEXT...",
+    speaking: "• TURNING TEXT INTO SPEECH..."
+  }[voiceStage] || "• SYSTEMS ONLINE";
   return /* @__PURE__ */ jsxRuntimeExports.jsxs(
     motion.div,
     {
@@ -23346,14 +23410,9 @@ function Home() {
             children: [
               /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "nova-orb-section", children: [
                 /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex justify-center mb-2", children: /* @__PURE__ */ jsxRuntimeExports.jsx(NovaOrb, { voiceState: voiceStatus, onClick: onNovaClick }) }),
-                /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "nova-orb-status", children: [
-                  voiceStatus === "idle" && "• SYSTEMS ONLINE",
-                  voiceStatus === "listening" && "• LISTENING...",
-                  voiceStatus === "speaking" && "• SPEAKING...",
-                  voiceStatus === "thinking" && "• PROCESSING..."
-                ] })
+                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "nova-orb-status", children: stageLabel })
               ] }),
-              /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "weather-card", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "weather-card home-weather-remake", children: [
                 /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "weather-main-container", children: [
                   /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "weather-left", children: [
                     /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "weather-location", children: "Stockholm" }),
@@ -23369,17 +23428,16 @@ function Home() {
                   ] }),
                   /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "weather-hourly-section", children: [
                     /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "weather-hourly-title", children: "TODAY'S FORECAST" }),
-                    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "weather-hourly-grid", children: forecastDays.length > 0 ? forecastDays.slice(0, 6).map((day, idx) => {
-                      const hourDisplay = `${String(idx * 4).padStart(2, "0")}:00`;
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "weather-hourly-grid", children: todayHours.length > 0 ? todayHours.map((entry) => {
                       return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "weather-hour-col", children: [
-                        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "hour-time", children: hourDisplay }),
-                        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "hour-emoji", children: getWeatherEmoji(currentWeatherCode) }),
+                        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "hour-time", children: entry.hour }),
+                        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "hour-emoji", children: getWeatherEmoji(entry.code) }),
                         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "hour-temp", children: [
-                          forecastTempsMax[idx] ? Math.round(forecastTempsMax[idx]) : "-",
+                          typeof entry.temp === "number" ? Math.round(entry.temp) : "-",
                           "°"
                         ] })
-                      ] }, `${day}-${idx}`);
-                    }) : /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "opacity-50 text-xs col-span-6", children: "Loading..." }) })
+                      ] }, entry.key);
+                    }) : /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "opacity-50 text-xs col-span-6", children: "Loading hourly weather..." }) })
                   ] })
                 ] }),
                 /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "air-conditions-grid", children: [
@@ -23426,7 +23484,7 @@ function Home() {
                 /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "space-y-1", children: forecastDays.length > 0 ? forecastDays.slice(0, 7).map((day, idx) => {
                   const maxTemp = forecastTempsMax[idx] ? Math.round(forecastTempsMax[idx]) : "-";
                   const minTemp = forecastTempsMin[idx] ? Math.round(forecastTempsMin[idx]) : "-";
-                  const dayName = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"][idx] || `Day+${idx}`;
+                  const dayName = formatDay(day, idx);
                   const dayWeatherCode = weather?.daily?.weather_code?.[idx] || currentWeatherCode;
                   return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "forecast-row", children: [
                     /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-sm font-medium", children: dayName }),
@@ -23468,11 +23526,14 @@ function Home() {
                   animate: { opacity: 1 },
                   transition: { duration: 0.4, delay: 0.4 },
                   children: [
-                    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-xs opacity-70 mb-2 font-semibold", children: "ALERTS" }),
-                    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "space-y-1", children: alerts.length > 0 ? alerts.slice(0, 4).map((item, idx) => /* @__PURE__ */ jsxRuntimeExports.jsxs("a", { href: item.url || "#", target: "_blank", rel: "noreferrer", className: "alert-item", children: [
-                      /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "alert-source", children: item.source || "Alert" }),
-                      /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "alert-title", children: item.title.slice(0, 50) })
-                    ] }, `${item.title}-${idx}`)) : /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-xs opacity-50", children: "No alerts" }) })
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-xs opacity-70 mb-2 font-semibold", children: "LATEST NEWS & ALERTS" }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-1", children: [
+                      alertsError && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-xs opacity-70", children: alertsError }),
+                      alerts.length > 0 ? alerts.slice(0, 4).map((item, idx) => /* @__PURE__ */ jsxRuntimeExports.jsxs("a", { href: item.url || "#", target: "_blank", rel: "noreferrer", className: "alert-item", children: [
+                        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "alert-source", children: item.source || "Alert" }),
+                        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "alert-title", children: item.title.slice(0, 50) })
+                      ] }, `${item.title}-${idx}`)) : /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-xs opacity-50", children: "No items yet" })
+                    ] })
                   ]
                 }
               )
@@ -37027,12 +37088,12 @@ function MusicPage() {
   return /* @__PURE__ */ jsxRuntimeExports.jsx(
     motion.div,
     {
-      className: "nova-page-grid",
+      className: "w-full h-full min-h-0 overflow-y-auto touch-scroll-y p-4",
       initial: { opacity: 0, y: 20 },
       animate: { opacity: 1, y: 0 },
       exit: { opacity: 0, y: -20 },
       transition: { duration: 0.5, ease: "easeOut" },
-      children: /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "glass-card p-6", children: [
+      children: /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "glass-card p-6 max-w-3xl w-full mx-auto", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "nova-title", children: "Music Control" }),
         /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "nova-subtitle", children: "Spotify-style controls are ready for integration." }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "music-card mt-6", children: [
@@ -37107,7 +37168,7 @@ function NewsPage() {
   return /* @__PURE__ */ jsxRuntimeExports.jsxs(
     motion.div,
     {
-      className: "w-full h-full flex flex-col gap-0 bg-transparent",
+      className: "w-full h-full min-h-0 flex flex-col gap-0 bg-transparent",
       initial: { opacity: 0, y: 20 },
       animate: { opacity: 1, y: 0 },
       transition: { duration: 0.5, ease: "easeOut" },
@@ -37119,7 +37180,7 @@ function NewsPage() {
             /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-cyan-300/70", children: "Polisen • Krisinformation • SOS Alarm" })
           ] })
         ] }) }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex-1 overflow-y-auto touch-scroll-y", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "px-6 py-4 space-y-3", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex-1 min-h-0 overflow-y-auto touch-scroll-y", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "px-6 py-4 space-y-3", children: [
           loading && /* @__PURE__ */ jsxRuntimeExports.jsxs(
             motion.div,
             {
@@ -37186,6 +37247,17 @@ function NewsPage() {
 }
 function WeatherPage() {
   const [weather, setWeather] = reactExports.useState(null);
+  const getWeatherEmoji = (code2) => {
+    if (code2 === 0) return "☀️";
+    if (code2 === 1 || code2 === 2) return "🌤️";
+    if (code2 === 3) return "☁️";
+    if (code2 === 45 || code2 === 48) return "🌫️";
+    if (code2 >= 51 && code2 <= 67) return "🌧️";
+    if (code2 >= 71 && code2 <= 77) return "❄️";
+    if (code2 >= 80 && code2 <= 82) return "⛈️";
+    if (code2 >= 85 && code2 <= 86) return "❄️";
+    return "🌤️";
+  };
   reactExports.useEffect(() => {
     let mounted = true;
     async function load() {
@@ -37206,43 +37278,80 @@ function WeatherPage() {
   }, []);
   const daily = weather?.daily || {};
   const days = Array.isArray(daily.time) ? daily.time : [];
+  const hourly = weather?.hourly || {};
+  const hours = Array.isArray(hourly.time) ? hourly.time.slice(0, 12) : [];
   return /* @__PURE__ */ jsxRuntimeExports.jsx(
     motion.div,
     {
-      className: "nova-page-grid",
+      className: "w-full h-full overflow-y-auto touch-scroll-y p-4",
       initial: { opacity: 0, y: 20 },
       animate: { opacity: 1, y: 0 },
       exit: { opacity: 0, y: -20 },
       transition: { duration: 0.5, ease: "easeOut" },
-      children: /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "glass-card p-6", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "nova-title", children: "Weather" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "nova-subtitle", children: "Open-Meteo 7 day overview" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "weather-grid mt-4", children: [
-          days.length === 0 && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "weather-day", children: "Weather data unavailable." }),
-          days.map((day, index2) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
-            motion.div,
-            {
-              className: "weather-day",
-              initial: { opacity: 0, scale: 0.9 },
-              animate: { opacity: 1, scale: 1 },
-              transition: { duration: 0.3, delay: index2 * 0.05 },
-              children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: day }),
-                /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-                  Math.round(daily.temperature_2m_max?.[index2] ?? 0),
-                  "° / ",
-                  Math.round(daily.temperature_2m_min?.[index2] ?? 0),
-                  "°"
-                ] }),
-                /* @__PURE__ */ jsxRuntimeExports.jsxs("small", { children: [
-                  "Rain ",
-                  Math.round(daily.precipitation_probability_max?.[index2] ?? 0),
-                  "%"
-                ] })
-              ]
-            },
-            day
-          ))
+      children: /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "glass-card p-6 flex flex-col gap-5", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "nova-title", children: "Weather" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "nova-subtitle", children: "Stockholm live + hourly + 7-day outlook" })
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "text-sm font-semibold mb-2 text-cyan-200/90", children: "NEXT 12 HOURS" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "weather-grid", children: [
+            hours.length === 0 && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "weather-day", children: "Hourly data unavailable." }),
+            hours.map((hour, index2) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
+              motion.div,
+              {
+                className: "weather-day",
+                initial: { opacity: 0, scale: 0.94 },
+                animate: { opacity: 1, scale: 1 },
+                transition: { duration: 0.2, delay: index2 * 0.02 },
+                children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: hour.includes("T") ? hour.split("T")[1].slice(0, 5) : "--:--" }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-xl", children: getWeatherEmoji(hourly.weather_code?.[index2]) }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+                    typeof hourly.temperature_2m?.[index2] === "number" ? Math.round(hourly.temperature_2m[index2]) : "-",
+                    "°"
+                  ] }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs("small", { children: [
+                    "Rain ",
+                    Math.round(hourly.precipitation_probability?.[index2] ?? 0),
+                    "%"
+                  ] })
+                ]
+              },
+              `${hour}-${index2}`
+            ))
+          ] })
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "text-sm font-semibold mb-2 text-cyan-200/90", children: "7-DAY" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "weather-grid mt-1", children: [
+            days.length === 0 && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "weather-day", children: "Weather data unavailable." }),
+            days.map((day, index2) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
+              motion.div,
+              {
+                className: "weather-day",
+                initial: { opacity: 0, scale: 0.9 },
+                animate: { opacity: 1, scale: 1 },
+                transition: { duration: 0.3, delay: index2 * 0.05 },
+                children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: new Date(day).toLocaleDateString("en-US", { weekday: "short" }) }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-xl", children: getWeatherEmoji(daily.weather_code?.[index2]) }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+                    Math.round(daily.temperature_2m_max?.[index2] ?? 0),
+                    "° / ",
+                    Math.round(daily.temperature_2m_min?.[index2] ?? 0),
+                    "°"
+                  ] }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs("small", { children: [
+                    "Rain ",
+                    Math.round(daily.precipitation_probability_max?.[index2] ?? 0),
+                    "%"
+                  ] })
+                ]
+              },
+              day
+            ))
+          ] })
         ] })
       ] })
     }
@@ -38323,42 +38432,54 @@ function OverlayKeyboard() {
 const AnimatedRoutes = () => {
   const location = useLocation();
   const [swipeDirection, setSwipeDirection] = React.useState(0);
-  const [scrollStart, setScrollStart] = React.useState(0);
   const navigate = useNavigate();
+  const lastNavAtRef = React.useRef(0);
+  const pointerStartRef = React.useRef(null);
   const routes = ["/", "/chat", "/music", "/news", "/weather", "/tasks", "/settings"];
   const currentIndex = routes.indexOf(location.pathname);
+  const canNavigateNow = () => Date.now() - lastNavAtRef.current > 450;
+  const navigateBy = (direction) => {
+    if (!canNavigateNow()) return;
+    const nextIndex = currentIndex + direction;
+    if (nextIndex < 0 || nextIndex >= routes.length) return;
+    setSwipeDirection(direction);
+    lastNavAtRef.current = Date.now();
+    navigate(routes[nextIndex]);
+  };
   const handleWheel = (e) => {
-    if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) {
-      e.preventDefault();
-      if (e.deltaX > 50 && currentIndex < routes.length - 1) {
-        navigate(routes[currentIndex + 1]);
-      } else if (e.deltaX < -50 && currentIndex > 0) {
-        navigate(routes[currentIndex - 1]);
-      }
-    }
+    const horizontalIntent = Math.abs(e.deltaX) > Math.abs(e.deltaY) * 1.5;
+    if (!horizontalIntent) return;
+    if (Math.abs(e.deltaX) < 140) return;
+    e.preventDefault();
+    navigateBy(e.deltaX > 0 ? 1 : -1);
+  };
+  const handlePointerDown = (e) => {
+    pointerStartRef.current = { x: e.clientX, y: e.clientY, ts: Date.now() };
+  };
+  const handlePointerUp = (e) => {
+    const start = pointerStartRef.current;
+    pointerStartRef.current = null;
+    if (!start) return;
+    const dx = e.clientX - start.x;
+    const dy = e.clientY - start.y;
+    const dt = Date.now() - start.ts;
+    const absX = Math.abs(dx);
+    const absY = Math.abs(dy);
+    const isHorizontalSwipe = absX > 170 && absX > absY * 1.8 && dt < 900;
+    if (!isHorizontalSwipe) return;
+    navigateBy(dx < 0 ? 1 : -1);
   };
   return /* @__PURE__ */ jsxRuntimeExports.jsx(AnimatePresence, { mode: "wait", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
     motion.div,
     {
+      className: "h-full min-h-0",
       initial: { opacity: 0, x: swipeDirection * 100 },
       animate: { opacity: 1, x: 0 },
       exit: { opacity: 0, x: -swipeDirection * 100 },
       transition: { type: "spring", stiffness: 300, damping: 30 },
-      onDragEnd: (e, info) => {
-        if (Math.abs(info.offset.x) > 50) {
-          const direction = info.offset.x > 0 ? -1 : 1;
-          setSwipeDirection(direction);
-          const nextIndex = currentIndex + direction;
-          if (nextIndex >= 0 && nextIndex < routes.length) {
-            navigate(routes[nextIndex]);
-          }
-        }
-      },
-      drag: "x",
-      dragConstraints: { left: 0, right: 0 },
-      dragElastic: 0.2,
       onWheel: handleWheel,
-      style: { cursor: "grab" },
+      onPointerDown: handlePointerDown,
+      onPointerUp: handlePointerUp,
       children: /* @__PURE__ */ jsxRuntimeExports.jsxs(Routes, { location, children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx(Route, { path: "/", element: /* @__PURE__ */ jsxRuntimeExports.jsx(Home, {}) }),
         /* @__PURE__ */ jsxRuntimeExports.jsx(Route, { path: "/chat", element: /* @__PURE__ */ jsxRuntimeExports.jsx(ChatInterface, {}) }),

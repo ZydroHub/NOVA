@@ -15,6 +15,7 @@ export function WebSocketProvider({ children }) {
     const [isRecording, setIsRecording] = useState(false);
     const [isVoskRecording, setIsVoskRecording] = useState(false);
     const [voiceStatus, setVoiceStatus] = useState('idle'); // idle | listening | thinking | speaking
+    const [voiceStage, setVoiceStage] = useState('idle'); // idle | listening | transcribing | thinking | generating | speaking
     const [voskText, setVoskText] = useState('');
     const [thinking, setThinking] = useState(false);
 
@@ -28,6 +29,21 @@ export function WebSocketProvider({ children }) {
 
     const wsRef = useRef(null);
     const reconnectTimer = useRef(null);
+    const stageResetTimerRef = useRef(null);
+
+    const setStageWithAutoReset = useCallback((stage, timeoutMs = 0) => {
+        if (stageResetTimerRef.current) {
+            clearTimeout(stageResetTimerRef.current);
+            stageResetTimerRef.current = null;
+        }
+        setVoiceStage(stage);
+        if (timeoutMs > 0) {
+            stageResetTimerRef.current = setTimeout(() => {
+                setVoiceStage((prev) => (prev === stage ? 'idle' : prev));
+                stageResetTimerRef.current = null;
+            }, timeoutMs);
+        }
+    }, []);
 
     const addEventListener = useCallback((type, callback) => {
         if (!eventListeners.current[type]) {
@@ -102,42 +118,53 @@ export function WebSocketProvider({ children }) {
             case 'voice_status':
                 setVoiceStatus(data.status);
                 setIsRecording(data.status === 'listening');
+                if (data.status === 'listening') setStageWithAutoReset('listening');
+                if (data.status === 'thinking') setStageWithAutoReset('thinking');
+                if (data.status === 'speaking') setStageWithAutoReset('speaking');
                 if (data.status === 'idle') {
+                    setStageWithAutoReset('idle');
                     setIsVoiceStreaming(false);
                     setVoiceStreamText('');
                 }
                 break;
             case 'voice_transcription':
+                setStageWithAutoReset('transcribing', 1200);
                 setMessages((prev) => [...prev, { role: 'user', text: data.text }]);
                 setVoskText('');
                 break;
             case 'vosk_partial':
+                setStageWithAutoReset('transcribing', 1200);
                 setVoskText(data.text || '');
                 break;
             case 'vosk_final':
+                setStageWithAutoReset('transcribing', 1200);
                 // Final Vosk result
                 setMessages((prev) => [...prev, { role: 'user', text: data.text }]);
                 setVoskText('');
                 break;
             case 'ai_start':
+                setStageWithAutoReset('thinking');
                 setVoiceStreamText('');
                 setIsVoiceStreaming(true);
                 break;
             case 'ai_delta':
+                setStageWithAutoReset('generating');
                 setVoiceStreamText(data.text || '');
                 break;
             case 'ai_final':
+                setStageWithAutoReset(voiceStatus === 'speaking' ? 'speaking' : 'generating', 1200);
                 setVoiceStreamText(data.text || '');
                 // We keep isVoiceStreaming true while speaking, speaking status comes from voice_status
                 break;
             case 'ai_aborted':
+                setStageWithAutoReset('idle');
                 setVoiceStreamText((prev) => prev + ' [aborted]');
                 setTimeout(() => setIsVoiceStreaming(false), 2000);
                 break;
             default:
                 break;
         }
-    }, []);
+    }, [setStageWithAutoReset, voiceStatus]);
 
     const connect = useCallback(() => {
         if (reconnectTimer.current) {
@@ -285,6 +312,7 @@ export function WebSocketProvider({ children }) {
         return () => {
             clearTimeout(reconnectTimer.current);
             clearTimeout(chatReconnectTimer.current);
+            if (stageResetTimerRef.current) clearTimeout(stageResetTimerRef.current);
             if (wsRef.current) wsRef.current.close();
             if (chatWsRef.current) chatWsRef.current.close();
         };
@@ -356,6 +384,7 @@ export function WebSocketProvider({ children }) {
         isRecording: isRecording || isVoskRecording,
         isVoskRecording,
         voiceStatus,
+        voiceStage,
         voskText,
         conversations,
         currentConvId,

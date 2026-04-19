@@ -32,47 +32,64 @@ function OverlayKeyboard() {
 const AnimatedRoutes = () => {
   const location = useLocation();
   const [swipeDirection, setSwipeDirection] = React.useState(0);
-  const [scrollStart, setScrollStart] = React.useState(0);
   const navigate = useNavigate();
+  const lastNavAtRef = React.useRef(0);
+  const pointerStartRef = React.useRef(null);
 
   const routes = ['/', '/chat', '/music', '/news', '/weather', '/tasks', '/settings'];
   const currentIndex = routes.indexOf(location.pathname);
 
+  const canNavigateNow = () => Date.now() - lastNavAtRef.current > 450;
+
+  const navigateBy = (direction) => {
+    if (!canNavigateNow()) return;
+    const nextIndex = currentIndex + direction;
+    if (nextIndex < 0 || nextIndex >= routes.length) return;
+    setSwipeDirection(direction);
+    lastNavAtRef.current = Date.now();
+    navigate(routes[nextIndex]);
+  };
+
   const handleWheel = (e) => {
-    // Only horizontal scroll detection
-    if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) {
-      e.preventDefault();
-      if (e.deltaX > 50 && currentIndex < routes.length - 1) {
-        navigate(routes[currentIndex + 1]);
-      } else if (e.deltaX < -50 && currentIndex > 0) {
-        navigate(routes[currentIndex - 1]);
-      }
-    }
+    const horizontalIntent = Math.abs(e.deltaX) > Math.abs(e.deltaY) * 1.5;
+    if (!horizontalIntent) return;
+    if (Math.abs(e.deltaX) < 140) return;
+    e.preventDefault();
+    navigateBy(e.deltaX > 0 ? 1 : -1);
+  };
+
+  const handlePointerDown = (e) => {
+    pointerStartRef.current = { x: e.clientX, y: e.clientY, ts: Date.now() };
+  };
+
+  const handlePointerUp = (e) => {
+    const start = pointerStartRef.current;
+    pointerStartRef.current = null;
+    if (!start) return;
+
+    const dx = e.clientX - start.x;
+    const dy = e.clientY - start.y;
+    const dt = Date.now() - start.ts;
+    const absX = Math.abs(dx);
+    const absY = Math.abs(dy);
+    const isHorizontalSwipe = absX > 170 && absX > absY * 1.8 && dt < 900;
+
+    if (!isHorizontalSwipe) return;
+    navigateBy(dx < 0 ? 1 : -1);
   };
 
   return (
     <AnimatePresence mode="wait">
       <motion.div
         key={location.pathname}
+        className="h-full min-h-0"
         initial={{ opacity: 0, x: swipeDirection * 100 }}
         animate={{ opacity: 1, x: 0 }}
         exit={{ opacity: 0, x: -swipeDirection * 100 }}
         transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-        onDragEnd={(e, info) => {
-          if (Math.abs(info.offset.x) > 50) {
-            const direction = info.offset.x > 0 ? -1 : 1;
-            setSwipeDirection(direction);
-            const nextIndex = currentIndex + direction;
-            if (nextIndex >= 0 && nextIndex < routes.length) {
-              navigate(routes[nextIndex]);
-            }
-          }
-        }}
-        drag="x"
-        dragConstraints={{ left: 0, right: 0 }}
-        dragElastic={0.2}
         onWheel={handleWheel}
-        style={{ cursor: 'grab' }}
+        onPointerDown={handlePointerDown}
+        onPointerUp={handlePointerUp}
       >
         <Routes location={location}>
           <Route path="/" element={<Home />} />

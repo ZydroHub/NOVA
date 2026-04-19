@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 
-const ACTIVE_STATES = new Set(['listening', 'speaking']);
+const ACTIVE_STATES = new Set(['listening', 'transcribing', 'thinking', 'generating', 'speaking']);
 
 export default function NovaOrb({ voiceState = 'idle', onClick }) {
     const isActive = ACTIVE_STATES.has(voiceState);

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { AlertCircle, Globe, Phone } from 'lucide-react';
+import { Globe } from 'lucide-react';
 import { apiFetch } from '../apiClient.js';
 
 export default function NewsPage() {
@@ -52,7 +52,7 @@ export default function NewsPage() {
 
     return (
         <motion.div
-            className="w-full h-full flex flex-col gap-0 bg-transparent"
+            className="w-full h-full min-h-0 flex flex-col gap-0 bg-transparent"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, ease: 'easeOut' }}
@@ -69,7 +69,7 @@ export default function NewsPage() {
             </div>
 
             {/* Content */}
-            <div className="flex-1 overflow-y-auto touch-scroll-y">
+            <div className="flex-1 min-h-0 overflow-y-auto touch-scroll-y">
                 <div className="px-6 py-4 space-y-3">
                     {loading && (
                         <motion.div 
