@@ -23220,34 +23220,52 @@ function useWebSocket() {
   return reactExports.useContext(WebSocketContext);
 }
 const ACTIVE_STATES = /* @__PURE__ */ new Set(["listening", "speaking"]);
-function NovaOrb({ voiceState = "idle" }) {
+function NovaOrb({ voiceState = "idle", onClick }) {
   const isActive = ACTIVE_STATES.has(voiceState);
-  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "nova-orb-wrap", "aria-label": "NOVA core orb", children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsx(
-      motion.div,
-      {
-        className: `nova-orb ${isActive ? "nova-orb-active" : "nova-orb-idle"}`,
-        animate: {
-          scale: isActive ? [1, 1.07, 1] : [1, 1.02, 1],
-          boxShadow: isActive ? [
-            "0 0 30px rgba(26,209,255,0.25), inset 0 0 40px rgba(39,123,255,0.22)",
-            "0 0 48px rgba(26,209,255,0.45), inset 0 0 52px rgba(39,123,255,0.32)",
-            "0 0 30px rgba(26,209,255,0.25), inset 0 0 40px rgba(39,123,255,0.22)"
-          ] : [
-            "0 0 24px rgba(26,209,255,0.18), inset 0 0 30px rgba(39,123,255,0.16)",
-            "0 0 32px rgba(26,209,255,0.24), inset 0 0 40px rgba(39,123,255,0.2)",
-            "0 0 24px rgba(26,209,255,0.18), inset 0 0 30px rgba(39,123,255,0.16)"
-          ]
-        },
-        transition: { duration: isActive ? 1.05 : 3.6, repeat: Infinity, ease: "easeInOut" },
-        children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "nova-orb-core", children: "NOVA" })
-      }
-    ),
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: `nova-orb-ring ${isActive ? "nova-orb-ring-fast" : "nova-orb-ring-slow"}` })
-  ] });
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+    motion.div,
+    {
+      className: "nova-orb-wrap",
+      "aria-label": "NOVA core orb",
+      onClick,
+      style: { cursor: "pointer" },
+      whileHover: { scale: 1.04 },
+      whileTap: { scale: 0.96 },
+      children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          motion.div,
+          {
+            className: `nova-orb ${isActive ? "nova-orb-active" : "nova-orb-idle"}`,
+            animate: {
+              y: isActive ? [0, -12, 0] : [0, -6, 0],
+              boxShadow: isActive ? [
+                "0 -8px 32px rgba(26,209,255,0.35), inset 0 0 40px rgba(39,123,255,0.28)",
+                "0 12px 48px rgba(26,209,255,0.55), inset 0 0 56px rgba(39,123,255,0.4)",
+                "0 -8px 32px rgba(26,209,255,0.35), inset 0 0 40px rgba(39,123,255,0.28)"
+              ] : [
+                "0 -4px 24px rgba(26,209,255,0.2), inset 0 0 30px rgba(39,123,255,0.16)",
+                "0 8px 36px rgba(26,209,255,0.32), inset 0 0 44px rgba(39,123,255,0.24)",
+                "0 -4px 24px rgba(26,209,255,0.2), inset 0 0 30px rgba(39,123,255,0.16)"
+              ]
+            },
+            transition: { duration: isActive ? 0.9 : 2.8, repeat: Infinity, ease: "easeInOut" },
+            children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "nova-orb-core", children: "NOVA" })
+          }
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          motion.div,
+          {
+            className: `nova-orb-ring ${isActive ? "nova-orb-ring-fast" : "nova-orb-ring-slow"}`,
+            animate: { y: isActive ? [0, -12, 0] : [0, -6, 0] },
+            transition: { duration: isActive ? 0.9 : 2.8, repeat: Infinity, ease: "easeInOut" }
+          }
+        )
+      ]
+    }
+  );
 }
 function Home() {
-  const { voiceStatus } = useWebSocket();
+  const { voiceStatus, toggleVoice } = useWebSocket();
   const [weather, setWeather] = reactExports.useState(null);
   const [alerts, setAlerts] = reactExports.useState([]);
   const [wakeState, setWakeState] = reactExports.useState("idle");
@@ -23286,81 +23304,106 @@ function Home() {
     }
     setTimeout(() => setWakeState("idle"), 2500);
   };
-  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "nova-page-grid", children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "glass-card p-6 relative overflow-hidden", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-start justify-between gap-4", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("h1", { className: "text-5xl font-semibold tracking-tight", children: "Good afternoon" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "nova-subtitle mt-2", children: "Welcome back, ZydroHub" })
-        ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2 text-cyan-100/80", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx(House, { size: 20 }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: "NOVA Home" })
+  const onNovaClick = () => {
+    toggleVoice();
+  };
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "nova-home", children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "nova-home-left", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "nova-orb-section", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex justify-center mb-2", children: /* @__PURE__ */ jsxRuntimeExports.jsx(NovaOrb, { voiceState: voiceStatus, onClick: onNovaClick }) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "nova-orb-status", children: [
+          voiceStatus === "idle" && "• SYSTEMS ONLINE",
+          voiceStatus === "listening" && "• LISTENING...",
+          voiceStatus === "speaking" && "• SPEAKING...",
+          voiceStatus === "thinking" && "• PROCESSING..."
         ] })
       ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mt-6 flex justify-center", children: /* @__PURE__ */ jsxRuntimeExports.jsx(NovaOrb, { voiceState: voiceStatus }) })
-    ] }),
-    /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "glass-card p-6", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "nova-title", children: "Weather" }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mt-4 text-6xl font-bold text-cyan-200", children: [
-        currentTemp,
-        "°"
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "nova-subtitle", children: "Stockholm via Open-Meteo" }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "weather-grid mt-5", children: forecastDays.slice(0, 7).map((day, idx) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "weather-day", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: day.slice(5) }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-          Math.round(weather?.daily?.temperature_2m_max?.[idx] ?? 0),
-          "°"
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "weather-card", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "weather-current", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "weather-temp", children: [
+            currentTemp,
+            "°"
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "weather-condition", children: "Stockholm" })
         ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("small", { children: [
-          Math.round(weather?.daily?.precipitation_probability_max?.[idx] ?? 0),
-          "% rain"
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "weather-hourly", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "weather-hourly-title", children: "TODAY'S FORECAST" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "weather-hourly-grid", children: forecastDays.slice(0, 6).map((day, idx) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "weather-hour", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-xs", children: [
+              "6AM+",
+              idx * 3,
+              "h"
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-2xl", children: "🌤️" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "font-semibold", children: [
+              Math.round(weather?.daily?.temperature_2m_max?.[idx] ?? 0),
+              "°"
+            ] })
+          ] }, `${day}-${idx}`)) })
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "weather-conditions", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "weather-condition-row", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-xs opacity-70", children: "Real Feel" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "font-semibold", children: [
+              currentTemp,
+              "°"
+            ] })
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "weather-condition-row", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-xs opacity-70", children: "Wind" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-semibold", children: "0.2 km/h" })
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "weather-condition-row", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-xs opacity-70", children: "Rain %" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-semibold", children: "0%" })
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "weather-condition-row", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-xs opacity-70", children: "UV Index" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-semibold", children: "3" })
+          ] })
         ] })
-      ] }, day)) })
+      ] })
     ] }),
-    /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "glass-card p-6", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "nova-title", children: "PC Control" }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "nova-subtitle", children: "Acer Predator · PC-Oscar" }),
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "nova-home-right", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "forecast-7day", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-xs opacity-70 mb-2", children: "7-DAY FORECAST" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "space-y-1", children: forecastDays.slice(0, 7).map((day, idx) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "forecast-row", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-sm", children: ["Today", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"][idx] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-xl", children: "🌤️" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "font-semibold ml-auto", children: [
+            Math.round(weather?.daily?.temperature_2m_max?.[idx] ?? 0),
+            "°/",
+            Math.round(weather?.daily?.temperature_2m_min?.[idx] ?? 0),
+            "°"
+          ] })
+        ] }, day)) })
+      ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs(
         motion.button,
         {
           whileTap: { scale: 0.97 },
           onClick: onWakePc,
-          className: `wake-btn mt-6 ${wakeState}`,
+          className: `wake-pc-card ${wakeState}`,
           children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(Power, { size: 26 }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(Power, { size: 20 }),
             /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { children: [
-              wakeState === "loading" && "Sending Magic Packet...",
-              wakeState === "sent" && "Wake Signal Sent",
-              wakeState === "error" && "Wake Failed",
-              wakeState === "idle" && "Wake PC"
+              wakeState === "loading" && "Waking...",
+              wakeState === "sent" && "Signal Sent ✓",
+              wakeState === "error" && "Failed",
+              wakeState === "idle" && "Wake PC Oscar"
             ] })
           ]
         }
-      )
-    ] }),
-    /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "glass-card p-6", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "nova-title", children: "Music" }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "nova-subtitle", children: "Spotify-style controls" }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "music-card mt-5", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "music-progress" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "music-controls", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("button", { className: "round-btn", "aria-label": "Previous", children: /* @__PURE__ */ jsxRuntimeExports.jsx(SkipBack, { size: 22 }) }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("button", { className: "round-btn round-btn-main", "aria-label": "Play", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Play, { size: 24 }) }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("button", { className: "round-btn", "aria-label": "Pause", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Pause, { size: 22 }) }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("button", { className: "round-btn", "aria-label": "Next", children: /* @__PURE__ */ jsxRuntimeExports.jsx(SkipForward, { size: 22 }) })
+      ),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "alerts-ticker", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-xs opacity-70 mb-1", children: "SWEDISH ALERTS" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-1", children: [
+          alerts.slice(0, 4).map((item, idx) => /* @__PURE__ */ jsxRuntimeExports.jsxs("a", { href: item.url || "#", target: "_blank", rel: "noreferrer", className: "alert-item", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "alert-source", children: item.source }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "alert-title", children: item.title.slice(0, 45) })
+          ] }, `${item.title}-${idx}`)),
+          alerts.length === 0 && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-xs opacity-50", children: "No alerts" })
         ] })
-      ] })
-    ] }),
-    /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "glass-card p-6 col-span-2", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "nova-title", children: "Swedish Alerts" }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "news-list mt-4", children: [
-        alerts.length === 0 && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "news-item", children: "No alert feed data yet." }),
-        alerts.map((item, index2) => /* @__PURE__ */ jsxRuntimeExports.jsxs("a", { className: "news-item", href: item.url || "#", target: "_blank", rel: "noreferrer", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { children: item.source || "Alert" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: item.title })
-        ] }, `${item.title}-${index2}`))
       ] })
     ] })
   ] });

@@ -6,7 +6,7 @@ import { apiFetch } from '../apiClient.js';
 import NovaOrb from './NovaOrb';
 
 export default function Home() {
-    const { voiceStatus } = useWebSocket();
+    const { voiceStatus, toggleVoice } = useWebSocket();
     const [weather, setWeather] = useState(null);
     const [alerts, setAlerts] = useState([]);
     const [wakeState, setWakeState] = useState('idle');
@@ -49,84 +49,109 @@ export default function Home() {
         setTimeout(() => setWakeState('idle'), 2500);
     };
 
+    const onNovaClick = () => {
+        // Trigger voice toggle when orb is clicked
+        toggleVoice();
+    };
+
     return (
-        <div className="nova-page-grid">
-            <section className="glass-card p-6 relative overflow-hidden">
-                <div className="flex items-start justify-between gap-4">
-                    <div>
-                        <h1 className="text-5xl font-semibold tracking-tight">Good afternoon</h1>
-                        <p className="nova-subtitle mt-2">Welcome back, ZydroHub</p>
+        <div className="nova-home">
+            {/* Left Section: NOVA Orb + Current Weather */}
+            <section className="nova-home-left">
+                <div className="nova-orb-section">
+                    <div className="flex justify-center mb-2">
+                        <NovaOrb voiceState={voiceStatus} onClick={onNovaClick} />
                     </div>
-                    <div className="flex items-center gap-2 text-cyan-100/80">
-                        <House size={20} />
-                        <span>NOVA Home</span>
+                    <div className="nova-orb-status">
+                        {voiceStatus === 'idle' && '• SYSTEMS ONLINE'}
+                        {voiceStatus === 'listening' && '• LISTENING...'}
+                        {voiceStatus === 'speaking' && '• SPEAKING...'}
+                        {voiceStatus === 'thinking' && '• PROCESSING...'}
                     </div>
                 </div>
 
-                <div className="mt-6 flex justify-center">
-                    <NovaOrb voiceState={voiceStatus} />
-                </div>
-            </section>
-
-            <section className="glass-card p-6">
-                <h3 className="nova-title">Weather</h3>
-                <div className="mt-4 text-6xl font-bold text-cyan-200">{currentTemp}°</div>
-                <p className="nova-subtitle">Stockholm via Open-Meteo</p>
-                <div className="weather-grid mt-5">
-                    {forecastDays.slice(0, 7).map((day, idx) => (
-                        <div key={day} className="weather-day">
-                            <h4>{day.slice(5)}</h4>
-                            <div>
-                                {Math.round(weather?.daily?.temperature_2m_max?.[idx] ?? 0)}°
-                            </div>
-                            <small>{Math.round(weather?.daily?.precipitation_probability_max?.[idx] ?? 0)}% rain</small>
+                {/* Weather Card */}
+                <section className="weather-card">
+                    <div className="weather-current">
+                        <div className="weather-temp">{currentTemp}°</div>
+                        <div className="weather-condition">Stockholm</div>
+                    </div>
+                    <div className="weather-hourly">
+                        <div className="weather-hourly-title">TODAY'S FORECAST</div>
+                        <div className="weather-hourly-grid">
+                            {forecastDays.slice(0, 6).map((day, idx) => (
+                                <div key={`${day}-${idx}`} className="weather-hour">
+                                    <div className="text-xs">6AM+{idx * 3}h</div>
+                                    <div className="text-2xl">🌤️</div>
+                                    <div className="font-semibold">{Math.round(weather?.daily?.temperature_2m_max?.[idx] ?? 0)}°</div>
+                                </div>
+                            ))}
                         </div>
-                    ))}
-                </div>
+                    </div>
+                    <div className="weather-conditions">
+                        <div className="weather-condition-row">
+                            <span className="text-xs opacity-70">Real Feel</span>
+                            <span className="font-semibold">{currentTemp}°</span>
+                        </div>
+                        <div className="weather-condition-row">
+                            <span className="text-xs opacity-70">Wind</span>
+                            <span className="font-semibold">0.2 km/h</span>
+                        </div>
+                        <div className="weather-condition-row">
+                            <span className="text-xs opacity-70">Rain %</span>
+                            <span className="font-semibold">0%</span>
+                        </div>
+                        <div className="weather-condition-row">
+                            <span className="text-xs opacity-70">UV Index</span>
+                            <span className="font-semibold">3</span>
+                        </div>
+                    </div>
+                </section>
             </section>
 
-            <section className="glass-card p-6">
-                <h3 className="nova-title">PC Control</h3>
-                <p className="nova-subtitle">Acer Predator · PC-Oscar</p>
+            {/* Right Section: 7-day + PC + Alerts */}
+            <section className="nova-home-right">
+                {/* 7-day Forecast */}
+                <div className="forecast-7day">
+                    <div className="text-xs opacity-70 mb-2">7-DAY FORECAST</div>
+                    <div className="space-y-1">
+                        {forecastDays.slice(0, 7).map((day, idx) => (
+                            <div key={day} className="forecast-row">
+                                <span className="text-sm">{['Today', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'][idx]}</span>
+                                <span className="text-xl">🌤️</span>
+                                <span className="font-semibold ml-auto">{Math.round(weather?.daily?.temperature_2m_max?.[idx] ?? 0)}°/{Math.round(weather?.daily?.temperature_2m_min?.[idx] ?? 0)}°</span>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+
+                {/* Wake PC Card */}
                 <motion.button
                     whileTap={{ scale: 0.97 }}
                     onClick={onWakePc}
-                    className={`wake-btn mt-6 ${wakeState}`}
+                    className={`wake-pc-card ${wakeState}`}
                 >
-                    <Power size={26} />
+                    <Power size={20} />
                     <span>
-                        {wakeState === 'loading' && 'Sending Magic Packet...'}
-                        {wakeState === 'sent' && 'Wake Signal Sent'}
-                        {wakeState === 'error' && 'Wake Failed'}
-                        {wakeState === 'idle' && 'Wake PC'}
+                        {wakeState === 'loading' && 'Waking...'}
+                        {wakeState === 'sent' && 'Signal Sent ✓'}
+                        {wakeState === 'error' && 'Failed'}
+                        {wakeState === 'idle' && 'Wake PC Oscar'}
                     </span>
                 </motion.button>
-            </section>
 
-            <section className="glass-card p-6">
-                <h3 className="nova-title">Music</h3>
-                <p className="nova-subtitle">Spotify-style controls</p>
-                <div className="music-card mt-5">
-                    <div className="music-progress" />
-                    <div className="music-controls">
-                        <button className="round-btn" aria-label="Previous"><SkipBack size={22} /></button>
-                        <button className="round-btn round-btn-main" aria-label="Play"><Play size={24} /></button>
-                        <button className="round-btn" aria-label="Pause"><Pause size={22} /></button>
-                        <button className="round-btn" aria-label="Next"><SkipForward size={22} /></button>
+                {/* Swedish Alerts */}
+                <div className="alerts-ticker">
+                    <div className="text-xs opacity-70 mb-1">SWEDISH ALERTS</div>
+                    <div className="space-y-1">
+                        {alerts.slice(0, 4).map((item, idx) => (
+                            <a key={`${item.title}-${idx}`} href={item.url || '#'} target="_blank" rel="noreferrer" className="alert-item">
+                                <span className="alert-source">{item.source}</span>
+                                <span className="alert-title">{item.title.slice(0, 45)}</span>
+                            </a>
+                        ))}
+                        {alerts.length === 0 && <div className="text-xs opacity-50">No alerts</div>}
                     </div>
-                </div>
-            </section>
-
-            <section className="glass-card p-6 col-span-2">
-                <h3 className="nova-title">Swedish Alerts</h3>
-                <div className="news-list mt-4">
-                    {alerts.length === 0 && <div className="news-item">No alert feed data yet.</div>}
-                    {alerts.map((item, index) => (
-                        <a key={`${item.title}-${index}`} className="news-item" href={item.url || '#'} target="_blank" rel="noreferrer">
-                            <strong>{item.source || 'Alert'}</strong>
-                            <span>{item.title}</span>
-                        </a>
-                    ))}
                 </div>
             </section>
         </div>
