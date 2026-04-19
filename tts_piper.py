@@ -136,19 +136,24 @@ class PocketAudio:
         return re.sub(r'[^a-zA-Z0-9\s.,!?;:\'\"()-]', '', text)
 
     def enqueue_sentence(self, sentence):
-        """Add a single sentence to the playback queue. Non-blocking."""
+        """Add a single sentence to the playback queue. Non-blocking. Returns True if queued."""
         cleaned = self.clean_text(sentence)
         if cleaned.strip():
             self._queue.put(cleaned)
+            return True
+        return False
 
     def enqueue_text(self, text):
-        """Split text into sentences and enqueue each. Use for full-text (e.g. function_gemma) or backward compat."""
+        """Split text into sentences and enqueue each. Returns number of queued sentences."""
+        queued = 0
         for s in split_sentences(text):
-            self.enqueue_sentence(s)
+            if self.enqueue_sentence(s):
+                queued += 1
+        return queued
 
     def speak(self, text):
         """Speak full text by splitting into sentences and enqueueing. Non-blocking."""
-        self.enqueue_text(text)
+        return self.enqueue_text(text)
 
     def _speak_internal(self, text):
         print(f"Synthesizing: {text[:50]}...")

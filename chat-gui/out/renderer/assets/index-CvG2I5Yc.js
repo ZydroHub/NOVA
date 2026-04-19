@@ -22952,6 +22952,7 @@ function WebSocketProvider({ children }) {
         setStreamText(data.text || "");
         break;
       case "stream_final":
+        if (voiceStatus !== "speaking" && !isRecording) setStageWithAutoReset("idle");
         setStreaming(false);
         setMessages((prev) => [
           ...prev,
@@ -22960,6 +22961,7 @@ function WebSocketProvider({ children }) {
         setStreamText("");
         break;
       case "stream_error":
+        setStageWithAutoReset("idle");
         setStreaming(false);
         setMessages((prev) => [
           ...prev,
@@ -22968,6 +22970,7 @@ function WebSocketProvider({ children }) {
         setStreamText("");
         break;
       case "stream_aborted":
+        setStageWithAutoReset("idle");
         setStreaming(false);
         setStreamText((prevStreamText) => {
           if (prevStreamText) {
@@ -22980,6 +22983,7 @@ function WebSocketProvider({ children }) {
         });
         break;
       case "session_reset":
+        setStageWithAutoReset("idle");
         setMessages([]);
         setStreamText("");
         setStreaming(false);
@@ -22988,7 +22992,7 @@ function WebSocketProvider({ children }) {
         setVoiceStatus(data.status);
         setIsRecording(data.status === "listening");
         if (data.status === "listening") setStageWithAutoReset("listening");
-        if (data.status === "thinking") setStageWithAutoReset("thinking");
+        if (data.status === "thinking") setStageWithAutoReset("thinking", 12e3);
         if (data.status === "speaking") setStageWithAutoReset("speaking");
         if (data.status === "idle") {
           setStageWithAutoReset("idle");
@@ -23011,12 +23015,12 @@ function WebSocketProvider({ children }) {
         setVoskText("");
         break;
       case "ai_start":
-        setStageWithAutoReset("thinking");
+        setStageWithAutoReset("thinking", 12e3);
         setVoiceStreamText("");
         setIsVoiceStreaming(true);
         break;
       case "ai_delta":
-        setStageWithAutoReset("generating");
+        setStageWithAutoReset("generating", 9e3);
         setVoiceStreamText(data.text || "");
         break;
       case "ai_final":
@@ -23029,7 +23033,7 @@ function WebSocketProvider({ children }) {
         setTimeout(() => setIsVoiceStreaming(false), 2e3);
         break;
     }
-  }, [setStageWithAutoReset, voiceStatus]);
+  }, [setStageWithAutoReset, voiceStatus, isRecording]);
   const connect = reactExports.useCallback(() => {
     if (reconnectTimer.current) {
       clearTimeout(reconnectTimer.current);
@@ -37210,16 +37214,13 @@ function NewsPage() {
             }
           ),
           items2.map((item, idx) => /* @__PURE__ */ jsxRuntimeExports.jsx(
-            motion.a,
+            motion.div,
             {
-              href: item.url || "#",
-              target: "_blank",
-              rel: "noreferrer",
-              className: `block p-4 rounded-lg border transition-all hover:border-opacity-100 hover:shadow-lg cursor-pointer ${getSourceColor(item.source)}`,
+              className: `block p-4 rounded-lg border transition-all hover:border-opacity-100 hover:shadow-lg cursor-default ${getSourceColor(item.source)}`,
               initial: { opacity: 0, x: -20 },
               animate: { opacity: 1, x: 0 },
               transition: { duration: 0.4, delay: idx * 0.05 },
-              whileHover: { scale: 1.02, x: 4 },
+              whileHover: { scale: 1.01, x: 2 },
               children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex gap-3", children: [
                 /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-2xl flex-shrink-0", children: getSourceIcon(item.source) }),
                 /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex-1 min-w-0", children: [

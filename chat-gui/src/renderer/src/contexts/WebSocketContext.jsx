@@ -83,6 +83,7 @@ export function WebSocketProvider({ children }) {
                 setStreamText(data.text || '');
                 break;
             case 'stream_final':
+                if (voiceStatus !== 'speaking' && !isRecording) setStageWithAutoReset('idle');
                 setStreaming(false);
                 setMessages((prev) => [
                     ...prev,
@@ -91,6 +92,7 @@ export function WebSocketProvider({ children }) {
                 setStreamText('');
                 break;
             case 'stream_error':
+                setStageWithAutoReset('idle');
                 setStreaming(false);
                 setMessages((prev) => [
                     ...prev,
@@ -99,6 +101,7 @@ export function WebSocketProvider({ children }) {
                 setStreamText('');
                 break;
             case 'stream_aborted':
+                setStageWithAutoReset('idle');
                 setStreaming(false);
                 setStreamText((prevStreamText) => {
                     if (prevStreamText) {
@@ -111,6 +114,7 @@ export function WebSocketProvider({ children }) {
                 });
                 break;
             case 'session_reset':
+                setStageWithAutoReset('idle');
                 setMessages([]);
                 setStreamText('');
                 setStreaming(false);
@@ -119,7 +123,7 @@ export function WebSocketProvider({ children }) {
                 setVoiceStatus(data.status);
                 setIsRecording(data.status === 'listening');
                 if (data.status === 'listening') setStageWithAutoReset('listening');
-                if (data.status === 'thinking') setStageWithAutoReset('thinking');
+                if (data.status === 'thinking') setStageWithAutoReset('thinking', 12000);
                 if (data.status === 'speaking') setStageWithAutoReset('speaking');
                 if (data.status === 'idle') {
                     setStageWithAutoReset('idle');
@@ -143,12 +147,12 @@ export function WebSocketProvider({ children }) {
                 setVoskText('');
                 break;
             case 'ai_start':
-                setStageWithAutoReset('thinking');
+                setStageWithAutoReset('thinking', 12000);
                 setVoiceStreamText('');
                 setIsVoiceStreaming(true);
                 break;
             case 'ai_delta':
-                setStageWithAutoReset('generating');
+                setStageWithAutoReset('generating', 9000);
                 setVoiceStreamText(data.text || '');
                 break;
             case 'ai_final':
@@ -164,7 +168,7 @@ export function WebSocketProvider({ children }) {
             default:
                 break;
         }
-    }, [setStageWithAutoReset, voiceStatus]);
+    }, [setStageWithAutoReset, voiceStatus, isRecording]);
 
     const connect = useCallback(() => {
         if (reconnectTimer.current) {

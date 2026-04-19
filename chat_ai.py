@@ -268,7 +268,10 @@ class AIState:
                     await websocket.send_json({"type": "voice_status", "status": "speaking"})
                     to_speak = display_text
                     if to_speak:
-                        self.tts.enqueue_text(to_speak)
+                        queued = self.tts.enqueue_text(to_speak)
+                        if queued == 0:
+                            logger.warning("TTS skipped: no speakable content in tool response")
+                            await websocket.send_json({"type": "voice_status", "status": "idle"})
                     else:
                         await websocket.send_json({"type": "voice_status", "status": "idle"})
                 return
@@ -311,10 +314,10 @@ class AIState:
                             to_flush = clean_reply[tts_flushed_len : last_end + 1].strip()
                             tts_flushed_len = last_end + 1
                             for s in split_sentences(to_flush):
-                                if not speaking_status_sent:
+                                queued = self.tts.enqueue_sentence(s)
+                                if queued and not speaking_status_sent:
                                     speaking_status_sent = True
                                     await websocket.send_json({"type": "voice_status", "status": "speaking"})
-                                self.tts.enqueue_sentence(s)
 
                 await asyncio.sleep(0.01)
 
@@ -331,9 +334,10 @@ class AIState:
                 if clean_reply and tts_flushed_len < len(clean_reply):
                     remainder = clean_reply[tts_flushed_len:].strip()
                     if remainder:
-                        if not speaking_status_sent:
+                        queued = self.tts.enqueue_sentence(remainder)
+                        if queued and not speaking_status_sent:
                             await websocket.send_json({"type": "voice_status", "status": "speaking"})
-                        self.tts.enqueue_sentence(remainder)
+                            speaking_status_sent = True
                 if not speaking_status_sent:
                     await websocket.send_json({"type": "voice_status", "status": "idle"})
                 # Otherwise "idle" is sent by on_tts_queue_drained when playback finishes
@@ -519,14 +523,26 @@ async def voice_websocket(websocket: WebSocket):
 
             if command == "start_vosk":
                 if not ai.is_vosk_recording:
-                    ai.is_vosk_recording = True
-                    loop = asyncio.get_event_loop()
-                    async def vosk_callback(text):
-                        try:
-                            await websocket.send_json({"type": "vosk_partial", "text": text})
-                        except: pass
-                    ai.vosk.start_listening(callback=lambda t: asyncio.run_coroutine_threadsafe(vosk_callback(t), loop))
-                    await websocket.send_json({"type": "voice_status", "status": "listening"})
+                    try:
+                        ai.is_vosk_recording = True
+                        loop = asyncio.get_event_loop()
+                        async def vosk_callback(text):
+                            try:
+                                await websocket.send_json({"type": "vosk_partial", "text": text})
+                            except:
+                                pass
+                        ai.vosk.start_listening(callback=lambda t: asyncio.run_coroutine_threadsafe(vosk_callback(t), loop))
+                        if not ai.vosk.listening:
+                            ai.is_vosk_recording = False
+                            await websocket.send_json({"type": "voice_status", "status": "idle"})
+                            await websocket.send_json({"type": "error", "message": "Vosk failed to start listening"})
+                        else:
+                            await websocket.send_json({"type": "voice_status", "status": "listening"})
+                    except Exception as e:
+                        ai.is_vosk_recording = False
+                        logger.exception("Vosk start error: %s", e)
+                        await websocket.send_json({"type": "voice_status", "status": "idle"})
+                        await websocket.send_json({"type": "error", "message": f"Vosk start error: {e}"})
 
             elif command == "stop_vosk":
                 if ai.is_vosk_recording:
@@ -551,7 +567,12 @@ async def voice_websocket(websocket: WebSocket):
                     abort_event.clear()
                     ai.is_recording = True
                     ai.stt.start_capture()
-                    await websocket.send_json({"type": "voice_status", "status": "listening"})
+                    if not ai.stt.listening:
+                        ai.is_recording = False
+                        await websocket.send_json({"type": "voice_status", "status": "idle"})
+                        await websocket.send_json({"type": "error", "message": "Whisper failed to start recording"})
+                    else:
+                        await websocket.send_json({"type": "voice_status", "status": "listening"})
                 else:
                     ai.is_recording = False
                     logger.debug("Stopping Whisper and Transcribing...")

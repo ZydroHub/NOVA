@@ -292,13 +292,13 @@ def run_web_search(arguments: dict) -> str:
             title = (r.get("title") or "").strip()
             body = (r.get("body") or "").strip()
             href = (r.get("href") or "").strip()
-            line = f"• {title}"
+            line = f"- {title or 'Result'}"
             if body:
-                line += f" — {body[:200]}" + ("…" if len(body) > 200 else "")
+                line += f": {body[:180]}" + ("..." if len(body) > 180 else "")
             if href:
-                line += f" ({href})"
+                line += f"\n  Link: {href}"
             parts.append(line)
-        return "Web search:\n" + "\n".join(parts)
+        return f"Web search results for '{query}':\n\n" + "\n\n".join(parts)
     except ImportError:
         pass  # Fall back to Instant Answer API
     except Exception as e:
@@ -314,12 +314,12 @@ def run_web_search(arguments: dict) -> str:
             parts.append(f"Source: {data['AbstractURL']}")
         for t in (data.get("RelatedTopics") or [])[:5]:
             if isinstance(t, dict) and t.get("Text"):
-                parts.append(f"• {t['Text']}")
+                parts.append(f"- {t['Text']}")
             elif isinstance(t, str):
-                parts.append(f"• {t}")
+                parts.append(f"- {t}")
         if not parts:
             return f"Web search for '{query}': no snippets returned. Install ddgs for full web results: pip install ddgs"
-        return "Web search:\n" + "\n".join(parts)
+        return f"Web search results for '{query}':\n\n" + "\n\n".join(parts)
     except (urllib.error.URLError, urllib.error.HTTPError, json.JSONDecodeError) as e:
         return f"Web search for '{query}': error — {e}"
 

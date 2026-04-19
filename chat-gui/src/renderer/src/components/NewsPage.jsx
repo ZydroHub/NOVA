@@ -103,16 +103,13 @@ export default function NewsPage() {
                     )}
 
                     {items.map((item, idx) => (
-                        <motion.a
+                        <motion.div
                             key={`${item.title}-${idx}`}
-                            href={item.url || '#'}
-                            target="_blank"
-                            rel="noreferrer"
-                            className={`block p-4 rounded-lg border transition-all hover:border-opacity-100 hover:shadow-lg cursor-pointer ${getSourceColor(item.source)}`}
+                            className={`block p-4 rounded-lg border transition-all hover:border-opacity-100 hover:shadow-lg cursor-default ${getSourceColor(item.source)}`}
                             initial={{ opacity: 0, x: -20 }}
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ duration: 0.4, delay: idx * 0.05 }}
-                            whileHover={{ scale: 1.02, x: 4 }}
+                            whileHover={{ scale: 1.01, x: 2 }}
                         >
                             <div className="flex gap-3">
                                 <div className="text-2xl flex-shrink-0">{getSourceIcon(item.source)}</div>
@@ -141,7 +138,7 @@ export default function NewsPage() {
                                     )}
                                 </div>
                             </div>
-                        </motion.a>
+                        </motion.div>
                     ))}
                 </div>
             </div>

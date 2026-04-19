@@ -1027,6 +1027,10 @@
     animation: var(--animate-spin);
   }
 
+  .cursor-default {
+    cursor: default;
+  }
+
   .cursor-pointer {
     cursor: pointer;
   }
@@ -2892,6 +2896,7 @@ body, html, #root {
   gap: 14px;
   width: 100%;
   height: 100%;
+  min-height: 0;
   padding: 14px;
   display: flex;
   overflow: hidden auto;
@@ -2903,6 +2908,7 @@ body, html, #root {
   min-width: 0;
   min-height: 0;
   display: flex;
+  overflow: visible;
 }
 .nova-orb-section {
   background: var(--nova-surface);
@@ -2933,6 +2939,7 @@ body, html, #root {
   padding: 18px;
   display: flex;
   overflow: hidden;
+  box-shadow: inset 0 0 0 1px #78d6ff14, 0 16px 40px #020d2259;
 }
 .home-weather-remake .weather-main-container {
   border-bottom: 1px solid #78d6ff26;
@@ -2943,8 +2950,12 @@ body, html, #root {
   display: grid;
 }
 .weather-left {
+  background: radial-gradient(circle at 20% 15%, #31c2ff38, #123a700f);
+  border: 1px solid #78d6ff33;
+  border-radius: 14px;
   flex-direction: column;
   gap: 4px;
+  padding: 14px;
   display: flex;
 }
 .weather-location {
@@ -2983,7 +2994,12 @@ body, html, #root {
   flex-direction: column;
   gap: 4px;
   padding: 8px;
+  transition: transform .18s, border-color .18s;
   display: flex;
+}
+.weather-hour-col:hover {
+  border-color: #78d6ff73;
+  transform: translateY(-2px);
 }
 .hour-time {
   color: #b6e5ffcc;
@@ -3030,7 +3046,7 @@ body, html, #root {
   min-height: 0;
   padding-right: 2px;
   display: flex;
-  overflow-y: auto;
+  overflow: visible;
 }
 .forecast-7day {
   background: var(--nova-surface);
@@ -3042,7 +3058,7 @@ body, html, #root {
   min-height: 0;
   padding: 12px;
   font-size: .9rem;
-  overflow-y: auto;
+  overflow: visible;
 }
 .forecast-row {
   border-bottom: 1px solid #78d6ff1a;
@@ -3052,6 +3068,9 @@ body, html, #root {
   gap: 6px;
   padding: 6px 0;
   display: grid;
+}
+.forecast-row:last-child {
+  border-bottom: none;
 }
 .wake-pc-card {
   -webkit-backdrop-filter: blur(25px);
@@ -3096,7 +3115,7 @@ body, html, #root {
   flex: .9;
   min-height: 0;
   padding: 12px;
-  overflow-y: auto;
+  overflow: visible;
 }
 .alert-item {
   color: #d0efffe6;
