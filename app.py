@@ -11,6 +11,8 @@ import urllib.error
 import urllib.parse
 import urllib.request
 import xml.etree.ElementTree as ET
+import threading
+from contextlib import asynccontextmanager
 from asyncio import sleep
 from datetime import datetime
 
@@ -73,7 +75,41 @@ chat_router, ai_state = _import_chat_state()
 setup_logging()
 logger = logging.getLogger(__name__)
 
-app = FastAPI(title="NOVA Unified Backend")
+_startup_lock = threading.Lock()
+_startup_completed = False
+
+
+def _initialize_backend_once() -> None:
+    global _startup_completed
+    with _startup_lock:
+        if _startup_completed:
+            logger.info("NOVA backend initialization already completed in this process; skipping duplicate startup.")
+            return
+
+        logger.info("NOVA backend starting up on port %s", PORT)
+        logger.debug("SKIP_MODEL_LOAD=%s", os.environ.get("SKIP_MODEL_LOAD", ""))
+        if not os.environ.get("SKIP_MODEL_LOAD"):
+            logger.info("Loading chat model...")
+            ai_state.load_model()
+            logger.info("Chat model loaded.")
+            # Tool model is loaded in a subprocess when needed (avoids thread/crash issues)
+
+        try:
+            from task_scheduler import init_scheduler
+            init_scheduler(ai_state.conv_manager)
+        except Exception as e:
+            logger.warning("Task scheduler not started: %s", e)
+
+        _startup_completed = True
+        logger.info("NOVA backend ready.")
+
+
+@asynccontextmanager
+async def lifespan(_app):
+    _initialize_backend_once()
+    yield
+
+app = FastAPI(title="NOVA Unified Backend", lifespan=lifespan)
 
 # Enable CORS for the frontend
 app.add_middleware(
@@ -529,22 +565,6 @@ async def wake_pc():
         logger.exception("Start PC / Wake-on-LAN failed")
         return {"status": "error", "target": "Start PC", "error": str(exc)}
 
-
-@app.on_event("startup")
-async def startup_event():
-    logger.info("NOVA backend starting up on port %s", PORT)
-    logger.debug("SKIP_MODEL_LOAD=%s", os.environ.get("SKIP_MODEL_LOAD", ""))
-    if not os.environ.get("SKIP_MODEL_LOAD"):
-        logger.info("Loading chat model...")
-        ai_state.load_model()
-        logger.info("Chat model loaded.")
-        # Tool model is loaded in a subprocess when needed (avoids thread/crash issues)
-    try:
-        from task_scheduler import init_scheduler
-        init_scheduler(ai_state.conv_manager)
-    except Exception as e:
-        logger.warning("Task scheduler not started: %s", e)
-    logger.info("NOVA backend ready.")
 
 @app.post("/shutdown")
 async def shutdown():

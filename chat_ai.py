@@ -9,6 +9,7 @@ import re
 import subprocess
 import sys
 import time
+import threading
 import uuid
 from typing import Any, Dict, List, Optional
 
@@ -192,21 +193,35 @@ class AIState:
         self.conv_manager = ConversationManager(CONVERSATIONS_FILE)
         self.is_recording = False
         self.is_vosk_recording = False
+        self._load_lock = threading.Lock()
+        self._models_loaded = False
         self.voice_messages = [
             {"role": "system", "content": "You are NOVA, a high-performance local AI core integrated into a Raspberry Pi 5. Identity: You are helpful, technical and similar to a Jarvis-like interface. Operational Constraints: Context: You have access to a 7-inch touchscreen UI. Format: Do not use bold markdown or special characters that might confuse the Text-to-Speech (TTS) engine. Keep your responses concise for text-to-speech."}
         ]
 
     def load_model(self):
-        if not os.path.exists(MODEL_PATH):
-            logger.info("Downloading model...")
-            os.makedirs(LOCAL_DIR, exist_ok=True)
-            hf_hub_download(repo_id=REPO_ID, filename=FILENAME, local_dir=LOCAL_DIR)
+        with self._load_lock:
+            if self._models_loaded and self.llm is not None:
+                logger.info("Chat AI already loaded; skipping model initialization.")
+                return
 
-        logger.info("Loading LLM...")
-        self.llm = Llama(model_path=MODEL_PATH, n_ctx=4096, n_threads=4, verbose=False)
-        self.stt.load_model()
-        self.vosk.load_model()
-        logger.info("Chat AI Ready.")
+            if not os.path.exists(MODEL_PATH):
+                logger.info("Downloading model...")
+                os.makedirs(LOCAL_DIR, exist_ok=True)
+                hf_hub_download(repo_id=REPO_ID, filename=FILENAME, local_dir=LOCAL_DIR)
+
+            if self.llm is None:
+                logger.info("Loading LLM...")
+                self.llm = Llama(model_path=MODEL_PATH, n_ctx=4096, n_threads=4, verbose=False)
+
+            if getattr(self.stt, "model", None) is None:
+                self.stt.load_model()
+
+            if getattr(self.vosk, "model", None) is None:
+                self.vosk.load_model()
+
+            self._models_loaded = True
+            logger.info("Chat AI Ready.")
 
     async def generate_response(self, messages, thinking=True):
         # Prepare messages (skip hidden tool-call entries so the model only sees user/result text)
