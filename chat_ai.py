@@ -29,6 +29,28 @@ from tts_piper import PocketAudio, split_sentences
 logger = logging.getLogger(__name__)
 
 
+async def _safe_ws_send_json(websocket: WebSocket, payload: dict, context: str = "") -> bool:
+    """Send JSON over WS and return False if the socket is no longer writable."""
+    try:
+        await websocket.send_json(payload)
+        return True
+    except WebSocketDisconnect:
+        if context:
+            logger.info("WebSocket disconnected while sending %s", context)
+        else:
+            logger.info("WebSocket disconnected while sending")
+        return False
+    except RuntimeError as exc:
+        # Starlette raises this after close frame has been sent.
+        if "close message has been sent" in str(exc):
+            if context:
+                logger.info("WebSocket already closed while sending %s", context)
+            else:
+                logger.info("WebSocket already closed while sending")
+            return False
+        raise
+
+
 # Semantic router: route prompt to qwen_basic / qwen_thinking / function_gemma
 def _get_route(prompt: str) -> str:
     try:
@@ -233,8 +255,10 @@ class AIState:
         route = _get_route(text)
         logger.debug("[voice] route: %s", route)
 
-        await websocket.send_json({"type": "ai_start"})
-        await websocket.send_json({"type": "voice_status", "status": "thinking"})
+        if not await _safe_ws_send_json(websocket, {"type": "ai_start"}, context="ai_start"):
+            return
+        if not await _safe_ws_send_json(websocket, {"type": "voice_status", "status": "thinking"}, context="voice_status thinking"):
+            return
 
         full_response = ""
         loop = asyncio.get_event_loop()
@@ -242,7 +266,7 @@ class AIState:
 
         def on_tts_queue_drained():
             async def send_idle():
-                await websocket.send_json({"type": "voice_status", "status": "idle"})
+                await _safe_ws_send_json(websocket, {"type": "voice_status", "status": "idle"}, context="voice_status idle (tts drained)")
             loop.call_soon_threadsafe(lambda: asyncio.ensure_future(send_idle()))
 
         try:
@@ -265,17 +289,20 @@ class AIState:
                 if not abort_event.is_set():
                     if len(self.voice_messages) > 11:
                         self.voice_messages = [self.voice_messages[0]] + self.voice_messages[-10:]
-                    await websocket.send_json({"type": "ai_delta", "text": display_text})
-                    await websocket.send_json({"type": "ai_final", "text": display_text})
-                    await websocket.send_json({"type": "voice_status", "status": "speaking"})
+                    if not await _safe_ws_send_json(websocket, {"type": "ai_delta", "text": display_text}, context="ai_delta tool path"):
+                        return
+                    if not await _safe_ws_send_json(websocket, {"type": "ai_final", "text": display_text}, context="ai_final tool path"):
+                        return
+                    if not await _safe_ws_send_json(websocket, {"type": "voice_status", "status": "speaking"}, context="voice_status speaking tool path"):
+                        return
                     to_speak = display_text
                     if to_speak:
                         queued = self.tts.enqueue_text(to_speak)
                         if queued == 0:
                             logger.warning("TTS skipped: no speakable content in tool response")
-                            await websocket.send_json({"type": "voice_status", "status": "idle"})
+                            await _safe_ws_send_json(websocket, {"type": "voice_status", "status": "idle"}, context="voice_status idle tool path")
                     else:
-                        await websocket.send_json({"type": "voice_status", "status": "idle"})
+                        await _safe_ws_send_json(websocket, {"type": "voice_status", "status": "idle"}, context="voice_status idle empty tool reply")
                 return
             # Qwen path: stream response and feed TTS sentence-by-sentence
             thinking = route == "qwen_thinking"
@@ -296,8 +323,8 @@ class AIState:
                 if abort_event.is_set():
                     self.tts.clear_queue()
                     self.tts.set_queue_drained_callback(None)
-                    await websocket.send_json({"type": "ai_aborted"})
-                    await websocket.send_json({"type": "voice_status", "status": "idle"})
+                    await _safe_ws_send_json(websocket, {"type": "ai_aborted"}, context="ai_aborted")
+                    await _safe_ws_send_json(websocket, {"type": "voice_status", "status": "idle"}, context="voice_status idle after abort")
                     return
 
                 if "choices" in chunk and len(chunk["choices"]) > 0:
@@ -307,7 +334,9 @@ class AIState:
                         full_response += content
                         if chunk_index % 20 == 1:
                             logger.debug("[voice] streamed chunk=%d response_len=%d", chunk_index, len(full_response))
-                        await websocket.send_json({"type": "ai_delta", "text": strip_think_for_ui(full_response)})
+                        if not await _safe_ws_send_json(websocket, {"type": "ai_delta", "text": strip_think_for_ui(full_response)}, context="ai_delta"):
+                            logger.info("Stopping voice generation due to closed websocket")
+                            return
 
                         # Flush complete sentences to TTS (only non-thinking content; strip unclosed <think> too)
                         clean_reply = strip_think_for_ui(full_response)
@@ -322,7 +351,8 @@ class AIState:
                                 queued = self.tts.enqueue_sentence(s)
                                 if queued and not speaking_status_sent:
                                     speaking_status_sent = True
-                                    await websocket.send_json({"type": "voice_status", "status": "speaking"})
+                                    if not await _safe_ws_send_json(websocket, {"type": "voice_status", "status": "speaking"}, context="voice_status speaking"):
+                                        return
 
                 await asyncio.sleep(0.01)
 
@@ -333,7 +363,8 @@ class AIState:
                     self.voice_messages = [self.voice_messages[0]] + self.voice_messages[-10:]
 
                 clean_reply = strip_think_for_ui(full_response)
-                await websocket.send_json({"type": "ai_final", "text": strip_think_for_ui(full_response)})
+                if not await _safe_ws_send_json(websocket, {"type": "ai_final", "text": strip_think_for_ui(full_response)}, context="ai_final"):
+                    return
 
                 # Flush any remaining text to TTS (last sentence or fragment)
                 if clean_reply and tts_flushed_len < len(clean_reply):
@@ -341,16 +372,17 @@ class AIState:
                     if remainder:
                         queued = self.tts.enqueue_sentence(remainder)
                         if queued and not speaking_status_sent:
-                            await websocket.send_json({"type": "voice_status", "status": "speaking"})
+                            if not await _safe_ws_send_json(websocket, {"type": "voice_status", "status": "speaking"}, context="voice_status speaking remainder"):
+                                return
                             speaking_status_sent = True
                 if not speaking_status_sent:
-                    await websocket.send_json({"type": "voice_status", "status": "idle"})
+                    await _safe_ws_send_json(websocket, {"type": "voice_status", "status": "idle"}, context="voice_status idle no speech")
                 # Otherwise "idle" is sent by on_tts_queue_drained when playback finishes
 
         except Exception as e:
             logger.exception("Error in AI response pipeline: %s", e)
-            await websocket.send_json({"type": "error", "message": str(e)})
-            await websocket.send_json({"type": "voice_status", "status": "idle"})
+            await _safe_ws_send_json(websocket, {"type": "error", "message": str(e)}, context="voice pipeline error")
+            await _safe_ws_send_json(websocket, {"type": "voice_status", "status": "idle"}, context="voice_status idle after pipeline error")
 
 # --- Router Initialization ---
 router = APIRouter()
@@ -523,8 +555,10 @@ async def voice_websocket(websocket: WebSocket):
                 await message_queue.put(data)
         except WebSocketDisconnect:
             logger.info("Voice websocket receive loop disconnected")
+            await message_queue.put({"type": "__disconnect__"})
         except Exception:
             logger.exception("Voice websocket receive loop failed")
+            await message_queue.put({"type": "__disconnect__"})
 
     receive_task = asyncio.create_task(receive_messages())
 
@@ -532,6 +566,10 @@ async def voice_websocket(websocket: WebSocket):
         while True:
             data = await message_queue.get()
             command = data.get("type")
+
+            if command == "__disconnect__":
+                break
+
             logger.debug("Voice Command Received: %s", command)
 
             if command == "start_vosk":
