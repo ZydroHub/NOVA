@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { HashRouter, Routes, Route, useLocation } from 'react-router-dom';
+import { HashRouter, Routes, Route, useLocation, useNavigate } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import Home from './components/Home';
 import ChatInterface from './components/ChatInterface';
@@ -32,6 +32,23 @@ function OverlayKeyboard() {
 const AnimatedRoutes = () => {
   const location = useLocation();
   const [swipeDirection, setSwipeDirection] = React.useState(0);
+  const [scrollStart, setScrollStart] = React.useState(0);
+  const navigate = useNavigate();
+
+  const routes = ['/', '/chat', '/music', '/news', '/weather', '/tasks', '/settings'];
+  const currentIndex = routes.indexOf(location.pathname);
+
+  const handleWheel = (e) => {
+    // Only horizontal scroll detection
+    if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) {
+      e.preventDefault();
+      if (e.deltaX > 50 && currentIndex < routes.length - 1) {
+        navigate(routes[currentIndex + 1]);
+      } else if (e.deltaX < -50 && currentIndex > 0) {
+        navigate(routes[currentIndex - 1]);
+      }
+    }
+  };
 
   return (
     <AnimatePresence mode="wait">
@@ -43,12 +60,19 @@ const AnimatedRoutes = () => {
         transition={{ type: 'spring', stiffness: 300, damping: 30 }}
         onDragEnd={(e, info) => {
           if (Math.abs(info.offset.x) > 50) {
-            setSwipeDirection(info.offset.x > 0 ? 1 : -1);
+            const direction = info.offset.x > 0 ? -1 : 1;
+            setSwipeDirection(direction);
+            const nextIndex = currentIndex + direction;
+            if (nextIndex >= 0 && nextIndex < routes.length) {
+              navigate(routes[nextIndex]);
+            }
           }
         }}
         drag="x"
         dragConstraints={{ left: 0, right: 0 }}
         dragElastic={0.2}
+        onWheel={handleWheel}
+        style={{ cursor: 'grab' }}
       >
         <Routes location={location}>
           <Route path="/" element={<Home />} />

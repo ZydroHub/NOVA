@@ -22628,7 +22628,7 @@ const createLucideIcon = (iconName, iconNode) => {
   Component.displayName = toPascalCase(iconName);
   return Component;
 };
-const __iconNode$u = [
+const __iconNode$r = [
   [
     "path",
     {
@@ -22637,20 +22637,20 @@ const __iconNode$u = [
     }
   ]
 ];
-const Activity = createLucideIcon("activity", __iconNode$u);
-const __iconNode$t = [
+const Activity = createLucideIcon("activity", __iconNode$r);
+const __iconNode$q = [
   ["path", { d: "m12 19-7-7 7-7", key: "1l729n" }],
   ["path", { d: "M19 12H5", key: "x3x0zl" }]
 ];
-const ArrowLeft = createLucideIcon("arrow-left", __iconNode$t);
-const __iconNode$s = [["path", { d: "M20 6 9 17l-5-5", key: "1gmf2c" }]];
-const Check = createLucideIcon("check", __iconNode$s);
-const __iconNode$r = [
+const ArrowLeft = createLucideIcon("arrow-left", __iconNode$q);
+const __iconNode$p = [["path", { d: "M20 6 9 17l-5-5", key: "1gmf2c" }]];
+const Check = createLucideIcon("check", __iconNode$p);
+const __iconNode$o = [
   ["path", { d: "M12 6v6l4 2", key: "mmk7yg" }],
   ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }]
 ];
-const Clock = createLucideIcon("clock", __iconNode$r);
-const __iconNode$q = [
+const Clock = createLucideIcon("clock", __iconNode$o);
+const __iconNode$n = [
   ["path", { d: "M12 2v2", key: "tus03m" }],
   ["path", { d: "m4.93 4.93 1.41 1.41", key: "149t6j" }],
   ["path", { d: "M20 12h2", key: "1q8mjw" }],
@@ -22658,31 +22658,14 @@ const __iconNode$q = [
   ["path", { d: "M15.947 12.65a4 4 0 0 0-5.925-4.128", key: "dpwdj0" }],
   ["path", { d: "M13 22H7a5 5 0 1 1 4.9-6H13a3 3 0 0 1 0 6Z", key: "s09mg5" }]
 ];
-const CloudSun = createLucideIcon("cloud-sun", __iconNode$q);
-const __iconNode$p = [
-  [
-    "path",
-    {
-      d: "M7 16.3c2.2 0 4-1.83 4-4.05 0-1.16-.57-2.26-1.71-3.19S7.29 6.75 7 5.3c-.29 1.45-1.14 2.84-2.29 3.76S3 11.1 3 12.25c0 2.22 1.8 4.05 4 4.05z",
-      key: "1ptgy4"
-    }
-  ],
-  [
-    "path",
-    {
-      d: "M12.56 6.6A10.97 10.97 0 0 0 14 3.02c.5 2.5 2 4.9 4 6.5s3 3.5 3 5.5a6.98 6.98 0 0 1-11.91 4.97",
-      key: "1sl1rz"
-    }
-  ]
-];
-const Droplets = createLucideIcon("droplets", __iconNode$p);
-const __iconNode$o = [
+const CloudSun = createLucideIcon("cloud-sun", __iconNode$n);
+const __iconNode$m = [
   ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }],
   ["path", { d: "M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20", key: "13o1zl" }],
   ["path", { d: "M2 12h20", key: "9i4pu4" }]
 ];
-const Globe = createLucideIcon("globe", __iconNode$o);
-const __iconNode$n = [
+const Globe = createLucideIcon("globe", __iconNode$m);
+const __iconNode$l = [
   ["path", { d: "M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8", key: "5wwlr5" }],
   [
     "path",
@@ -22692,8 +22675,8 @@ const __iconNode$n = [
     }
   ]
 ];
-const House = createLucideIcon("house", __iconNode$n);
-const __iconNode$m = [
+const House = createLucideIcon("house", __iconNode$l);
+const __iconNode$k = [
   ["path", { d: "M10 8h.01", key: "1r9ogq" }],
   ["path", { d: "M12 12h.01", key: "1mp3jc" }],
   ["path", { d: "M14 8h.01", key: "1primd" }],
@@ -22704,14 +22687,14 @@ const __iconNode$m = [
   ["path", { d: "M8 12h.01", key: "czm47f" }],
   ["rect", { width: "20", height: "16", x: "2", y: "4", rx: "2", key: "18n3k1" }]
 ];
-const Keyboard = createLucideIcon("keyboard", __iconNode$m);
-const __iconNode$l = [
+const Keyboard = createLucideIcon("keyboard", __iconNode$k);
+const __iconNode$j = [
   ["path", { d: "M4 5h16", key: "1tepv9" }],
   ["path", { d: "M4 12h16", key: "1lakjw" }],
   ["path", { d: "M4 19h16", key: "1djgab" }]
 ];
-const Menu = createLucideIcon("menu", __iconNode$l);
-const __iconNode$k = [
+const Menu = createLucideIcon("menu", __iconNode$j);
+const __iconNode$i = [
   [
     "path",
     {
@@ -22720,8 +22703,8 @@ const __iconNode$k = [
     }
   ]
 ];
-const MessageCircle = createLucideIcon("message-circle", __iconNode$k);
-const __iconNode$j = [
+const MessageCircle = createLucideIcon("message-circle", __iconNode$i);
+const __iconNode$h = [
   [
     "path",
     {
@@ -22730,19 +22713,19 @@ const __iconNode$j = [
     }
   ]
 ];
-const MessageSquare = createLucideIcon("message-square", __iconNode$j);
-const __iconNode$i = [
+const MessageSquare = createLucideIcon("message-square", __iconNode$h);
+const __iconNode$g = [
   ["path", { d: "M12 19v3", key: "npa21l" }],
   ["path", { d: "M19 10v2a7 7 0 0 1-14 0v-2", key: "1vc78b" }],
   ["rect", { x: "9", y: "2", width: "6", height: "13", rx: "3", key: "s6n7sd" }]
 ];
-const Mic = createLucideIcon("mic", __iconNode$i);
-const __iconNode$h = [
+const Mic = createLucideIcon("mic", __iconNode$g);
+const __iconNode$f = [
   ["circle", { cx: "8", cy: "18", r: "4", key: "1fc0mg" }],
   ["path", { d: "M12 18V2l7 4", key: "g04rme" }]
 ];
-const Music2 = createLucideIcon("music-2", __iconNode$h);
-const __iconNode$g = [
+const Music2 = createLucideIcon("music-2", __iconNode$f);
+const __iconNode$e = [
   ["path", { d: "M15 18h-5", key: "95g1m2" }],
   ["path", { d: "M18 14h-8", key: "sponae" }],
   [
@@ -22754,13 +22737,13 @@ const __iconNode$g = [
   ],
   ["rect", { width: "8", height: "4", x: "10", y: "6", rx: "1", key: "aywv1n" }]
 ];
-const Newspaper = createLucideIcon("newspaper", __iconNode$g);
-const __iconNode$f = [
+const Newspaper = createLucideIcon("newspaper", __iconNode$e);
+const __iconNode$d = [
   ["rect", { x: "14", y: "3", width: "5", height: "18", rx: "1", key: "kaeet6" }],
   ["rect", { x: "5", y: "3", width: "5", height: "18", rx: "1", key: "1wsw3u" }]
 ];
-const Pause = createLucideIcon("pause", __iconNode$f);
-const __iconNode$e = [
+const Pause = createLucideIcon("pause", __iconNode$d);
+const __iconNode$c = [
   [
     "path",
     {
@@ -22770,8 +22753,8 @@ const __iconNode$e = [
   ],
   ["path", { d: "m15 5 4 4", key: "1mk7zo" }]
 ];
-const Pencil = createLucideIcon("pencil", __iconNode$e);
-const __iconNode$d = [
+const Pencil = createLucideIcon("pencil", __iconNode$c);
+const __iconNode$b = [
   [
     "path",
     {
@@ -22780,25 +22763,25 @@ const __iconNode$d = [
     }
   ]
 ];
-const Play = createLucideIcon("play", __iconNode$d);
-const __iconNode$c = [
+const Play = createLucideIcon("play", __iconNode$b);
+const __iconNode$a = [
   ["path", { d: "M5 12h14", key: "1ays0h" }],
   ["path", { d: "M12 5v14", key: "s699le" }]
 ];
-const Plus = createLucideIcon("plus", __iconNode$c);
-const __iconNode$b = [
+const Plus = createLucideIcon("plus", __iconNode$a);
+const __iconNode$9 = [
   ["path", { d: "M12 2v10", key: "mnfbl" }],
   ["path", { d: "M18.4 6.6a9 9 0 1 1-12.77.04", key: "obofu9" }]
 ];
-const Power = createLucideIcon("power", __iconNode$b);
-const __iconNode$a = [
+const Power = createLucideIcon("power", __iconNode$9);
+const __iconNode$8 = [
   ["path", { d: "m17 2 4 4-4 4", key: "nntrym" }],
   ["path", { d: "M3 11v-1a4 4 0 0 1 4-4h14", key: "84bu3i" }],
   ["path", { d: "m7 22-4-4 4-4", key: "1wqhfi" }],
   ["path", { d: "M21 13v1a4 4 0 0 1-4 4H3", key: "1rx37r" }]
 ];
-const Repeat = createLucideIcon("repeat", __iconNode$a);
-const __iconNode$9 = [
+const Repeat = createLucideIcon("repeat", __iconNode$8);
+const __iconNode$7 = [
   [
     "path",
     {
@@ -22809,16 +22792,16 @@ const __iconNode$9 = [
   ["path", { d: "M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7", key: "1ydtos" }],
   ["path", { d: "M7 3v4a1 1 0 0 0 1 1h7", key: "t51u73" }]
 ];
-const Save = createLucideIcon("save", __iconNode$9);
-const __iconNode$8 = [
+const Save = createLucideIcon("save", __iconNode$7);
+const __iconNode$6 = [
   ["path", { d: "m18 14 4 4-4 4", key: "10pe0f" }],
   ["path", { d: "m18 2 4 4-4 4", key: "pucp1d" }],
   ["path", { d: "M2 18h1.973a4 4 0 0 0 3.3-1.7l5.454-8.6a4 4 0 0 1 3.3-1.7H22", key: "1ailkh" }],
   ["path", { d: "M2 6h1.972a4 4 0 0 1 3.6 2.2", key: "km57vx" }],
   ["path", { d: "M22 18h-6.041a4 4 0 0 1-3.3-1.8l-.359-.45", key: "os18l9" }]
 ];
-const Shuffle = createLucideIcon("shuffle", __iconNode$8);
-const __iconNode$7 = [
+const Shuffle = createLucideIcon("shuffle", __iconNode$6);
+const __iconNode$5 = [
   [
     "path",
     {
@@ -22828,8 +22811,8 @@ const __iconNode$7 = [
   ],
   ["path", { d: "M3 20V4", key: "1ptbpl" }]
 ];
-const SkipBack = createLucideIcon("skip-back", __iconNode$7);
-const __iconNode$6 = [
+const SkipBack = createLucideIcon("skip-back", __iconNode$5);
+const __iconNode$4 = [
   ["path", { d: "M21 4v16", key: "7j8fe9" }],
   [
     "path",
@@ -22839,37 +22822,19 @@ const __iconNode$6 = [
     }
   ]
 ];
-const SkipForward = createLucideIcon("skip-forward", __iconNode$6);
-const __iconNode$5 = [
-  ["circle", { cx: "12", cy: "12", r: "4", key: "4exip2" }],
-  ["path", { d: "M12 2v2", key: "tus03m" }],
-  ["path", { d: "M12 20v2", key: "1lh1kg" }],
-  ["path", { d: "m4.93 4.93 1.41 1.41", key: "149t6j" }],
-  ["path", { d: "m17.66 17.66 1.41 1.41", key: "ptbguv" }],
-  ["path", { d: "M2 12h2", key: "1t8f8n" }],
-  ["path", { d: "M20 12h2", key: "1q8mjw" }],
-  ["path", { d: "m6.34 17.66-1.41 1.41", key: "1m8zz5" }],
-  ["path", { d: "m19.07 4.93-1.41 1.41", key: "1shlcs" }]
-];
-const Sun = createLucideIcon("sun", __iconNode$5);
-const __iconNode$4 = [
+const SkipForward = createLucideIcon("skip-forward", __iconNode$4);
+const __iconNode$3 = [
   ["path", { d: "M14 4v10.54a4 4 0 1 1-4 0V4a2 2 0 0 1 4 0Z", key: "17jzev" }]
 ];
-const Thermometer = createLucideIcon("thermometer", __iconNode$4);
-const __iconNode$3 = [
+const Thermometer = createLucideIcon("thermometer", __iconNode$3);
+const __iconNode$2 = [
   ["path", { d: "M10 11v6", key: "nco0om" }],
   ["path", { d: "M14 11v6", key: "outv1u" }],
   ["path", { d: "M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6", key: "miytrc" }],
   ["path", { d: "M3 6h18", key: "d0wm0j" }],
   ["path", { d: "M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2", key: "e791ji" }]
 ];
-const Trash2 = createLucideIcon("trash-2", __iconNode$3);
-const __iconNode$2 = [
-  ["path", { d: "M12.8 19.6A2 2 0 1 0 14 16H2", key: "148xed" }],
-  ["path", { d: "M17.5 8a2.5 2.5 0 1 1 2 4H2", key: "1u4tom" }],
-  ["path", { d: "M9.8 4.4A2 2 0 1 1 11 8H2", key: "75valh" }]
-];
-const Wind = createLucideIcon("wind", __iconNode$2);
+const Trash2 = createLucideIcon("trash-2", __iconNode$2);
 const __iconNode$1 = [
   ["path", { d: "M18 6 6 18", key: "1bl5f8" }],
   ["path", { d: "m6 6 12 12", key: "d8bk6v" }]
@@ -23337,14 +23302,19 @@ function Home() {
   const forecastDays = weather?.daily?.time || [];
   const forecastTempsMax = weather?.daily?.temperature_2m_max || [];
   const forecastTempsMin = weather?.daily?.temperature_2m_min || [];
-  const getWeatherEmoji = (code2) => {
-    if (code2 === 0 || code2 === 1) return "☀️";
-    if (code2 === 2 || code2 === 3) return "⛅";
+  const getWeatherEmoji = reactExports.useCallback((code2) => {
+    if (code2 === 0) return "☀️";
+    if (code2 === 1 || code2 === 2) return "🌤️";
+    if (code2 === 3) return "☁️";
     if (code2 === 45 || code2 === 48) return "🌫️";
-    if (code2 >= 51 && code2 <= 67) return "🌧️";
+    if (code2 >= 51 && code2 <= 55) return "🌧️";
+    if (code2 >= 61 && code2 <= 67) return "🌧️";
+    if (code2 >= 71 && code2 <= 77) return "❄️";
+    if (code2 >= 80 && code2 <= 82) return "⛈️";
+    if (code2 >= 85 && code2 <= 86) return "❄️";
     return "🌤️";
-  };
-  const onWakePc = async () => {
+  }, []);
+  const onWakePc = reactExports.useCallback(async () => {
     setWakeState("loading");
     try {
       const result = await apiFetch("/actions/wake-pc", { method: "POST" });
@@ -23354,14 +23324,14 @@ function Home() {
       setWakeState("error");
     }
     setTimeout(() => setWakeState("idle"), 2500);
-  };
-  const onNovaClick = () => {
+  }, []);
+  const onNovaClick = reactExports.useCallback(() => {
     toggleVoice();
-  };
+  }, [toggleVoice]);
   return /* @__PURE__ */ jsxRuntimeExports.jsxs(
     motion.div,
     {
-      className: "nova-home",
+      className: "nova-home touch-scroll-y",
       initial: { opacity: 0, y: 20 },
       animate: { opacity: 1, y: 0 },
       transition: { duration: 0.5, ease: "easeOut" },
@@ -23384,65 +23354,59 @@ function Home() {
                 ] })
               ] }),
               /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "weather-card", children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "weather-current", children: [
-                  /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "weather-temp", children: [
-                    currentTemp !== "-" ? Math.round(currentTemp) : "-",
-                    "°"
-                  ] }),
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "weather-condition", children: "Stockholm, Sweden" })
-                ] }),
-                /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "weather-hourly", children: [
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "weather-hourly-title", children: "HOURLY" }),
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "weather-hourly-grid", children: forecastDays.length > 0 ? forecastDays.slice(0, 6).map((day, idx) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "weather-hour", children: [
-                    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-xs", children: [
-                      "+",
-                      idx * 4,
-                      "h"
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "weather-main-container", children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "weather-left", children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "weather-location", children: "Stockholm" }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "weather-rain-chance", children: [
+                      "Chance of rain: ",
+                      forecastDays.length > 0 ? weather?.daily?.precipitation_probability_max?.[0] ?? 0 : "-",
+                      "%"
                     ] }),
-                    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { style: { fontSize: "1.1rem" }, children: getWeatherEmoji(currentWeatherCode) }),
-                    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "font-semibold", children: [
-                      forecastTempsMax[idx] ? Math.round(forecastTempsMax[idx]) : "-",
+                    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "weather-temp-huge", children: [
+                      currentTemp !== "-" ? Math.round(currentTemp) : "-",
                       "°"
                     ] })
-                  ] }, `${day}-${idx}`)) : /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "opacity-50 text-xs col-span-6", children: "Loading..." }) })
+                  ] }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "weather-hourly-section", children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "weather-hourly-title", children: "TODAY'S FORECAST" }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "weather-hourly-grid", children: forecastDays.length > 0 ? forecastDays.slice(0, 6).map((day, idx) => {
+                      const hourDisplay = `${String(idx * 4).padStart(2, "0")}:00`;
+                      return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "weather-hour-col", children: [
+                        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "hour-time", children: hourDisplay }),
+                        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "hour-emoji", children: getWeatherEmoji(currentWeatherCode) }),
+                        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "hour-temp", children: [
+                          forecastTempsMax[idx] ? Math.round(forecastTempsMax[idx]) : "-",
+                          "°"
+                        ] })
+                      ] }, `${day}-${idx}`);
+                    }) : /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "opacity-50 text-xs col-span-6", children: "Loading..." }) })
+                  ] })
                 ] }),
-                /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "weather-conditions", children: [
-                  /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "weather-condition-row", children: [
-                    /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-xs opacity-70 flex items-center gap-1", children: [
-                      /* @__PURE__ */ jsxRuntimeExports.jsx(Droplets, { size: 11 }),
-                      " Feels"
-                    ] }),
-                    /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "font-semibold", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "air-conditions-grid", children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "air-condition-item", children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "condition-label", children: "Real Feel" }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "condition-value", children: [
                       weather?.current?.apparent_temperature ? Math.round(weather.current.apparent_temperature) : "-",
                       "°"
                     ] })
                   ] }),
-                  /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "weather-condition-row", children: [
-                    /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-xs opacity-70 flex items-center gap-1", children: [
-                      /* @__PURE__ */ jsxRuntimeExports.jsx(Droplets, { size: 11 }),
-                      " Humidity"
-                    ] }),
-                    /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "font-semibold", children: [
-                      weather?.current?.relative_humidity_2m ?? "-",
-                      "%"
-                    ] })
-                  ] }),
-                  /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "weather-condition-row", children: [
-                    /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-xs opacity-70 flex items-center gap-1", children: [
-                      /* @__PURE__ */ jsxRuntimeExports.jsx(Wind, { size: 11 }),
-                      " Wind"
-                    ] }),
-                    /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "font-semibold", children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "air-condition-item", children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "condition-label", children: "Wind" }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "condition-value", children: [
                       weather?.current?.wind_speed_10m ? Math.round(weather.current.wind_speed_10m) : "-",
                       " km/h"
                     ] })
                   ] }),
-                  /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "weather-condition-row", children: [
-                    /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-xs opacity-70 flex items-center gap-1", children: [
-                      /* @__PURE__ */ jsxRuntimeExports.jsx(Sun, { size: 11 }),
-                      " UV"
-                    ] }),
-                    /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-semibold", children: weather?.current?.uv_index ? Math.round(weather.current.uv_index * 10) / 10 : "-" })
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "air-condition-item", children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "condition-label", children: "Humidity" }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "condition-value", children: [
+                      weather?.current?.relative_humidity_2m ?? "-",
+                      "%"
+                    ] })
+                  ] }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "air-condition-item", children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "condition-label", children: "UV Index" }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "condition-value", children: weather?.current?.uv_index ? Math.round(weather.current.uv_index * 10) / 10 : "-" })
                   ] })
                 ] })
               ] })
@@ -38359,6 +38323,20 @@ function OverlayKeyboard() {
 const AnimatedRoutes = () => {
   const location = useLocation();
   const [swipeDirection, setSwipeDirection] = React.useState(0);
+  const [scrollStart, setScrollStart] = React.useState(0);
+  const navigate = useNavigate();
+  const routes = ["/", "/chat", "/music", "/news", "/weather", "/tasks", "/settings"];
+  const currentIndex = routes.indexOf(location.pathname);
+  const handleWheel = (e) => {
+    if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) {
+      e.preventDefault();
+      if (e.deltaX > 50 && currentIndex < routes.length - 1) {
+        navigate(routes[currentIndex + 1]);
+      } else if (e.deltaX < -50 && currentIndex > 0) {
+        navigate(routes[currentIndex - 1]);
+      }
+    }
+  };
   return /* @__PURE__ */ jsxRuntimeExports.jsx(AnimatePresence, { mode: "wait", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
     motion.div,
     {
@@ -38368,12 +38346,19 @@ const AnimatedRoutes = () => {
       transition: { type: "spring", stiffness: 300, damping: 30 },
       onDragEnd: (e, info) => {
         if (Math.abs(info.offset.x) > 50) {
-          setSwipeDirection(info.offset.x > 0 ? 1 : -1);
+          const direction = info.offset.x > 0 ? -1 : 1;
+          setSwipeDirection(direction);
+          const nextIndex = currentIndex + direction;
+          if (nextIndex >= 0 && nextIndex < routes.length) {
+            navigate(routes[nextIndex]);
+          }
         }
       },
       drag: "x",
       dragConstraints: { left: 0, right: 0 },
       dragElastic: 0.2,
+      onWheel: handleWheel,
+      style: { cursor: "grab" },
       children: /* @__PURE__ */ jsxRuntimeExports.jsxs(Routes, { location, children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx(Route, { path: "/", element: /* @__PURE__ */ jsxRuntimeExports.jsx(Home, {}) }),
         /* @__PURE__ */ jsxRuntimeExports.jsx(Route, { path: "/chat", element: /* @__PURE__ */ jsxRuntimeExports.jsx(ChatInterface, {}) }),

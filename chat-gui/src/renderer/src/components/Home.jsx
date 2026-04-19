@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { SkipBack, Play, Pause, SkipForward, House, Power, Wind, Droplets, Sun, Eye } from 'lucide-react';
 import { useWebSocket } from '../contexts/WebSocketContext.jsx';
@@ -40,15 +40,20 @@ export default function Home() {
     const forecastTempsMax = weather?.daily?.temperature_2m_max || [];
     const forecastTempsMin = weather?.daily?.temperature_2m_min || [];
 
-    const getWeatherEmoji = (code) => {
-        if (code === 0 || code === 1) return '☀️';
-        if (code === 2 || code === 3) return '⛅';
-        if (code === 45 || code === 48) return '🌫️';
-        if (code >= 51 && code <= 67) return '🌧️';
+    const getWeatherEmoji = useCallback((code) => {
+        if (code === 0) return '☀️';     // Clear
+        if (code === 1 || code === 2) return '🌤️';  // Mostly clear/Partly cloudy
+        if (code === 3) return '☁️';     // Overcast
+        if (code === 45 || code === 48) return '🌫️';  // Foggy
+        if (code >= 51 && code <= 55) return '🌧️';  // Drizzle
+        if (code >= 61 && code <= 67) return '🌧️';  // Rain
+        if (code >= 71 && code <= 77) return '❄️';   // Snow
+        if (code >= 80 && code <= 82) return '⛈️';   // Rain showers
+        if (code >= 85 && code <= 86) return '❄️';   // Snow showers
         return '🌤️';
-    };
+    }, []);
 
-    const onWakePc = async () => {
+    const onWakePc = useCallback(async () => {
         setWakeState('loading');
         try {
             const result = await apiFetch('/actions/wake-pc', { method: 'POST' });
@@ -58,16 +63,15 @@ export default function Home() {
             setWakeState('error');
         }
         setTimeout(() => setWakeState('idle'), 2500);
-    };
+    }, []);
 
-    const onNovaClick = () => {
-        // Trigger voice toggle when orb is clicked
+    const onNovaClick = useCallback(() => {
         toggleVoice();
-    };
+    }, [toggleVoice]);
 
     return (
         <motion.div 
-            className="nova-home"
+            className="nova-home touch-scroll-y"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, ease: 'easeOut' }}
@@ -93,38 +97,46 @@ export default function Home() {
 
                 {/* Weather Card */}
                 <section className="weather-card">
-                    <div className="weather-current">
-                        <div className="weather-temp">{currentTemp !== '-' ? Math.round(currentTemp) : '-'}°</div>
-                        <div className="weather-condition">Stockholm, Sweden</div>
-                    </div>
-                    <div className="weather-hourly">
-                        <div className="weather-hourly-title">HOURLY</div>
-                        <div className="weather-hourly-grid">
-                            {forecastDays.length > 0 ? forecastDays.slice(0, 6).map((day, idx) => (
-                                <div key={`${day}-${idx}`} className="weather-hour">
-                                    <div className="text-xs">+{idx * 4}h</div>
-                                    <div style={{fontSize: '1.1rem'}}>{getWeatherEmoji(currentWeatherCode)}</div>
-                                    <div className="font-semibold">{forecastTempsMax[idx] ? Math.round(forecastTempsMax[idx]) : '-'}°</div>
-                                </div>
-                            )) : <div className="opacity-50 text-xs col-span-6">Loading...</div>}
+                    <div className="weather-main-container">
+                        <div className="weather-left">
+                            <div className="weather-location">Stockholm</div>
+                            <div className="weather-rain-chance">Chance of rain: {forecastDays.length > 0 ? (weather?.daily?.precipitation_probability_max?.[0] ?? 0) : '-'}%</div>
+                            <div className="weather-temp-huge">{currentTemp !== '-' ? Math.round(currentTemp) : '-'}°</div>
+                        </div>
+
+                        <div className="weather-hourly-section">
+                            <div className="weather-hourly-title">TODAY'S FORECAST</div>
+                            <div className="weather-hourly-grid">
+                                {forecastDays.length > 0 ? forecastDays.slice(0, 6).map((day, idx) => {
+                                    const hourDisplay = `${String(idx * 4).padStart(2, '0')}:00`;
+                                    return (
+                                        <div key={`${day}-${idx}`} className="weather-hour-col">
+                                            <div className="hour-time">{hourDisplay}</div>
+                                            <div className="hour-emoji">{getWeatherEmoji(currentWeatherCode)}</div>
+                                            <div className="hour-temp">{forecastTempsMax[idx] ? Math.round(forecastTempsMax[idx]) : '-'}°</div>
+                                        </div>
+                                    );
+                                }) : <div className="opacity-50 text-xs col-span-6">Loading...</div>}
+                            </div>
                         </div>
                     </div>
-                    <div className="weather-conditions">
-                        <div className="weather-condition-row">
-                            <span className="text-xs opacity-70 flex items-center gap-1"><Droplets size={11} /> Feels</span>
-                            <span className="font-semibold">{weather?.current?.apparent_temperature ? Math.round(weather.current.apparent_temperature) : '-'}°</span>
+
+                    <div className="air-conditions-grid">
+                        <div className="air-condition-item">
+                            <div className="condition-label">Real Feel</div>
+                            <div className="condition-value">{weather?.current?.apparent_temperature ? Math.round(weather.current.apparent_temperature) : '-'}°</div>
                         </div>
-                        <div className="weather-condition-row">
-                            <span className="text-xs opacity-70 flex items-center gap-1"><Droplets size={11} /> Humidity</span>
-                            <span className="font-semibold">{weather?.current?.relative_humidity_2m ?? '-'}%</span>
+                        <div className="air-condition-item">
+                            <div className="condition-label">Wind</div>
+                            <div className="condition-value">{weather?.current?.wind_speed_10m ? Math.round(weather.current.wind_speed_10m) : '-'} km/h</div>
                         </div>
-                        <div className="weather-condition-row">
-                            <span className="text-xs opacity-70 flex items-center gap-1"><Wind size={11} /> Wind</span>
-                            <span className="font-semibold">{weather?.current?.wind_speed_10m ? Math.round(weather.current.wind_speed_10m) : '-'} km/h</span>
+                        <div className="air-condition-item">
+                            <div className="condition-label">Humidity</div>
+                            <div className="condition-value">{weather?.current?.relative_humidity_2m ?? '-'}%</div>
                         </div>
-                        <div className="weather-condition-row">
-                            <span className="text-xs opacity-70 flex items-center gap-1"><Sun size={11} /> UV</span>
-                            <span className="font-semibold">{weather?.current?.uv_index ? Math.round(weather.current.uv_index * 10) / 10 : '-'}</span>
+                        <div className="air-condition-item">
+                            <div className="condition-label">UV Index</div>
+                            <div className="condition-value">{weather?.current?.uv_index ? Math.round(weather.current.uv_index * 10) / 10 : '-'}</div>
                         </div>
                     </div>
                 </section>

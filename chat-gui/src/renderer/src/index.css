@@ -162,6 +162,14 @@
   background: transparent;
 }
 
+/* Disable text selection globally */
+body, html, #root {
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
 /* Thin scrollbar for 4.3" touch screens (used with scroller-pixel class) */
 .scroller-pixel {
   scrollbar-width: thin;
@@ -492,7 +500,8 @@
   flex-direction: row;
   gap: 12px;
   padding: 12px;
-  overflow: hidden;
+  overflow-x: hidden;
+   overflow-y: auto;
   background: transparent;
 }
 
@@ -533,61 +542,94 @@
   display: flex;
   flex-direction: column;
   gap: 12px;
-  flex: 1;
+   gap: 16px;
   min-height: 0;
 }
+  .weather-main-container {
+    display: grid;
+    grid-template-columns: 0.8fr 1.2fr;
+    gap: 16px;
+    align-items: center;
+    border-bottom: 1px solid rgba(120, 214, 255, 0.15);
+    padding-bottom: 16px;
+  }
 
-.weather-current {
-  text-align: center;
-}
+  .weather-left {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
 
-.weather-temp {
-  font-size: 3.2rem;
-  font-weight: 900;
-  color: #1ad1ff;
-  line-height: 1;
-}
+  .weather-location {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #ffffff;
+  }
 
-.weather-condition {
-  font-size: 0.9rem;
-  color: rgba(208, 239, 255, 0.75);
-}
+  .weather-rain-chance {
+    font-size: 0.75rem;
+    color: rgba(208, 239, 255, 0.7);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
 
-.weather-hourly-title {
-  font-size: 0.7rem;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: rgba(182, 229, 255, 0.7);
-  margin-bottom: 6px;
-}
+  .weather-temp-huge {
+    font-size: 3.5rem;
+    font-weight: 900;
+    color: #1ad1ff;
+    line-height: 1;
+  }
 
-.weather-hourly-grid {
-  display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  gap: 4px;
-}
+  .weather-hour-col {
+    background: rgba(14, 33, 68, 0.6);
+    border: 1px solid rgba(120, 214, 255, 0.15);
+    border-radius: 10px;
+    padding: 8px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
 
-.weather-hour {
-  background: rgba(14, 33, 68, 0.5);
-  border-radius: 10px;
-  padding: 6px;
-  text-align: center;
-  font-size: 0.75rem;
-}
+  .hour-time {
+    font-size: 0.65rem;
+    color: rgba(182, 229, 255, 0.8);
+    font-weight: 600;
+  }
 
-.weather-conditions {
-  border-top: 1px solid rgba(120, 214, 255, 0.2);
-  padding-top: 8px;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
-  font-size: 0.85rem;
-}
+  .hour-emoji {
+    font-size: 2rem;
+    min-height: 2rem;
+  }
 
-.weather-condition-row {
-  display: flex;
-  justify-content: space-between;
-}
+  .air-conditions-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    padding: 12px;
+    background: rgba(14, 33, 68, 0.4);
+    border-radius: 12px;
+  }
+
+  .air-condition-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    text-align: center;
+  }
+
+  .condition-label {
+    font-size: 0.7rem;
+    color: rgba(182, 229, 255, 0.7);
+    text-transform: uppercase;
+  }
+
+  .condition-value {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #ffffff;
+  }
+
 
 .nova-home-right {
   flex: 1;
