@@ -340,7 +340,17 @@ async def weather_open_meteo(latitude: float = 59.3293, longitude: float = 18.06
 async def swedish_alerts(limit: int = 12):
     """Aggregate Sweden-focused alerts/news from official APIs."""
     items: list[dict] = []
-    errors: list[str] = []
+    source_errors: list[str] = []
+
+    def _as_items(payload: object, keys: list[str]) -> list[dict]:
+        if isinstance(payload, list):
+            return [x for x in payload if isinstance(x, dict)]
+        if isinstance(payload, dict):
+            for key in keys:
+                value = payload.get(key)
+                if isinstance(value, list):
+                    return [x for x in value if isinstance(x, dict)]
+        return []
 
     # 1) Polisen events API (JSON) - https://polisen.se/om-polisen/om-webbplatsen/oppna-data/api-over-polisens-handelser/
     try:
@@ -358,45 +368,62 @@ async def swedish_alerts(limit: int = 12):
         logger.debug("Polisen: fetched %d items", len(polisen_data or []))
     except Exception as exc:
         error_msg = str(exc)[:40]
-        logger.warning("Polisen API failed: %s", error_msg)
-        errors.append(f"Polisen: {error_msg}")
+        source_errors.append(f"Polisen: {error_msg}")
 
-    # 2) Krisinformation API - https://api.krisinformation.se/
+    # 2) Krisinformation API v3 (v4 is not available)
     try:
-        krisis_data = _fetch_json("https://api.krisinformation.se/v4/events?severity=WARNING,ALERT")
-        for entry in (krisis_data.get("events") or [])[:limit]:
+        # Combine VMAs (critical alerts) with news headlines.
+        krisis_vmas = _fetch_json("https://api.krisinformation.se/v3/vmas?language=sv")
+        krisis_news = _fetch_json(f"https://api.krisinformation.se/v3/news?language=sv&numberOfNewsArticles={max(limit, 10)}")
+
+        vma_items = _as_items(krisis_vmas, ["vmas", "items", "data"])
+        news_items = _as_items(krisis_news, ["news", "items", "data"])
+
+        for entry in vma_items[:limit]:
+            items.append(
+                {
+                    "source": "Krisinformation VMA",
+                    "title": (entry.get("Headline") or entry.get("headline") or entry.get("title") or "VMA").strip()[:100],
+                    "url": entry.get("Link") or entry.get("link") or "https://krisinformation.se/",
+                    "published": entry.get("Published") or entry.get("published") or entry.get("Updated") or "",
+                    "location": entry.get("Area") or entry.get("area") or "",
+                }
+            )
+
+        for entry in news_items[:limit]:
             items.append(
                 {
                     "source": "Krisinformation",
-                    "title": (entry.get("headline") or entry.get("title") or "Alert").strip()[:80],
-                    "url": "https://krisinformation.se/",
-                    "published": entry.get("updated") or entry.get("created") or "",
+                    "title": (entry.get("Headline") or entry.get("headline") or entry.get("Title") or entry.get("title") or "Alert").strip()[:100],
+                    "url": entry.get("Link") or entry.get("link") or "https://krisinformation.se/",
+                    "published": entry.get("Published") or entry.get("published") or entry.get("Updated") or entry.get("updated") or "",
+                    "location": entry.get("Area") or entry.get("area") or "",
                 }
             )
-        logger.debug("Krisinformation: fetched %d items", len(krisis_data.get("events") or []))
+        logger.debug("Krisinformation: fetched %d VMAs and %d news items", len(vma_items), len(news_items))
     except Exception as exc:
         error_msg = str(exc)[:40]
-        logger.warning("Krisinformation API failed: %s", error_msg)
-        errors.append(f"Krisinformation: {error_msg}")
+        source_errors.append(f"Krisinformation: {error_msg}")
 
-    # 3) SOS Alarm API via henrikhjelm.se proxy - https://henrikhjelm.se/api/sos/
+    # 3) SOS Alarm proxy changed API structure in 2025 and root no longer returns JSON feed entries.
+    # Keep this source optional; do not spam warning logs on each polling request.
     try:
         sos_data = _fetch_json("https://henrikhjelm.se/api/sos/")
-        if isinstance(sos_data, list):
-            for entry in sos_data[:limit]:
-                items.append(
-                    {
-                        "source": "SOS Alarm",
-                        "title": (entry.get("headline") or entry.get("title") or "SOS Event").strip()[:80],
-                        "url": "https://www.sosalarm.se/",
-                        "published": entry.get("timestamp") or entry.get("updated") or "",
-                    }
-                )
-        logger.debug("SOS Alarm: fetched %d items", len(sos_data) if isinstance(sos_data, list) else 0)
+        sos_items = _as_items(sos_data, ["items", "data", "results"])
+        for entry in sos_items[:limit]:
+            items.append(
+                {
+                    "source": "SOS Alarm",
+                    "title": (entry.get("headline") or entry.get("title") or "SOS Event").strip()[:100],
+                    "url": entry.get("url") or "https://www.sosalarm.se/",
+                    "published": entry.get("timestamp") or entry.get("updated") or entry.get("published") or "",
+                    "location": entry.get("location") or "",
+                }
+            )
+        logger.debug("SOS Alarm: fetched %d items", len(sos_items))
     except Exception as exc:
         error_msg = str(exc)[:40]
-        logger.warning("SOS Alarm API failed: %s", error_msg)
-        errors.append(f"SOS Alarm: {error_msg}")
+        source_errors.append(f"SOS Alarm: {error_msg}")
 
     # 4) RSS fallback so UI still shows items even if JSON APIs fail
     if not items:
@@ -413,8 +440,7 @@ async def swedish_alerts(limit: int = 12):
                     break
             except Exception as exc:
                 error_msg = str(exc)[:40]
-                logger.warning("%s RSS failed: %s", source, error_msg)
-                errors.append(f"{source}: {error_msg}")
+                source_errors.append(f"{source}: {error_msg}")
 
     # Deduplicate by title and source, keep first seen entries
     deduped: list[dict] = []
@@ -432,12 +458,14 @@ async def swedish_alerts(limit: int = 12):
     result = {
         "items": deduped,
         "count": len(deduped),
-        "errors": errors if errors else [],
+        "errors": source_errors if source_errors else [],
         "sources": ["Polisen", "Krisinformation", "SOS Alarm"],
     }
     
     if not deduped:
-        logger.warning("No Swedish alerts fetched. Errors: %s", errors)
+        logger.warning("No Swedish alerts fetched. Errors: %s", source_errors)
+    elif source_errors:
+        logger.info("Swedish alerts fetched with partial source errors: %s", source_errors)
     
     return result
 
