@@ -71,6 +71,16 @@ export function WebSocketProvider({ children }) {
             eventListeners.current[data.type].forEach(cb => cb(data));
         }
 
+        if (data.type === 'voice_status') {
+            console.debug('[voice] status update', data.status, data);
+        } else if (data.type === 'voice_transcription') {
+            console.debug('[voice] transcription received', data.text?.slice?.(0, 120) || '');
+        } else if (data.type === 'vosk_partial') {
+            console.debug('[voice] partial transcript', data.text?.slice?.(0, 120) || '');
+        } else if (data.type === 'error') {
+            console.error('[voice] backend error event', data.message || data.error || data);
+        }
+
         // 2. Handle core chat messages locally (or we could move this out too, but keeping it here for simplicity of migration)
         switch (data.type) {
             case 'history': {
@@ -135,6 +145,7 @@ export function WebSocketProvider({ children }) {
             case 'voice_status':
                 setVoiceStatus(data.status);
                 setIsRecording(data.status === 'listening');
+                console.debug('[voice] stage transition', voiceStage, '->', data.status);
                 if (data.status === 'listening') setStageWithAutoReset('listening');
                 if (data.status === 'thinking') setStageWithAutoReset('thinking', 12000);
                 if (data.status === 'speaking') setStageWithAutoReset('speaking');
@@ -145,35 +156,42 @@ export function WebSocketProvider({ children }) {
                 }
                 break;
             case 'voice_transcription':
+                console.info('[voice] final transcription accepted, entering transcribing stage');
                 setStageWithAutoReset('transcribing', 1200);
                 setMessages((prev) => [...prev, { role: 'user', text: data.text }]);
                 setVoskText('');
                 break;
             case 'vosk_partial':
+                console.debug('[voice] transcribing partial text');
                 setStageWithAutoReset('transcribing', 1200);
                 setVoskText(data.text || '');
                 break;
             case 'vosk_final':
+                console.info('[voice] final Vosk text received');
                 setStageWithAutoReset('transcribing', 1200);
                 // Final Vosk result
                 setMessages((prev) => [...prev, { role: 'user', text: data.text }]);
                 setVoskText('');
                 break;
             case 'ai_start':
+                console.info('[voice] AI generation started');
                 setStageWithAutoReset('thinking', 12000);
                 setVoiceStreamText('');
                 setIsVoiceStreaming(true);
                 break;
             case 'ai_delta':
+                console.debug('[voice] AI stream delta received');
                 setStageWithAutoReset('generating', 9000);
                 setVoiceStreamText(data.text || '');
                 break;
             case 'ai_final':
+                console.info('[voice] AI generation finished');
                 setStageWithAutoReset(voiceStatus === 'speaking' ? 'speaking' : 'generating', 1200);
                 setVoiceStreamText(data.text || '');
                 // We keep isVoiceStreaming true while speaking, speaking status comes from voice_status
                 break;
             case 'ai_aborted':
+                console.warn('[voice] AI generation aborted');
                 setStageWithAutoReset('idle');
                 setVoiceStreamText((prev) => prev + ' [aborted]');
                 setTimeout(() => setIsVoiceStreaming(false), 2000);
@@ -181,7 +199,7 @@ export function WebSocketProvider({ children }) {
             default:
                 break;
         }
-    }, [setStageWithAutoReset, voiceStatus, isRecording]);
+    }, [setStageWithAutoReset, voiceStatus, voiceStage, isRecording]);
 
     const connect = useCallback(() => {
         if (reconnectTimer.current) {

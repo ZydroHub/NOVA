@@ -583,77 +583,90 @@ async def voice_websocket(websocket: WebSocket):
             command = data.get("type")
 
             if command == "__disconnect__":
+                logger.info("Voice websocket disconnect sentinel received; closing voice loop")
                 break
 
-            logger.debug("Voice Command Received: %s", command)
+            logger.debug("Voice command received: %s payload_keys=%s", command, sorted(list(data.keys())))
 
             if command == "start_vosk":
+                logger.info("Voice start_vosk requested; current recording=%s", ai.is_vosk_recording)
                 if not ai.is_vosk_recording:
                     try:
                         ai.is_vosk_recording = True
                         loop = asyncio.get_event_loop()
                         async def vosk_callback(text):
                             try:
-                                await websocket.send_json({"type": "vosk_partial", "text": text})
-                            except:
-                                pass
+                                await _safe_ws_send_json(websocket, {"type": "vosk_partial", "text": text}, context="vosk_partial")
+                            except Exception:
+                                logger.exception("Voice Vosk partial callback failed")
+                        logger.info("Starting Vosk listening")
                         ai.vosk.start_listening(callback=lambda t: asyncio.run_coroutine_threadsafe(vosk_callback(t), loop))
                         if not ai.vosk.listening:
                             ai.is_vosk_recording = False
-                            await websocket.send_json({"type": "voice_status", "status": "idle"})
-                            await websocket.send_json({"type": "error", "message": "Vosk failed to start listening"})
+                            logger.error("Vosk failed to enter listening state")
+                            await _safe_ws_send_json(websocket, {"type": "voice_status", "status": "idle"}, context="voice_status idle after vosk start failure")
+                            await _safe_ws_send_json(websocket, {"type": "error", "message": "Vosk failed to start listening"}, context="vosk start failure")
                         else:
-                            await websocket.send_json({"type": "voice_status", "status": "listening"})
+                            logger.info("Vosk listening started successfully")
+                            await _safe_ws_send_json(websocket, {"type": "voice_status", "status": "listening"}, context="voice_status listening")
                     except Exception as e:
                         ai.is_vosk_recording = False
                         logger.exception("Vosk start error: %s", e)
-                        await websocket.send_json({"type": "voice_status", "status": "idle"})
-                        await websocket.send_json({"type": "error", "message": f"Vosk start error: {e}"})
+                        await _safe_ws_send_json(websocket, {"type": "voice_status", "status": "idle"}, context="voice_status idle after vosk exception")
+                        await _safe_ws_send_json(websocket, {"type": "error", "message": f"Vosk start error: {e}"}, context="vosk start exception")
 
             elif command == "stop_vosk":
                 if ai.is_vosk_recording:
+                    logger.info("Stopping Vosk recording")
                     ai.is_vosk_recording = False
-                    logger.debug("Stopping Vosk...")
                     text = ai.vosk.stop_listening()
-                    logger.debug("Vosk Final Text: %s", text)
+                    logger.info("Vosk stop completed; text_len=%d text=%r", len(text or ""), text[:120] if text else "")
                     transcription_only = data.get("transcription_only", False)
                     if text:
-                        await websocket.send_json({"type": "vosk_final", "text": text})
+                        await _safe_ws_send_json(websocket, {"type": "vosk_final", "text": text}, context="vosk_final")
                         if transcription_only:
-                            await websocket.send_json({"type": "voice_status", "status": "idle"})
+                            logger.info("Transcription-only voice stop complete; returning to idle")
+                            await _safe_ws_send_json(websocket, {"type": "voice_status", "status": "idle"}, context="voice_status idle after transcription_only vosk")
                         else:
-                            await websocket.send_json({"type": "voice_status", "status": "thinking"})
+                            logger.info("Routing Vosk text into AI response pipeline")
+                            await _safe_ws_send_json(websocket, {"type": "voice_status", "status": "thinking"}, context="voice_status thinking after vosk")
                             await ai.ai_response_and_speak(websocket, text, abort_event, message_queue)
                     else:
-                        await websocket.send_json({"type": "voice_status", "status": "idle"})
+                        logger.warning("Vosk stopped but produced no text")
+                        await _safe_ws_send_json(websocket, {"type": "voice_status", "status": "idle"}, context="voice_status idle after empty vosk")
 
             elif command == "toggle_voice":
                 if not ai.is_recording:
-                    logger.debug("Starting Whisper Capture...")
+                    logger.info("Starting Whisper capture; current recording=%s", ai.is_recording)
                     abort_event.clear()
                     ai.is_recording = True
                     ai.stt.start_capture()
                     if not ai.stt.listening:
                         ai.is_recording = False
-                        await websocket.send_json({"type": "voice_status", "status": "idle"})
-                        await websocket.send_json({"type": "error", "message": "Whisper failed to start recording"})
+                        logger.error("Whisper capture start failed; STT engine not listening")
+                        await _safe_ws_send_json(websocket, {"type": "voice_status", "status": "idle"}, context="voice_status idle after whisper start failure")
+                        await _safe_ws_send_json(websocket, {"type": "error", "message": "Whisper failed to start recording"}, context="whisper start failure")
                     else:
-                        await websocket.send_json({"type": "voice_status", "status": "listening"})
+                        logger.info("Whisper capture active")
+                        await _safe_ws_send_json(websocket, {"type": "voice_status", "status": "listening"}, context="voice_status listening whisper")
                 else:
                     ai.is_recording = False
-                    logger.debug("Stopping Whisper and Transcribing...")
-                    await websocket.send_json({"type": "voice_status", "status": "thinking"})
+                    logger.info("Stopping Whisper and transcribing")
+                    await _safe_ws_send_json(websocket, {"type": "voice_status", "status": "thinking"}, context="voice_status thinking whisper stop")
                     text = ai.stt.stop_and_transcribe()
-                    logger.debug("Whisper Transcription: %s", text)
+                    logger.info("Whisper transcription completed; text_len=%d text=%r", len(text or ""), text[:120] if text else "")
                     transcription_only = data.get("transcription_only", False)
                     if text:
-                        await websocket.send_json({"type": "voice_transcription", "text": text})
+                        await _safe_ws_send_json(websocket, {"type": "voice_transcription", "text": text}, context="voice_transcription")
                         if transcription_only:
-                            await websocket.send_json({"type": "voice_status", "status": "idle"})
+                            logger.info("Transcription-only whisper stop complete; returning to idle")
+                            await _safe_ws_send_json(websocket, {"type": "voice_status", "status": "idle"}, context="voice_status idle after transcription_only whisper")
                         else:
+                            logger.info("Sending whisper transcript into AI response pipeline")
                             await ai.ai_response_and_speak(websocket, text, abort_event, message_queue)
                     else:
-                        await websocket.send_json({"type": "voice_status", "status": "idle"})
+                        logger.warning("Whisper stopped but produced no text")
+                        await _safe_ws_send_json(websocket, {"type": "voice_status", "status": "idle"}, context="voice_status idle after empty whisper")
 
             elif command == "abort":
                 logger.info("Global Abort Requested")
