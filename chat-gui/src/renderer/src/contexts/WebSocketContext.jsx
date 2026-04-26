@@ -214,13 +214,16 @@ export function WebSocketProvider({ children }) {
         setConnStatus('connecting');
         const ws = new WebSocket(WS_URL);
         wsRef.current = ws;
+        console.info('[voice] websocket connecting', WS_URL);
 
         ws.onopen = () => {
             setConnStatus('connected');
             clearTimeout(reconnectTimer.current);
+            console.info('[voice] websocket open');
         };
 
-        ws.onclose = () => {
+        ws.onclose = (event) => {
+            console.warn('[voice] websocket closed', { code: event.code, reason: event.reason, wasClean: event.wasClean });
             setConnStatus('disconnected');
             resetVoiceActivity();
             wsRef.current = null;
@@ -228,7 +231,7 @@ export function WebSocketProvider({ children }) {
         };
 
         ws.onerror = (event) => {
-            console.error('Voice websocket error', event);
+            console.error('[voice] websocket error', event);
             resetVoiceActivity();
         };
 
@@ -319,15 +322,18 @@ export function WebSocketProvider({ children }) {
         setChatConnStatus('connecting');
         const ws = new WebSocket(`${CHAT_WS_URL}/${convId}`);
         chatWsRef.current = ws;
+        console.info('[chat] websocket connecting', `${CHAT_WS_URL}/${convId}`);
 
         ws.onopen = () => {
             setChatConnStatus('connected');
+            console.info('[chat] websocket open', convId);
             if (chatReconnectTimer.current) {
                 clearTimeout(chatReconnectTimer.current);
                 chatReconnectTimer.current = null;
             }
         };
-        ws.onclose = () => {
+        ws.onclose = (event) => {
+            console.warn('[chat] websocket closed', { convId, code: event.code, reason: event.reason, wasClean: event.wasClean });
             chatWsRef.current = null;
             setChatConnStatus('disconnected');
             chatReconnectTimer.current = setTimeout(() => {
@@ -370,6 +376,11 @@ export function WebSocketProvider({ children }) {
         const useVoiceWs = typeof type === 'string' && type.startsWith('task.');
         const targetWs = useVoiceWs ? wsRef.current : (chatWsRef.current?.readyState === WebSocket.OPEN ? chatWsRef.current : wsRef.current);
         if (targetWs && targetWs.readyState === WebSocket.OPEN) {
+            if (useVoiceWs) {
+                console.debug('[voice] sendMessage', type, payload);
+            } else {
+                console.debug('[chat] sendMessage', type, payload);
+            }
             targetWs.send(JSON.stringify({ type, ...payload }));
         } else {
             console.warn("WS not connected, cannot send", type);
@@ -377,6 +388,7 @@ export function WebSocketProvider({ children }) {
     }, []);
     const sendVoiceCommand = useCallback((type, payload = {}) => {
         if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
+            console.debug('[voice] sendVoiceCommand', type, payload);
             wsRef.current.send(JSON.stringify({ type, ...payload }));
         } else {
             console.warn("Voice WS not connected, cannot send", type);

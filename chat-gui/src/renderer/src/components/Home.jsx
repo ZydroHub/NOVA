@@ -78,6 +78,7 @@ export default function Home() {
     }, []);
 
     const onNovaClick = useCallback(() => {
+        console.info('[voice] home nova click -> toggleVoice');
         toggleVoice();
     }, [toggleVoice]);
 
