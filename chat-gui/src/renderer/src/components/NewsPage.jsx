@@ -3,6 +3,59 @@ import { motion } from 'framer-motion';
 import { Globe } from 'lucide-react';
 import { apiFetch } from '../apiClient.js';
 
+function toDisplayText(value) {
+    if (value == null) return '';
+    if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') {
+        return String(value).trim();
+    }
+    if (Array.isArray(value)) {
+        return value.map(toDisplayText).filter(Boolean).join(', ').trim();
+    }
+    if (typeof value === 'object') {
+        const preferred = value.Description || value.description || value.name || value.title || value.Type || value.type;
+        if (preferred != null) return toDisplayText(preferred);
+        try {
+            return JSON.stringify(value);
+        } catch {
+            return '';
+        }
+    }
+    return '';
+}
+
+function normalizeAlertItem(item) {
+    const source = toDisplayText(item?.source) || 'Alert';
+    const title = toDisplayText(item?.title) || toDisplayText(item?.Description) || 'Untitled alert';
+    const location = toDisplayText(item?.location ?? item?.Area ?? item?.area);
+    const published = toDisplayText(item?.published);
+    const priorityLabel = toDisplayText(item?.priority_label) || 'News';
+    const priorityRank = Number(item?.priority_rank) || 0;
+
+    return {
+        ...item,
+        source,
+        title,
+        location,
+        published,
+        priority_label: priorityLabel,
+        priority_rank: priorityRank,
+    };
+}
+
+function formatPublished(value) {
+    if (!value) return '';
+    const parsed = new Date(value);
+    if (Number.isNaN(parsed.getTime())) {
+        return value;
+    }
+    return parsed.toLocaleString('sv-SE', {
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+    });
+}
+
 export default function NewsPage() {
     const [items, setItems] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -25,7 +78,8 @@ export default function NewsPage() {
             try {
                 const data = await apiFetch('/integrations/swedish-alerts?limit=20', { signal: controller.signal });
                 if (mounted) {
-                    setItems(Array.isArray(data?.items) ? data.items : []);
+                    const rawItems = Array.isArray(data?.items) ? data.items : [];
+                    setItems(rawItems.map(normalizeAlertItem));
                     setError(null);
                 }
             } catch (err) {
@@ -148,12 +202,7 @@ export default function NewsPage() {
                                     )}
                                     {item.published && (
                                         <div className="text-xs text-cyan-300/50 mt-1 opacity-70">
-                                            {new Date(item.published).toLocaleString('sv-SE', { 
-                                                month: 'short', 
-                                                day: 'numeric', 
-                                                hour: '2-digit', 
-                                                minute: '2-digit' 
-                                            })}
+                                            {formatPublished(item.published)}
                                         </div>
                                     )}
                                 </div>
