@@ -6,30 +6,44 @@ import { apiFetch } from '../apiClient.js';
 export default function NewsPage() {
     const [items, setItems] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [refreshing, setRefreshing] = useState(false);
     const [error, setError] = useState(null);
 
     useEffect(() => {
         let mounted = true;
-        async function load() {
-            setLoading(true);
-            setError(null);
+        async function load({ initial = false } = {}) {
+            if (initial) {
+                setLoading(true);
+            } else {
+                setRefreshing(true);
+            }
+            if (initial) setError(null);
+
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 10000);
+
             try {
-                const data = await apiFetch('/integrations/swedish-alerts?limit=20');
+                const data = await apiFetch('/integrations/swedish-alerts?limit=20', { signal: controller.signal });
                 if (mounted) {
-                    setItems(data.items || []);
+                    setItems(Array.isArray(data?.items) ? data.items : []);
+                    setError(null);
                 }
             } catch (err) {
                 console.error('Failed to load alerts', err);
                 if (mounted) {
-                    setError('Failed to load alerts');
+                    setError(err?.name === 'AbortError' ? 'Loading alerts timed out. Retry in a moment.' : 'Failed to load alerts');
                     setItems([]);
                 }
             } finally {
-                if (mounted) setLoading(false);
+                clearTimeout(timeoutId);
+                if (mounted) {
+                    setLoading(false);
+                    setRefreshing(false);
+                }
             }
         }
-        load();
-        const timer = setInterval(load, 120000);
+        load({ initial: true });
+        const timer = setInterval(() => load({ initial: false }), 120000);
         return () => {
             mounted = false;
             clearInterval(timer);
@@ -63,10 +77,9 @@ export default function NewsPage() {
             <div className="flex-shrink-0 px-6 py-4 border-b border-cyan-400/20">
                 <div className="flex items-end justify-between gap-4 flex-wrap">
                     <div>
-                        <div className="text-xs uppercase tracking-[0.24em] text-cyan-300/70 font-semibold mb-1">Swedish Alerts</div>
                         <h2 className="text-2xl font-black text-white font-['Plus_Jakarta_Sans']">Swedish Alerts</h2>
                     </div>
-                    <div className="text-xs text-cyan-300/60">Sorted by priority</div>
+                    <div className="text-xs text-cyan-300/60">{refreshing ? 'Refreshing...' : 'Sorted by priority'}</div>
                 </div>
             </div>
 
