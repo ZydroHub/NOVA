@@ -198,6 +198,7 @@ class AIState:
         self.is_vosk_recording = False
         self._load_lock = threading.Lock()
         self._models_loaded = False
+        self.pending_voice_reply: Optional[str] = None
         self.voice_messages = [
             {"role": "system", "content": "You are NOVA, a high-performance local AI core integrated into a Raspberry Pi 5. Identity: You are helpful, technical and similar to a Jarvis-like interface. Operational Constraints: Context: You have access to a 7-inch touchscreen UI. Format: Do not use bold markdown or special characters that might confuse the Text-to-Speech (TTS) engine. Keep your responses concise for text-to-speech."}
         ]
@@ -280,6 +281,7 @@ class AIState:
 
         full_response = ""
         loop = asyncio.get_event_loop()
+        ws_stream_open = True
         logger.debug("[voice] pipeline start route=%s message_len=%d", route, len(text))
 
         def on_tts_queue_drained():
@@ -352,9 +354,10 @@ class AIState:
                         full_response += content
                         if chunk_index % 20 == 1:
                             logger.debug("[voice] streamed chunk=%d response_len=%d", chunk_index, len(full_response))
-                        if not await _safe_ws_send_json(websocket, {"type": "ai_delta", "text": strip_think_for_ui(full_response)}, context="ai_delta"):
-                            logger.info("Stopping voice generation due to closed websocket")
-                            return
+                        if ws_stream_open:
+                            if not await _safe_ws_send_json(websocket, {"type": "ai_delta", "text": strip_think_for_ui(full_response)}, context="ai_delta"):
+                                logger.info("Voice websocket closed during ai_delta; continuing generation and caching final reply")
+                                ws_stream_open = False
 
                         # Flush complete sentences to TTS (only non-thinking content; strip unclosed <think> too)
                         clean_reply = strip_think_for_ui(full_response)
@@ -387,8 +390,13 @@ class AIState:
                 if len(self.voice_messages) > 11:
                     self.voice_messages = [self.voice_messages[0]] + self.voice_messages[-10:]
 
-                if not await _safe_ws_send_json(websocket, {"type": "ai_final", "text": clean_reply}, context="ai_final"):
-                    return
+                if ws_stream_open:
+                    if not await _safe_ws_send_json(websocket, {"type": "ai_final", "text": clean_reply}, context="ai_final"):
+                        ws_stream_open = False
+
+                if not ws_stream_open:
+                    self.pending_voice_reply = clean_reply
+                    logger.info("Cached pending voice reply for next websocket reconnect (len=%d)", len(clean_reply))
 
                 # Flush any remaining text to TTS (last sentence or fragment)
                 if clean_reply and tts_flushed_len < len(clean_reply):
@@ -396,11 +404,13 @@ class AIState:
                     if remainder:
                         queued = self.tts.enqueue_sentence(remainder)
                         if queued and not speaking_status_sent:
-                            if not await _safe_ws_send_json(websocket, {"type": "voice_status", "status": "speaking"}, context="voice_status speaking remainder"):
-                                return
+                            if ws_stream_open:
+                                if not await _safe_ws_send_json(websocket, {"type": "voice_status", "status": "speaking"}, context="voice_status speaking remainder"):
+                                    ws_stream_open = False
                             speaking_status_sent = True
                 if not speaking_status_sent:
-                    await _safe_ws_send_json(websocket, {"type": "voice_status", "status": "idle"}, context="voice_status idle no speech")
+                    if ws_stream_open:
+                        await _safe_ws_send_json(websocket, {"type": "voice_status", "status": "idle"}, context="voice_status idle no speech")
                 # Otherwise "idle" is sent by on_tts_queue_drained when playback finishes
 
         except Exception as e:
@@ -568,6 +578,13 @@ async def chat_websocket_endpoint(websocket: WebSocket, conv_id: str):
 async def voice_websocket(websocket: WebSocket):
     await websocket.accept()
     logger.info("Voice client connected")
+
+    if ai.pending_voice_reply:
+        replay_text = ai.pending_voice_reply
+        ai.pending_voice_reply = None
+        logger.info("Replaying cached voice reply after websocket reconnect (len=%d)", len(replay_text))
+        await _safe_ws_send_json(websocket, {"type": "ai_final", "text": replay_text}, context="ai_final replay")
+        await _safe_ws_send_json(websocket, {"type": "voice_status", "status": "idle"}, context="voice_status idle replay")
     
     abort_event = asyncio.Event()
     message_queue = asyncio.Queue()
@@ -646,6 +663,7 @@ async def voice_websocket(websocket: WebSocket):
 
             elif command == "toggle_voice":
                 if not ai.is_recording:
+                    ai.pending_voice_reply = None
                     logger.info("Starting Whisper capture; current recording=%s", ai.is_recording)
                     abort_event.clear()
                     ai.is_recording = True
