@@ -52,6 +52,9 @@ async def _safe_ws_send_json(websocket: WebSocket, payload: dict, context: str =
         raise
 
 
+VOICE_EMPTY_REPLY_FALLBACK = "I heard you, but I could not create a spoken reply. Please try again."
+
+
 # Semantic router: route prompt to qwen_basic / qwen_thinking / function_gemma
 def _get_route(prompt: str) -> str:
     try:
@@ -373,12 +376,18 @@ class AIState:
 
             if not abort_event.is_set():
                 logger.debug("AI response complete: %s...", full_response[:50])
-                self.voice_messages.append({"role": "assistant", "content": full_response})
+                clean_reply = strip_think_for_ui(full_response)
+                if not clean_reply:
+                    logger.warning("Voice reply contained no speakable text after think-strip; using fallback reply")
+                    clean_reply = VOICE_EMPTY_REPLY_FALLBACK
+
+                # Keep voice context coherent even when model emitted think-only content.
+                memory_reply = full_response if strip_think_for_ui(full_response) else clean_reply
+                self.voice_messages.append({"role": "assistant", "content": memory_reply})
                 if len(self.voice_messages) > 11:
                     self.voice_messages = [self.voice_messages[0]] + self.voice_messages[-10:]
 
-                clean_reply = strip_think_for_ui(full_response)
-                if not await _safe_ws_send_json(websocket, {"type": "ai_final", "text": strip_think_for_ui(full_response)}, context="ai_final"):
+                if not await _safe_ws_send_json(websocket, {"type": "ai_final", "text": clean_reply}, context="ai_final"):
                     return
 
                 # Flush any remaining text to TTS (last sentence or fragment)
