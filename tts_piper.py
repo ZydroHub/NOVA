@@ -31,6 +31,28 @@ def split_sentences(text):
     return [p.strip() for p in parts if p.strip()]
 
 
+def merge_short_sentences(sentences, min_len=42):
+    """Merge very short sentence fragments to reduce choppy TTS transitions."""
+    merged = []
+    buffer = ""
+    for sentence in sentences:
+        s = sentence.strip()
+        if not s:
+            continue
+        if not buffer:
+            buffer = s
+            continue
+        # Keep natural flow by combining tiny fragments into a longer phrase.
+        if len(buffer) < min_len:
+            buffer = f"{buffer} {s}".strip()
+        else:
+            merged.append(buffer)
+            buffer = s
+    if buffer:
+        merged.append(buffer)
+    return merged
+
+
 class PocketAudio:
     def __init__(self, model_name="en_US-lessac-medium"):
         self.base_dir = os.path.dirname(os.path.abspath(__file__))
@@ -117,23 +139,34 @@ class PocketAudio:
             pass
 
     def _queue_worker(self):
+        stream = None
         while True:
             try:
                 text = self._queue.get()
                 if text is None:
                     continue
-                self._speak_internal(text)
+                if stream is None:
+                    stream = self._open_output_stream()
+                self._speak_internal(text, stream=stream)
                 if self._queue.empty() and self._queue_drained_callback:
                     try:
                         self._queue_drained_callback()
                     except Exception as e:
                         print(f"TTS queue drained callback error: {e}")
             except Exception as e:
+                if stream is not None:
+                    try:
+                        stream.stop_stream()
+                        stream.close()
+                    except Exception:
+                        pass
+                    stream = None
                 print(f"TTS worker error: {e}")
 
     def clean_text(self, text):
         """Remove emojis and special symbols, keeping alphanumeric, spaces and basic punctuation."""
-        return re.sub(r'[^a-zA-Z0-9\s.,!?;:\'\"()-]', '', text)
+        cleaned = re.sub(r'[^a-zA-Z0-9\s.,!?;:\'\"()-]', '', text)
+        return re.sub(r'\s+', ' ', cleaned).strip()
 
     def enqueue_sentence(self, sentence):
         """Add a single sentence to the playback queue. Non-blocking. Returns True if queued."""
@@ -146,7 +179,8 @@ class PocketAudio:
     def enqueue_text(self, text):
         """Split text into sentences and enqueue each. Returns number of queued sentences."""
         queued = 0
-        for s in split_sentences(text):
+        sentences = merge_short_sentences(split_sentences(text))
+        for s in sentences:
             if self.enqueue_sentence(s):
                 queued += 1
         return queued
@@ -155,11 +189,13 @@ class PocketAudio:
         """Speak full text by splitting into sentences and enqueueing. Non-blocking."""
         return self.enqueue_text(text)
 
-    def _speak_internal(self, text):
+    def _speak_internal(self, text, stream=None):
         print(f"Synthesizing: {text[:50]}...")
         try:
-            # Use PyAudio for cross-platform audio playback
-            stream = self._open_output_stream()
+            # Use a persistent worker stream when available to avoid per-sentence pops/gaps.
+            owns_stream = stream is None
+            if stream is None:
+                stream = self._open_output_stream()
             t0 = time.perf_counter()
             chunk_count = 0
             for chunk in self.voice.synthesize(text):
@@ -169,8 +205,9 @@ class PocketAudio:
             if chunk_count == 0:
                 print("TTS warning: synthesize returned 0 chunks")
             print(f"  text-to-speech: {tts_ms:.0f} ms")
-            stream.stop_stream()
-            stream.close()
+            if owns_stream:
+                stream.stop_stream()
+                stream.close()
         except Exception as e:
             print(f"Audio Error: {e}")
 
