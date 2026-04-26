@@ -30,6 +30,21 @@ export function WebSocketProvider({ children }) {
     const wsRef = useRef(null);
     const reconnectTimer = useRef(null);
     const stageResetTimerRef = useRef(null);
+    const voiceStatusRef = useRef(voiceStatus);
+    const voiceStageRef = useRef(voiceStage);
+    const isRecordingRef = useRef(isRecording);
+
+    useEffect(() => {
+        voiceStatusRef.current = voiceStatus;
+    }, [voiceStatus]);
+
+    useEffect(() => {
+        voiceStageRef.current = voiceStage;
+    }, [voiceStage]);
+
+    useEffect(() => {
+        isRecordingRef.current = isRecording;
+    }, [isRecording]);
 
     const resetVoiceActivity = useCallback(() => {
         setVoiceStatus('idle');
@@ -101,7 +116,7 @@ export function WebSocketProvider({ children }) {
                 setStreamText(data.text || '');
                 break;
             case 'stream_final':
-                if (voiceStatus !== 'speaking' && !isRecording) setStageWithAutoReset('idle');
+                if (voiceStatusRef.current !== 'speaking' && !isRecordingRef.current) setStageWithAutoReset('idle');
                 setStreaming(false);
                 setMessages((prev) => [
                     ...prev,
@@ -145,7 +160,7 @@ export function WebSocketProvider({ children }) {
             case 'voice_status':
                 setVoiceStatus(data.status);
                 setIsRecording(data.status === 'listening');
-                console.debug('[voice] stage transition', voiceStage, '->', data.status);
+                console.debug('[voice] stage transition', voiceStageRef.current, '->', data.status);
                 if (data.status === 'listening') setStageWithAutoReset('listening');
                 if (data.status === 'thinking') setStageWithAutoReset('thinking', 12000);
                 if (data.status === 'speaking') setStageWithAutoReset('speaking');
@@ -186,7 +201,7 @@ export function WebSocketProvider({ children }) {
                 break;
             case 'ai_final':
                 console.info('[voice] AI generation finished');
-                setStageWithAutoReset(voiceStatus === 'speaking' ? 'speaking' : 'generating', 1200);
+                setStageWithAutoReset(voiceStatusRef.current === 'speaking' ? 'speaking' : 'generating', 1200);
                 setVoiceStreamText(data.text || '');
                 // We keep isVoiceStreaming true while speaking, speaking status comes from voice_status
                 break;
@@ -199,7 +214,7 @@ export function WebSocketProvider({ children }) {
             default:
                 break;
         }
-    }, [setStageWithAutoReset, voiceStatus, voiceStage, isRecording]);
+    }, [setStageWithAutoReset]);
 
     const connect = useCallback(() => {
         if (reconnectTimer.current) {
@@ -223,6 +238,10 @@ export function WebSocketProvider({ children }) {
         };
 
         ws.onclose = (event) => {
+            if (wsRef.current !== ws) {
+                console.debug('[voice] ignoring stale websocket close event');
+                return;
+            }
             console.warn('[voice] websocket closed', { code: event.code, reason: event.reason, wasClean: event.wasClean });
             setConnStatus('disconnected');
             resetVoiceActivity();
@@ -231,6 +250,10 @@ export function WebSocketProvider({ children }) {
         };
 
         ws.onerror = (event) => {
+            if (wsRef.current !== ws) {
+                console.debug('[voice] ignoring stale websocket error event');
+                return;
+            }
             console.error('[voice] websocket error', event);
             resetVoiceActivity();
         };
@@ -333,6 +356,10 @@ export function WebSocketProvider({ children }) {
             }
         };
         ws.onclose = (event) => {
+            if (chatWsRef.current !== ws) {
+                console.debug('[chat] ignoring stale websocket close event', convId);
+                return;
+            }
             console.warn('[chat] websocket closed', { convId, code: event.code, reason: event.reason, wasClean: event.wasClean });
             chatWsRef.current = null;
             setChatConnStatus('disconnected');
