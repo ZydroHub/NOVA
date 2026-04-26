@@ -206,9 +206,9 @@ export default function Home() {
                             const dayWeatherCode = weather?.daily?.weather_code?.[idx] || currentWeatherCode;
                             return (
                                 <div key={day} className="forecast-row">
-                                    <span className="text-sm font-medium">{dayName}</span>
-                                    <span style={{fontSize: '1.1rem', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>{getWeatherEmoji(dayWeatherCode)}</span>
-                                    <span className="font-semibold ml-auto text-sm text-cyan-100">{formatTempRange(minTemp, maxTemp)}</span>
+                                    <span className="forecast-day text-sm font-medium">{dayName}</span>
+                                    <span className="forecast-icon" style={{fontSize: '1.1rem', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>{getWeatherEmoji(dayWeatherCode)}</span>
+                                    <span className="forecast-temp font-semibold ml-auto text-sm text-cyan-100">{formatTempRange(minTemp, maxTemp)}</span>
                                 </div>
                             );
                         }) : <div className="opacity-50 text-xs">Loading forecast...</div>}
@@ -249,7 +249,7 @@ export default function Home() {
                                     <span className="alert-source">{item.source || 'Alert'}</span>
                                     <span className="alert-priority">{item.priority_label || 'News'}</span>
                                 </div>
-                                <span className="alert-title">{item.title.slice(0, 70)}</span>
+                                <span className="alert-title">{item.title}</span>
                             </div>
                         )) : <div className="text-xs opacity-50">No items yet</div>}
                     </div>

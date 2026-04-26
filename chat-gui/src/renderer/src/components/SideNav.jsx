@@ -1,13 +1,14 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { House, MessageCircle, Music2, Newspaper, CloudSun } from 'lucide-react';
+import { House, MessageCircle, Music2, Newspaper, CloudSun, SlidersHorizontal } from 'lucide-react';
 
 const items = [
     { to: '/', label: 'Home', icon: House },
     { to: '/chat', label: 'Chat', icon: MessageCircle },
     { to: '/music', label: 'Music', icon: Music2 },
     { to: '/news', label: 'News', icon: Newspaper },
-    { to: '/weather', label: 'Weather', icon: CloudSun }
+    { to: '/weather', label: 'Weather', icon: CloudSun },
+    { to: '/settings', label: 'Config', icon: SlidersHorizontal }
 ];
 
 export default function SideNav() {

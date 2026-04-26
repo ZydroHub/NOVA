@@ -4,6 +4,17 @@ import { apiFetch } from '../apiClient.js';
 
 const WebSocketContext = createContext(null);
 
+const KEY_VOICE_AUTO_RECONNECT = 'pocket-ai.voiceAutoReconnect';
+
+function readVoiceReconnectEnabled() {
+    try {
+        const value = localStorage.getItem(KEY_VOICE_AUTO_RECONNECT);
+        return value !== 'false';
+    } catch {
+        return true;
+    }
+}
+
 export function WebSocketProvider({ children }) {
     const [connStatus, setConnStatus] = useState('connecting'); // connected | disconnected | connecting
     const [chatConnStatus, setChatConnStatus] = useState('disconnected');
@@ -246,7 +257,11 @@ export function WebSocketProvider({ children }) {
             setConnStatus('disconnected');
             resetVoiceActivity();
             wsRef.current = null;
-            reconnectTimer.current = setTimeout(connect, 3000);
+            if (readVoiceReconnectEnabled()) {
+                reconnectTimer.current = setTimeout(connect, 3000);
+            } else {
+                console.info('[voice] auto reconnect disabled by settings');
+            }
         };
 
         ws.onerror = (event) => {

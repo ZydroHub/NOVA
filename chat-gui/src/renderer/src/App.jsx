@@ -9,8 +9,6 @@ import NewsPage from './components/NewsPage';
 import WeatherPage from './components/WeatherPage';
 import Settings from './components/Settings';
 import StatusBar from './components/StatusBar';
-import TaskManager from './components/TaskManager';
-import TaskAdd from './components/TaskAdd';
 import HeartbeatManager from './components/HeartbeatManager';
 import GPIOControl from './components/GPIOControl';
 import ErrorBoundary from './components/ErrorBoundary';
@@ -18,14 +16,33 @@ import VirtualKeyboard from './components/VirtualKeyboard';
 import { WebSocketProvider } from './contexts/WebSocketContext';
 import { KeyboardProvider, useKeyboardSettings } from './contexts/KeyboardContext';
 
+const KEY_SCANLINES_ENABLED = 'pocket-ai.scanlinesEnabled';
+const KEY_UI_DENSITY = 'pocket-ai.uiDensity';
+
+function readScanlinesEnabled() {
+  try {
+    const value = localStorage.getItem(KEY_SCANLINES_ENABLED);
+    return value !== 'false';
+  } catch {
+    return true;
+  }
+}
+
+function readDensity() {
+  try {
+    return localStorage.getItem(KEY_UI_DENSITY) === 'compact' ? 'compact' : 'comfortable';
+  } catch {
+    return 'comfortable';
+  }
+}
+
 // HashRouter so routes work when the app is loaded from file:// (built Electron app)
 
 function OverlayKeyboard() {
   const location = useLocation();
   const { keyboardEnabled, focusState, focusedElementRef, syncInputValueRef } = useKeyboardSettings();
   const isOnChatRoute = location.pathname === '/chat';
-  const isOnTasksRoute = location.pathname.startsWith('/tasks');
-  const show = keyboardEnabled && focusState && (!isOnChatRoute || !focusState.isChatInput) && !isOnTasksRoute;
+  const show = keyboardEnabled && focusState && (!isOnChatRoute || !focusState.isChatInput);
   return <VirtualKeyboard visible={show} mode="overlay" focusedElementRef={focusedElementRef} syncInputValueRef={syncInputValueRef} />;
 }
 
@@ -36,7 +53,7 @@ const AnimatedRoutes = () => {
   const lastNavAtRef = React.useRef(0);
   const pointerStartRef = React.useRef(null);
 
-  const routes = ['/', '/chat', '/music', '/news', '/weather', '/tasks', '/settings'];
+  const routes = ['/', '/chat', '/music', '/news', '/weather', '/settings'];
   const currentIndex = routes.indexOf(location.pathname);
 
   const canNavigateNow = () => Date.now() - lastNavAtRef.current > 450;
@@ -97,9 +114,6 @@ const AnimatedRoutes = () => {
           <Route path="/music" element={<MusicPage />} />
           <Route path="/news" element={<NewsPage />} />
           <Route path="/weather" element={<WeatherPage />} />
-          <Route path="/tasks" element={<TaskManager />} />
-          <Route path="/tasks/add" element={<TaskAdd />} />
-          <Route path="/tasks/edit" element={<TaskAdd />} />
           <Route path="/heartbeat" element={<HeartbeatManager />} />
           <Route path="/gpio" element={<GPIOControl />} />
           <Route path="/settings" element={<Settings />} />
@@ -146,6 +160,22 @@ function RandomScanlineOverlay() {
 }
 
 export default function App() {
+  const [scanlinesEnabled, setScanlinesEnabled] = useState(readScanlinesEnabled);
+
+  useEffect(() => {
+    const applyPrefs = () => {
+      setScanlinesEnabled(readScanlinesEnabled());
+      document.body.dataset.novaDensity = readDensity();
+    };
+    applyPrefs();
+    window.addEventListener('storage', applyPrefs);
+    window.addEventListener('nova-settings-updated', applyPrefs);
+    return () => {
+      window.removeEventListener('storage', applyPrefs);
+      window.removeEventListener('nova-settings-updated', applyPrefs);
+    };
+  }, []);
+
   return (
     <HashRouter>
       <WebSocketProvider>
@@ -154,7 +184,7 @@ export default function App() {
             <StatusBar />
             <div className="flex-1 overflow-hidden relative w-full flex">
               {/* CRT scanline overlay only for the route content area */}
-              <RandomScanlineOverlay />
+              {scanlinesEnabled ? <RandomScanlineOverlay /> : null}
               <SideNav />
               <ErrorBoundary>
                 <div className="flex-1 min-w-0 min-h-0">
