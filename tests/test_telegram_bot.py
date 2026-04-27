@@ -13,6 +13,7 @@ def test_telegram_command_subscribe_and_test(tmp_path):
     bot = TelegramAlertBot(
         token="token",
         subscriptions_file=str(tmp_path / "subs.json"),
+        seen_alerts_file=str(tmp_path / "seen.json"),
         alert_fetcher=lambda limit, region: {"items": []},
         send_message_fn=fake_sender,
         poll_interval_seconds=15,
@@ -20,9 +21,9 @@ def test_telegram_command_subscribe_and_test(tmp_path):
     )
 
     assert bot.process_message(42, "/Nacka") == "Subscribed to Nacka alerts."
-    assert bot.process_message(42, "/test") == "NOVA Telegram bot test OK."
+    assert bot.process_message(42, "/test") == "NOVA check-in: live, awake, and ready."
     assert sent_messages[0] == (42, "Subscribed to Nacka alerts.")
-    assert sent_messages[1] == (42, "NOVA Telegram bot test OK.")
+    assert sent_messages[1] == (42, "NOVA check-in: live, awake, and ready.")
 
 
 def test_telegram_dispatch_deduplicates_alerts(tmp_path):
@@ -53,6 +54,7 @@ def test_telegram_dispatch_deduplicates_alerts(tmp_path):
     bot = TelegramAlertBot(
         token="token",
         subscriptions_file=str(tmp_path / "subs.json"),
+        seen_alerts_file=str(tmp_path / "seen.json"),
         alert_fetcher=fake_alert_fetcher,
         send_message_fn=fake_sender,
         poll_interval_seconds=15,
@@ -63,7 +65,7 @@ def test_telegram_dispatch_deduplicates_alerts(tmp_path):
     bot._poll_alerts_once()
     bot._poll_alerts_once()
 
-    alert_messages = [message for message in sent_messages if message[1].startswith("Traffic: Road closure")]
+    alert_messages = [message for message in sent_messages if message[1].startswith("Traffic | Road closure")]
     assert len(alert_messages) == 1
 
 
@@ -79,6 +81,7 @@ def test_telegram_startup_notification_broadcasts_to_subscribers(tmp_path):
     bot = TelegramAlertBot(
         token="token",
         subscriptions_file=str(tmp_path / "subs.json"),
+        seen_alerts_file=str(tmp_path / "seen.json"),
         alert_fetcher=lambda limit, region: {"items": []},
         send_message_fn=fake_sender,
         poll_interval_seconds=15,
@@ -92,8 +95,8 @@ def test_telegram_startup_notification_broadcasts_to_subscribers(tmp_path):
 
     assert sent_count == 2
     assert sent_messages == [
-        (42, "NOVA started successfully and is now monitoring alerts."),
-        (99, "NOVA started successfully and is now monitoring alerts."),
+        (42, "NOVA is online. Alert radar is active."),
+        (99, "NOVA is online. Alert radar is active."),
     ]
 
 
@@ -109,6 +112,7 @@ def test_telegram_test_notification_reports_missing_subscribers(tmp_path):
     bot = TelegramAlertBot(
         token="token",
         subscriptions_file=str(tmp_path / "subs.json"),
+        seen_alerts_file=str(tmp_path / "seen.json"),
         alert_fetcher=lambda limit, region: {"items": []},
         send_message_fn=fake_sender,
         poll_interval_seconds=15,
@@ -120,3 +124,56 @@ def test_telegram_test_notification_reports_missing_subscribers(tmp_path):
     assert result["sent"] == 0
     assert result["errors"]
     assert sent_messages == []
+
+
+def test_telegram_seen_alerts_persist_across_instances(tmp_path):
+    from telegram_bot import TelegramAlertBot
+
+    sent_messages = []
+
+    def fake_sender(chat_id, text):
+        sent_messages.append((chat_id, text))
+        return True
+
+    alert_payload = {
+        "items": [
+            {
+                "id": "alert-1",
+                "title": "Same alert",
+                "description": "First pass",
+                "priority": "News",
+                "type": "Alert",
+                "timestamp": "2026-04-27T10:00:00Z",
+                "location": "Nacka",
+                "url": "https://example.invalid/alert",
+            }
+        ]
+    }
+
+    subscriptions_file = str(tmp_path / "subs.json")
+    bot_one = TelegramAlertBot(
+        token="token",
+        subscriptions_file=subscriptions_file,
+        seen_alerts_file=str(tmp_path / "seen.json"),
+        alert_fetcher=lambda limit, region: alert_payload,
+        send_message_fn=fake_sender,
+        poll_interval_seconds=15,
+        request_timeout_seconds=3,
+    )
+    bot_one.subscribe(42, "nacka")
+    bot_one._poll_alerts_once()
+
+    bot_two = TelegramAlertBot(
+        token="token",
+        subscriptions_file=subscriptions_file,
+        seen_alerts_file=str(tmp_path / "seen.json"),
+        alert_fetcher=lambda limit, region: alert_payload,
+        send_message_fn=fake_sender,
+        poll_interval_seconds=15,
+        request_timeout_seconds=3,
+    )
+    bot_two.subscribe(42, "nacka")
+    bot_two._poll_alerts_once()
+
+    alert_messages = [message for message in sent_messages if message[1].startswith("News | Same alert")]
+    assert len(alert_messages) == 1

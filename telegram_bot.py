@@ -18,19 +18,20 @@ logger = logging.getLogger(__name__)
 
 TELEGRAM_BOT_TOKEN = (os.getenv("TELEGRAM_BOT_TOKEN") or "").strip()
 TELEGRAM_SUBSCRIPTIONS_FILE = (os.getenv("TELEGRAM_SUBSCRIPTIONS_FILE") or "telegram_subscriptions.json").strip()
+TELEGRAM_SEEN_ALERTS_FILE = (os.getenv("TELEGRAM_SEEN_ALERTS_FILE") or "telegram_seen_alerts.json").strip()
 TELEGRAM_POLL_INTERVAL_SECONDS = max(15, int(os.getenv("TELEGRAM_POLL_INTERVAL_SECONDS", "60")))
 TELEGRAM_UPDATE_POLL_TIMEOUT_SECONDS = max(1, int(os.getenv("TELEGRAM_UPDATE_POLL_TIMEOUT_SECONDS", "30")))
 TELEGRAM_REQUEST_TIMEOUT_SECONDS = max(3, int(os.getenv("TELEGRAM_REQUEST_TIMEOUT_SECONDS", "10")))
 TELEGRAM_MAX_RETRIES = max(1, int(os.getenv("TELEGRAM_MAX_RETRIES", "3")))
 
 _HELP_TEXT = (
-    "Send /Nacka to subscribe to Nacka alerts. "
-    "Send /stockholm to subscribe to Stockholm alerts. "
-    "Send /test to verify the bot reply."
+    "Send /Nacka to lock onto Nacka alerts. "
+    "Send /stockholm to track the Stockholm feed. "
+    "Send /test to fire a live signal."
 )
 
-_STARTUP_TEXT = "NOVA started successfully and is now monitoring alerts."
-_TEST_TEXT = "NOVA Telegram test OK."
+_STARTUP_TEXT = "NOVA is online. Alert radar is active."
+_TEST_TEXT = "NOVA check-in: live, awake, and ready."
 
 
 def _coerce_chat_id(value: object) -> int | None:
@@ -59,9 +60,9 @@ def _format_alert_message(alert: dict) -> str:
     location = str(alert.get("location") or "").strip()
     url = str(alert.get("url") or "").strip()
 
-    lines = [f"{priority}: {title}"]
+    lines = [f"{priority} | {title}"]
     if alert_type:
-        lines.append(f"Type: {alert_type}")
+        lines.append(f"Source: {alert_type}")
     if description and description != title:
         lines.append(f"Details: {description}")
     if location and location != description:
@@ -97,6 +98,7 @@ class TelegramAlertBot:
         token: str,
         subscriptions_file: str,
         *,
+        seen_alerts_file: str | None = None,
         poll_interval_seconds: int = TELEGRAM_POLL_INTERVAL_SECONDS,
         request_timeout_seconds: int = TELEGRAM_REQUEST_TIMEOUT_SECONDS,
         max_retries: int = TELEGRAM_MAX_RETRIES,
@@ -116,7 +118,9 @@ class TelegramAlertBot:
         self._alert_thread: threading.Thread | None = None
         self._state_lock = threading.Lock()
         self._subscriptions = self._load_subscriptions()
+        self._seen_alerts_file = Path(seen_alerts_file or TELEGRAM_SEEN_ALERTS_FILE)
         self._seen_alert_ids: set[str] = set()
+        self._load_seen_alert_ids()
         self._update_offset: int | None = None
         self._last_alert_poll_at = 0.0
 
@@ -181,7 +185,7 @@ class TelegramAlertBot:
             self._send_message(chat_id, reply)
             return reply
         if command == "test":
-            reply = "NOVA Telegram bot test OK."
+            reply = "NOVA check-in: live, awake, and ready."
             self._send_message(chat_id, reply)
             return reply
         if command in {"start", "help"}:
@@ -306,6 +310,7 @@ class TelegramAlertBot:
 
     def _filter_new_alerts(self, region: str, alerts: list[dict]) -> list[dict]:
         new_alerts: list[dict] = []
+        changed = False
         seen = self._seen_alert_ids
         for alert in alerts:
             if not isinstance(alert, dict):
@@ -316,8 +321,38 @@ class TelegramAlertBot:
             if alert_id in seen:
                 continue
             seen.add(alert_id)
+            changed = True
             new_alerts.append(alert)
+        if changed:
+            self._save_seen_alert_ids()
         return new_alerts
+
+    def _load_seen_alert_ids(self) -> None:
+        path = self._seen_alerts_file
+        if not path.exists():
+            return
+        try:
+            with path.open("r", encoding="utf-8") as handle:
+                payload = json.load(handle)
+        except (OSError, json.JSONDecodeError) as exc:
+            logger.warning("Telegram seen-alert cache load failed: %s", exc)
+            return
+
+        if isinstance(payload, list):
+            for item in payload:
+                if isinstance(item, str) and item.strip():
+                    self._seen_alert_ids.add(item.strip())
+
+    def _save_seen_alert_ids(self) -> None:
+        path = self._seen_alerts_file
+        try:
+            path.parent.mkdir(parents=True, exist_ok=True)
+            temp_path = path.with_suffix(path.suffix + ".tmp")
+            with temp_path.open("w", encoding="utf-8") as handle:
+                json.dump(sorted(self._seen_alert_ids), handle, indent=2)
+            os.replace(temp_path, path)
+        except OSError as exc:
+            logger.warning("Telegram seen-alert cache save failed: %s", exc)
 
     def _fetch_updates(self) -> list[dict]:
         if not self.token:
@@ -437,6 +472,7 @@ def get_telegram_bot() -> TelegramAlertBot:
         _telegram_bot = TelegramAlertBot(
             token=TELEGRAM_BOT_TOKEN,
             subscriptions_file=TELEGRAM_SUBSCRIPTIONS_FILE,
+            seen_alerts_file=TELEGRAM_SEEN_ALERTS_FILE,
         )
     return _telegram_bot
 
