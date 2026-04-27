@@ -144,8 +144,9 @@ export default function NewsPage() {
             const timeoutId = setTimeout(() => controller.abort(), 20000);
 
             try {
+                const requestedLimit = region === 'sweden' ? '180' : '60';
                 const query = new URLSearchParams({
-                    limit: '60',
+                    limit: requestedLimit,
                     region,
                 });
                 const data = await apiFetch(`/integrations/swedish-alerts?${query.toString()}`, { signal: controller.signal });

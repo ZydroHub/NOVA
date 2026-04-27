@@ -514,6 +514,42 @@ def _is_within_last_days(value: str, days: int = 30) -> bool:
     return parsed >= (now - timedelta(days=days))
 
 
+def _balance_items_by_source(items: list[dict]) -> list[dict]:
+    """Interleave sources so one feed does not dominate the Sweden list."""
+    if not items:
+        return items
+
+    preferred_order = [
+        "Krisinformation VMA",
+        "SOS Alarm",
+        "Polisen",
+        "Krisinformation",
+        "Trafikverket",
+    ]
+
+    buckets: dict[str, list[dict]] = {}
+    for item in items:
+        source = str(item.get("source") or "Unknown")
+        buckets.setdefault(source, []).append(item)
+
+    ordered_sources = [source for source in preferred_order if source in buckets]
+    ordered_sources.extend(source for source in buckets.keys() if source not in ordered_sources)
+
+    balanced: list[dict] = []
+    while True:
+        added = False
+        for source in ordered_sources:
+            bucket = buckets.get(source) or []
+            if not bucket:
+                continue
+            balanced.append(bucket.pop(0))
+            added = True
+        if not added:
+            break
+
+    return balanced
+
+
 def _extract_sos_statistics(payload: object) -> dict[str, str]:
     if not isinstance(payload, dict):
         return {}
@@ -761,6 +797,9 @@ async def swedish_alerts(limit: int = 12, region: str = "nacka"):
             (item.get("title") or ""),
         )
     )
+
+    if selected_region == "sweden":
+        deduped = _balance_items_by_source(deduped)
 
     # If Stockholm is empty, backfill with broader recent Polisen events.
     if not deduped and selected_region == "stockholm" and polisen_data_cache:
