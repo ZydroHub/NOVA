@@ -22628,7 +22628,7 @@ const createLucideIcon = (iconName, iconNode) => {
   Component.displayName = toPascalCase(iconName);
   return Component;
 };
-const __iconNode$r = [
+const __iconNode$x = [
   [
     "path",
     {
@@ -22637,20 +22637,25 @@ const __iconNode$r = [
     }
   ]
 ];
-const Activity = createLucideIcon("activity", __iconNode$r);
-const __iconNode$q = [
+const Activity = createLucideIcon("activity", __iconNode$x);
+const __iconNode$w = [
   ["path", { d: "m12 19-7-7 7-7", key: "1l729n" }],
   ["path", { d: "M19 12H5", key: "x3x0zl" }]
 ];
-const ArrowLeft = createLucideIcon("arrow-left", __iconNode$q);
-const __iconNode$p = [["path", { d: "M20 6 9 17l-5-5", key: "1gmf2c" }]];
-const Check = createLucideIcon("check", __iconNode$p);
-const __iconNode$o = [
+const ArrowLeft = createLucideIcon("arrow-left", __iconNode$w);
+const __iconNode$v = [["path", { d: "M20 6 9 17l-5-5", key: "1gmf2c" }]];
+const Check = createLucideIcon("check", __iconNode$v);
+const __iconNode$u = [
+  ["path", { d: "M12 6v6h4", key: "135r8i" }],
+  ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }]
+];
+const Clock3 = createLucideIcon("clock-3", __iconNode$u);
+const __iconNode$t = [
   ["path", { d: "M12 6v6l4 2", key: "mmk7yg" }],
   ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }]
 ];
-const Clock = createLucideIcon("clock", __iconNode$o);
-const __iconNode$n = [
+const Clock = createLucideIcon("clock", __iconNode$t);
+const __iconNode$s = [
   ["path", { d: "M12 2v2", key: "tus03m" }],
   ["path", { d: "m4.93 4.93 1.41 1.41", key: "149t6j" }],
   ["path", { d: "M20 12h2", key: "1q8mjw" }],
@@ -22658,14 +22663,14 @@ const __iconNode$n = [
   ["path", { d: "M15.947 12.65a4 4 0 0 0-5.925-4.128", key: "dpwdj0" }],
   ["path", { d: "M13 22H7a5 5 0 1 1 4.9-6H13a3 3 0 0 1 0 6Z", key: "s09mg5" }]
 ];
-const CloudSun = createLucideIcon("cloud-sun", __iconNode$n);
-const __iconNode$m = [
+const CloudSun = createLucideIcon("cloud-sun", __iconNode$s);
+const __iconNode$r = [
   ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }],
   ["path", { d: "M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20", key: "13o1zl" }],
   ["path", { d: "M2 12h20", key: "9i4pu4" }]
 ];
-const Globe = createLucideIcon("globe", __iconNode$m);
-const __iconNode$l = [
+const Globe = createLucideIcon("globe", __iconNode$r);
+const __iconNode$q = [
   ["path", { d: "M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8", key: "5wwlr5" }],
   [
     "path",
@@ -22675,8 +22680,8 @@ const __iconNode$l = [
     }
   ]
 ];
-const House = createLucideIcon("house", __iconNode$l);
-const __iconNode$k = [
+const House = createLucideIcon("house", __iconNode$q);
+const __iconNode$p = [
   ["path", { d: "M10 8h.01", key: "1r9ogq" }],
   ["path", { d: "M12 12h.01", key: "1mp3jc" }],
   ["path", { d: "M14 8h.01", key: "1primd" }],
@@ -22687,14 +22692,21 @@ const __iconNode$k = [
   ["path", { d: "M8 12h.01", key: "czm47f" }],
   ["rect", { width: "20", height: "16", x: "2", y: "4", rx: "2", key: "18n3k1" }]
 ];
-const Keyboard = createLucideIcon("keyboard", __iconNode$k);
-const __iconNode$j = [
+const Keyboard = createLucideIcon("keyboard", __iconNode$p);
+const __iconNode$o = [
+  ["rect", { width: "7", height: "7", x: "3", y: "3", rx: "1", key: "1g98yp" }],
+  ["rect", { width: "7", height: "7", x: "14", y: "3", rx: "1", key: "6d4xhi" }],
+  ["rect", { width: "7", height: "7", x: "14", y: "14", rx: "1", key: "nxv5o0" }],
+  ["rect", { width: "7", height: "7", x: "3", y: "14", rx: "1", key: "1bb6yr" }]
+];
+const LayoutGrid = createLucideIcon("layout-grid", __iconNode$o);
+const __iconNode$n = [
   ["path", { d: "M4 5h16", key: "1tepv9" }],
   ["path", { d: "M4 12h16", key: "1lakjw" }],
   ["path", { d: "M4 19h16", key: "1djgab" }]
 ];
-const Menu = createLucideIcon("menu", __iconNode$j);
-const __iconNode$i = [
+const Menu = createLucideIcon("menu", __iconNode$n);
+const __iconNode$m = [
   [
     "path",
     {
@@ -22703,29 +22715,19 @@ const __iconNode$i = [
     }
   ]
 ];
-const MessageCircle = createLucideIcon("message-circle", __iconNode$i);
-const __iconNode$h = [
-  [
-    "path",
-    {
-      d: "M22 17a2 2 0 0 1-2 2H6.828a2 2 0 0 0-1.414.586l-2.202 2.202A.71.71 0 0 1 2 21.286V5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2z",
-      key: "18887p"
-    }
-  ]
-];
-const MessageSquare = createLucideIcon("message-square", __iconNode$h);
-const __iconNode$g = [
+const MessageCircle = createLucideIcon("message-circle", __iconNode$m);
+const __iconNode$l = [
   ["path", { d: "M12 19v3", key: "npa21l" }],
   ["path", { d: "M19 10v2a7 7 0 0 1-14 0v-2", key: "1vc78b" }],
   ["rect", { x: "9", y: "2", width: "6", height: "13", rx: "3", key: "s6n7sd" }]
 ];
-const Mic = createLucideIcon("mic", __iconNode$g);
-const __iconNode$f = [
+const Mic = createLucideIcon("mic", __iconNode$l);
+const __iconNode$k = [
   ["circle", { cx: "8", cy: "18", r: "4", key: "1fc0mg" }],
   ["path", { d: "M12 18V2l7 4", key: "g04rme" }]
 ];
-const Music2 = createLucideIcon("music-2", __iconNode$f);
-const __iconNode$e = [
+const Music2 = createLucideIcon("music-2", __iconNode$k);
+const __iconNode$j = [
   ["path", { d: "M15 18h-5", key: "95g1m2" }],
   ["path", { d: "M18 14h-8", key: "sponae" }],
   [
@@ -22737,13 +22739,13 @@ const __iconNode$e = [
   ],
   ["rect", { width: "8", height: "4", x: "10", y: "6", rx: "1", key: "aywv1n" }]
 ];
-const Newspaper = createLucideIcon("newspaper", __iconNode$e);
-const __iconNode$d = [
+const Newspaper = createLucideIcon("newspaper", __iconNode$j);
+const __iconNode$i = [
   ["rect", { x: "14", y: "3", width: "5", height: "18", rx: "1", key: "kaeet6" }],
   ["rect", { x: "5", y: "3", width: "5", height: "18", rx: "1", key: "1wsw3u" }]
 ];
-const Pause = createLucideIcon("pause", __iconNode$d);
-const __iconNode$c = [
+const Pause = createLucideIcon("pause", __iconNode$i);
+const __iconNode$h = [
   [
     "path",
     {
@@ -22753,8 +22755,8 @@ const __iconNode$c = [
   ],
   ["path", { d: "m15 5 4 4", key: "1mk7zo" }]
 ];
-const Pencil = createLucideIcon("pencil", __iconNode$c);
-const __iconNode$b = [
+const Pencil = createLucideIcon("pencil", __iconNode$h);
+const __iconNode$g = [
   [
     "path",
     {
@@ -22763,25 +22765,33 @@ const __iconNode$b = [
     }
   ]
 ];
-const Play = createLucideIcon("play", __iconNode$b);
-const __iconNode$a = [
+const Play = createLucideIcon("play", __iconNode$g);
+const __iconNode$f = [
   ["path", { d: "M5 12h14", key: "1ays0h" }],
   ["path", { d: "M12 5v14", key: "s699le" }]
 ];
-const Plus = createLucideIcon("plus", __iconNode$a);
-const __iconNode$9 = [
+const Plus = createLucideIcon("plus", __iconNode$f);
+const __iconNode$e = [
   ["path", { d: "M12 2v10", key: "mnfbl" }],
   ["path", { d: "M18.4 6.6a9 9 0 1 1-12.77.04", key: "obofu9" }]
 ];
-const Power = createLucideIcon("power", __iconNode$9);
-const __iconNode$8 = [
+const Power = createLucideIcon("power", __iconNode$e);
+const __iconNode$d = [
+  ["path", { d: "M16.247 7.761a6 6 0 0 1 0 8.478", key: "1fwjs5" }],
+  ["path", { d: "M19.075 4.933a10 10 0 0 1 0 14.134", key: "ehdyv1" }],
+  ["path", { d: "M4.925 19.067a10 10 0 0 1 0-14.134", key: "1q22gi" }],
+  ["path", { d: "M7.753 16.239a6 6 0 0 1 0-8.478", key: "r2q7qm" }],
+  ["circle", { cx: "12", cy: "12", r: "2", key: "1c9p78" }]
+];
+const Radio = createLucideIcon("radio", __iconNode$d);
+const __iconNode$c = [
   ["path", { d: "m17 2 4 4-4 4", key: "nntrym" }],
   ["path", { d: "M3 11v-1a4 4 0 0 1 4-4h14", key: "84bu3i" }],
   ["path", { d: "m7 22-4-4 4-4", key: "1wqhfi" }],
   ["path", { d: "M21 13v1a4 4 0 0 1-4 4H3", key: "1rx37r" }]
 ];
-const Repeat = createLucideIcon("repeat", __iconNode$8);
-const __iconNode$7 = [
+const Repeat = createLucideIcon("repeat", __iconNode$c);
+const __iconNode$b = [
   [
     "path",
     {
@@ -22792,16 +22802,24 @@ const __iconNode$7 = [
   ["path", { d: "M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7", key: "1ydtos" }],
   ["path", { d: "M7 3v4a1 1 0 0 0 1 1h7", key: "t51u73" }]
 ];
-const Save = createLucideIcon("save", __iconNode$7);
-const __iconNode$6 = [
+const Save = createLucideIcon("save", __iconNode$b);
+const __iconNode$a = [
+  ["path", { d: "M3 7V5a2 2 0 0 1 2-2h2", key: "aa7l1z" }],
+  ["path", { d: "M17 3h2a2 2 0 0 1 2 2v2", key: "4qcy5o" }],
+  ["path", { d: "M21 17v2a2 2 0 0 1-2 2h-2", key: "6vwrx8" }],
+  ["path", { d: "M7 21H5a2 2 0 0 1-2-2v-2", key: "ioqczr" }],
+  ["path", { d: "M7 12h10", key: "b7w52i" }]
+];
+const ScanLine = createLucideIcon("scan-line", __iconNode$a);
+const __iconNode$9 = [
   ["path", { d: "m18 14 4 4-4 4", key: "10pe0f" }],
   ["path", { d: "m18 2 4 4-4 4", key: "pucp1d" }],
   ["path", { d: "M2 18h1.973a4 4 0 0 0 3.3-1.7l5.454-8.6a4 4 0 0 1 3.3-1.7H22", key: "1ailkh" }],
   ["path", { d: "M2 6h1.972a4 4 0 0 1 3.6 2.2", key: "km57vx" }],
   ["path", { d: "M22 18h-6.041a4 4 0 0 1-3.3-1.8l-.359-.45", key: "os18l9" }]
 ];
-const Shuffle = createLucideIcon("shuffle", __iconNode$6);
-const __iconNode$5 = [
+const Shuffle = createLucideIcon("shuffle", __iconNode$9);
+const __iconNode$8 = [
   [
     "path",
     {
@@ -22811,8 +22829,8 @@ const __iconNode$5 = [
   ],
   ["path", { d: "M3 20V4", key: "1ptbpl" }]
 ];
-const SkipBack = createLucideIcon("skip-back", __iconNode$5);
-const __iconNode$4 = [
+const SkipBack = createLucideIcon("skip-back", __iconNode$8);
+const __iconNode$7 = [
   ["path", { d: "M21 4v16", key: "7j8fe9" }],
   [
     "path",
@@ -22822,19 +22840,54 @@ const __iconNode$4 = [
     }
   ]
 ];
-const SkipForward = createLucideIcon("skip-forward", __iconNode$4);
-const __iconNode$3 = [
+const SkipForward = createLucideIcon("skip-forward", __iconNode$7);
+const __iconNode$6 = [
+  ["path", { d: "M10 5H3", key: "1qgfaw" }],
+  ["path", { d: "M12 19H3", key: "yhmn1j" }],
+  ["path", { d: "M14 3v4", key: "1sua03" }],
+  ["path", { d: "M16 17v4", key: "1q0r14" }],
+  ["path", { d: "M21 12h-9", key: "1o4lsq" }],
+  ["path", { d: "M21 19h-5", key: "1rlt1p" }],
+  ["path", { d: "M21 5h-7", key: "1oszz2" }],
+  ["path", { d: "M8 10v4", key: "tgpxqk" }],
+  ["path", { d: "M8 12H3", key: "a7s4jb" }]
+];
+const SlidersHorizontal = createLucideIcon("sliders-horizontal", __iconNode$6);
+const __iconNode$5 = [
   ["path", { d: "M14 4v10.54a4 4 0 1 1-4 0V4a2 2 0 0 1 4 0Z", key: "17jzev" }]
 ];
-const Thermometer = createLucideIcon("thermometer", __iconNode$3);
-const __iconNode$2 = [
+const Thermometer = createLucideIcon("thermometer", __iconNode$5);
+const __iconNode$4 = [
   ["path", { d: "M10 11v6", key: "nco0om" }],
   ["path", { d: "M14 11v6", key: "outv1u" }],
   ["path", { d: "M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6", key: "miytrc" }],
   ["path", { d: "M3 6h18", key: "d0wm0j" }],
   ["path", { d: "M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2", key: "e791ji" }]
 ];
-const Trash2 = createLucideIcon("trash-2", __iconNode$2);
+const Trash2 = createLucideIcon("trash-2", __iconNode$4);
+const __iconNode$3 = [
+  [
+    "path",
+    {
+      d: "M11 4.702a.705.705 0 0 0-1.203-.498L6.413 7.587A1.4 1.4 0 0 1 5.416 8H3a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h2.416a1.4 1.4 0 0 1 .997.413l3.383 3.384A.705.705 0 0 0 11 19.298z",
+      key: "uqj9uw"
+    }
+  ],
+  ["path", { d: "M16 9a5 5 0 0 1 0 6", key: "1q6k2b" }]
+];
+const Volume1 = createLucideIcon("volume-1", __iconNode$3);
+const __iconNode$2 = [
+  [
+    "path",
+    {
+      d: "M11 4.702a.705.705 0 0 0-1.203-.498L6.413 7.587A1.4 1.4 0 0 1 5.416 8H3a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h2.416a1.4 1.4 0 0 1 .997.413l3.383 3.384A.705.705 0 0 0 11 19.298z",
+      key: "uqj9uw"
+    }
+  ],
+  ["path", { d: "M16 9a5 5 0 0 1 0 6", key: "1q6k2b" }],
+  ["path", { d: "M19.364 18.364a9 9 0 0 0 0-12.728", key: "ijwkga" }]
+];
+const Volume2 = createLucideIcon("volume-2", __iconNode$2);
 const __iconNode$1 = [
   ["path", { d: "M18 6 6 18", key: "1bl5f8" }],
   ["path", { d: "m6 6 12 12", key: "d8bk6v" }]
@@ -22888,6 +22941,15 @@ async function apiFetch(path2, options = {}) {
   return body;
 }
 const WebSocketContext = reactExports.createContext(null);
+const KEY_VOICE_AUTO_RECONNECT$1 = "pocket-ai.voiceAutoReconnect";
+function readVoiceReconnectEnabled() {
+  try {
+    const value = localStorage.getItem(KEY_VOICE_AUTO_RECONNECT$1);
+    return value !== "false";
+  } catch {
+    return true;
+  }
+}
 function WebSocketProvider({ children }) {
   const [connStatus, setConnStatus] = reactExports.useState("connecting");
   const [chatConnStatus, setChatConnStatus] = reactExports.useState("disconnected");
@@ -22909,6 +22971,25 @@ function WebSocketProvider({ children }) {
   const wsRef = reactExports.useRef(null);
   const reconnectTimer = reactExports.useRef(null);
   const stageResetTimerRef = reactExports.useRef(null);
+  const voiceStatusRef = reactExports.useRef(voiceStatus);
+  const voiceStageRef = reactExports.useRef(voiceStage);
+  const isRecordingRef = reactExports.useRef(isRecording);
+  reactExports.useEffect(() => {
+    voiceStatusRef.current = voiceStatus;
+  }, [voiceStatus]);
+  reactExports.useEffect(() => {
+    voiceStageRef.current = voiceStage;
+  }, [voiceStage]);
+  reactExports.useEffect(() => {
+    isRecordingRef.current = isRecording;
+  }, [isRecording]);
+  const resetVoiceActivity = reactExports.useCallback(() => {
+    setVoiceStatus("idle");
+    setVoiceStage("idle");
+    setIsVoiceStreaming(false);
+    setVoiceStreamText("");
+    setIsRecording(false);
+  }, []);
   const setStageWithAutoReset = reactExports.useCallback((stage, timeoutMs = 0) => {
     if (stageResetTimerRef.current) {
       clearTimeout(stageResetTimerRef.current);
@@ -22935,6 +23016,15 @@ function WebSocketProvider({ children }) {
     if (eventListeners.current[data.type]) {
       eventListeners.current[data.type].forEach((cb) => cb(data));
     }
+    if (data.type === "voice_status") {
+      console.debug("[voice] status update", data.status, data);
+    } else if (data.type === "voice_transcription") {
+      console.debug("[voice] transcription received", data.text?.slice?.(0, 120) || "");
+    } else if (data.type === "vosk_partial") {
+      console.debug("[voice] partial transcript", data.text?.slice?.(0, 120) || "");
+    } else if (data.type === "error") {
+      console.error("[voice] backend error event", data.message || data.error || data);
+    }
     switch (data.type) {
       case "history": {
         const history = (data.messages || []).filter((m) => !m.hidden).map((m) => ({
@@ -22952,7 +23042,7 @@ function WebSocketProvider({ children }) {
         setStreamText(data.text || "");
         break;
       case "stream_final":
-        if (voiceStatus !== "speaking" && !isRecording) setStageWithAutoReset("idle");
+        if (voiceStatusRef.current !== "speaking" && !isRecordingRef.current) setStageWithAutoReset("idle");
         setStreaming(false);
         setMessages((prev) => [
           ...prev,
@@ -22968,6 +23058,11 @@ function WebSocketProvider({ children }) {
           { role: "assistant", text: `⚠ Error: ${data.error || "Unknown error"}` }
         ]);
         setStreamText("");
+        break;
+      case "error":
+        console.error("WS backend error", data.message || data.error || data);
+        resetVoiceActivity();
+        setStageWithAutoReset("idle");
         break;
       case "stream_aborted":
         setStageWithAutoReset("idle");
@@ -22991,6 +23086,7 @@ function WebSocketProvider({ children }) {
       case "voice_status":
         setVoiceStatus(data.status);
         setIsRecording(data.status === "listening");
+        console.debug("[voice] stage transition", voiceStageRef.current, "->", data.status);
         if (data.status === "listening") setStageWithAutoReset("listening");
         if (data.status === "thinking") setStageWithAutoReset("thinking", 12e3);
         if (data.status === "speaking") setStageWithAutoReset("speaking");
@@ -23001,39 +23097,46 @@ function WebSocketProvider({ children }) {
         }
         break;
       case "voice_transcription":
+        console.info("[voice] final transcription accepted, entering transcribing stage");
         setStageWithAutoReset("transcribing", 1200);
         setMessages((prev) => [...prev, { role: "user", text: data.text }]);
         setVoskText("");
         break;
       case "vosk_partial":
+        console.debug("[voice] transcribing partial text");
         setStageWithAutoReset("transcribing", 1200);
         setVoskText(data.text || "");
         break;
       case "vosk_final":
+        console.info("[voice] final Vosk text received");
         setStageWithAutoReset("transcribing", 1200);
         setMessages((prev) => [...prev, { role: "user", text: data.text }]);
         setVoskText("");
         break;
       case "ai_start":
+        console.info("[voice] AI generation started");
         setStageWithAutoReset("thinking", 12e3);
         setVoiceStreamText("");
         setIsVoiceStreaming(true);
         break;
       case "ai_delta":
+        console.debug("[voice] AI stream delta received");
         setStageWithAutoReset("generating", 9e3);
         setVoiceStreamText(data.text || "");
         break;
       case "ai_final":
-        setStageWithAutoReset(voiceStatus === "speaking" ? "speaking" : "generating", 1200);
+        console.info("[voice] AI generation finished");
+        setStageWithAutoReset(voiceStatusRef.current === "speaking" ? "speaking" : "generating", 1200);
         setVoiceStreamText(data.text || "");
         break;
       case "ai_aborted":
+        console.warn("[voice] AI generation aborted");
         setStageWithAutoReset("idle");
         setVoiceStreamText((prev) => prev + " [aborted]");
         setTimeout(() => setIsVoiceStreaming(false), 2e3);
         break;
     }
-  }, [setStageWithAutoReset, voiceStatus, isRecording]);
+  }, [setStageWithAutoReset]);
   const connect = reactExports.useCallback(() => {
     if (reconnectTimer.current) {
       clearTimeout(reconnectTimer.current);
@@ -23046,14 +23149,34 @@ function WebSocketProvider({ children }) {
     setConnStatus("connecting");
     const ws = new WebSocket(WS_URL);
     wsRef.current = ws;
+    console.info("[voice] websocket connecting", WS_URL);
     ws.onopen = () => {
       setConnStatus("connected");
       clearTimeout(reconnectTimer.current);
+      console.info("[voice] websocket open");
     };
-    ws.onclose = () => {
+    ws.onclose = (event) => {
+      if (wsRef.current !== ws) {
+        console.debug("[voice] ignoring stale websocket close event");
+        return;
+      }
+      console.warn("[voice] websocket closed", { code: event.code, reason: event.reason, wasClean: event.wasClean });
       setConnStatus("disconnected");
+      resetVoiceActivity();
       wsRef.current = null;
-      reconnectTimer.current = setTimeout(connect, 3e3);
+      if (readVoiceReconnectEnabled()) {
+        reconnectTimer.current = setTimeout(connect, 3e3);
+      } else {
+        console.info("[voice] auto reconnect disabled by settings");
+      }
+    };
+    ws.onerror = (event) => {
+      if (wsRef.current !== ws) {
+        console.debug("[voice] ignoring stale websocket error event");
+        return;
+      }
+      console.error("[voice] websocket error", event);
+      resetVoiceActivity();
     };
     ws.onmessage = (event) => {
       try {
@@ -23063,7 +23186,7 @@ function WebSocketProvider({ children }) {
         console.error("WS Parse error", e);
       }
     };
-  }, [handleServerMessage]);
+  }, [handleServerMessage, resetVoiceActivity]);
   const fetchConversations = reactExports.useCallback(async () => {
     try {
       setLastApiError(null);
@@ -23135,14 +23258,21 @@ function WebSocketProvider({ children }) {
     setChatConnStatus("connecting");
     const ws = new WebSocket(`${CHAT_WS_URL}/${convId}`);
     chatWsRef.current = ws;
+    console.info("[chat] websocket connecting", `${CHAT_WS_URL}/${convId}`);
     ws.onopen = () => {
       setChatConnStatus("connected");
+      console.info("[chat] websocket open", convId);
       if (chatReconnectTimer.current) {
         clearTimeout(chatReconnectTimer.current);
         chatReconnectTimer.current = null;
       }
     };
-    ws.onclose = () => {
+    ws.onclose = (event) => {
+      if (chatWsRef.current !== ws) {
+        console.debug("[chat] ignoring stale websocket close event", convId);
+        return;
+      }
+      console.warn("[chat] websocket closed", { convId, code: event.code, reason: event.reason, wasClean: event.wasClean });
       chatWsRef.current = null;
       setChatConnStatus("disconnected");
       chatReconnectTimer.current = setTimeout(() => {
@@ -23181,6 +23311,11 @@ function WebSocketProvider({ children }) {
     const useVoiceWs = typeof type === "string" && type.startsWith("task.");
     const targetWs = useVoiceWs ? wsRef.current : chatWsRef.current?.readyState === WebSocket.OPEN ? chatWsRef.current : wsRef.current;
     if (targetWs && targetWs.readyState === WebSocket.OPEN) {
+      if (useVoiceWs) {
+        console.debug("[voice] sendMessage", type, payload);
+      } else {
+        console.debug("[chat] sendMessage", type, payload);
+      }
       targetWs.send(JSON.stringify({ type, ...payload }));
     } else {
       console.warn("WS not connected, cannot send", type);
@@ -23188,6 +23323,7 @@ function WebSocketProvider({ children }) {
   }, []);
   const sendVoiceCommand = reactExports.useCallback((type, payload = {}) => {
     if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
+      console.debug("[voice] sendVoiceCommand", type, payload);
       wsRef.current.send(JSON.stringify({ type, ...payload }));
     } else {
       console.warn("Voice WS not connected, cannot send", type);
@@ -23339,9 +23475,12 @@ function Home() {
   const hourlyTimes = Array.isArray(hourly.time) ? hourly.time : [];
   const hourlyTemps = Array.isArray(hourly.temperature_2m) ? hourly.temperature_2m : [];
   const hourlyCodes = Array.isArray(hourly.weather_code) ? hourly.weather_code : [];
-  const forecastDays = weather?.daily?.time || [];
-  const forecastTempsMax = weather?.daily?.temperature_2m_max || [];
-  const forecastTempsMin = weather?.daily?.temperature_2m_min || [];
+  const forecastDays = Array.isArray(weather?.daily?.time) ? weather.daily.time : [];
+  const forecastTempsMax = Array.isArray(weather?.daily?.temperature_2m_max) ? weather.daily.temperature_2m_max : [];
+  const forecastTempsMin = Array.isArray(weather?.daily?.temperature_2m_min) ? weather.daily.temperature_2m_min : [];
+  const alertsSorted = reactExports.useMemo(() => {
+    return [...alerts].sort((a, b) => (b.priority_rank || 0) - (a.priority_rank || 0));
+  }, [alerts]);
   const getWeatherEmoji = reactExports.useCallback((code2) => {
     if (code2 === 0) return "☀️";
     if (code2 === 1 || code2 === 2) return "🌤️";
@@ -23366,6 +23505,7 @@ function Home() {
     setTimeout(() => setWakeState("idle"), 2500);
   }, []);
   const onNovaClick = reactExports.useCallback(() => {
+    console.info("[voice] home nova click -> toggleVoice");
     toggleVoice();
   }, [toggleVoice]);
   const todayHours = reactExports.useMemo(() => {
@@ -23388,6 +23528,11 @@ function Home() {
     if (Number.isNaN(date.getTime())) return `Day ${idx + 1}`;
     return date.toLocaleDateString("en-US", { weekday: "short" });
   };
+  const formatTempRange = (minTemp, maxTemp) => {
+    const low = typeof minTemp === "number" ? Math.round(minTemp) : "-";
+    const high = typeof maxTemp === "number" ? Math.round(maxTemp) : "-";
+    return `${low}° - ${high}°`;
+  };
   const stageLabel = {
     idle: "• SYSTEMS ONLINE",
     listening: "• LISTENING FOR VOICE...",
@@ -23399,7 +23544,7 @@ function Home() {
   return /* @__PURE__ */ jsxRuntimeExports.jsxs(
     motion.div,
     {
-      className: "nova-home touch-scroll-y",
+      className: "nova-home touch-scroll-y overflow-y-auto h-full min-h-0",
       initial: { opacity: 0, y: 20 },
       animate: { opacity: 1, y: 0 },
       transition: { duration: 0.5, ease: "easeOut" },
@@ -23426,7 +23571,7 @@ function Home() {
                       "%"
                     ] }),
                     /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "weather-temp-huge", children: [
-                      currentTemp !== "-" ? Math.round(currentTemp) : "-",
+                      typeof currentTemp === "number" ? Math.round(currentTemp) : "-",
                       "°"
                     ] })
                   ] }),
@@ -23448,14 +23593,14 @@ function Home() {
                   /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "air-condition-item", children: [
                     /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "condition-label", children: "Real Feel" }),
                     /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "condition-value", children: [
-                      weather?.current?.apparent_temperature ? Math.round(weather.current.apparent_temperature) : "-",
+                      typeof weather?.current?.apparent_temperature === "number" ? Math.round(weather.current.apparent_temperature) : "-",
                       "°"
                     ] })
                   ] }),
                   /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "air-condition-item", children: [
                     /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "condition-label", children: "Wind" }),
                     /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "condition-value", children: [
-                      weather?.current?.wind_speed_10m ? Math.round(weather.current.wind_speed_10m) : "-",
+                      typeof weather?.current?.wind_speed_10m === "number" ? Math.round(weather.current.wind_speed_10m) : "-",
                       " km/h"
                     ] })
                   ] }),
@@ -23468,7 +23613,7 @@ function Home() {
                   ] }),
                   /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "air-condition-item", children: [
                     /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "condition-label", children: "UV Index" }),
-                    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "condition-value", children: weather?.current?.uv_index ? Math.round(weather.current.uv_index * 10) / 10 : "-" })
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "condition-value", children: typeof weather?.current?.uv_index === "number" ? Math.round(weather.current.uv_index * 10) / 10 : "-" })
                   ] })
                 ] })
               ] })
@@ -23484,21 +23629,16 @@ function Home() {
             transition: { duration: 0.6, delay: 0.2, ease: "easeOut" },
             children: [
               /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "forecast-7day", children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-xs opacity-70 mb-2 font-semibold", children: "7-DAY FORECAST" }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-xs opacity-70 mb-2 font-semibold tracking-[0.18em]", children: "7-DAY FORECAST" }),
                 /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "space-y-1", children: forecastDays.length > 0 ? forecastDays.slice(0, 7).map((day, idx) => {
-                  const maxTemp = forecastTempsMax[idx] ? Math.round(forecastTempsMax[idx]) : "-";
-                  const minTemp = forecastTempsMin[idx] ? Math.round(forecastTempsMin[idx]) : "-";
+                  const maxTemp = typeof forecastTempsMax[idx] === "number" ? Math.round(forecastTempsMax[idx]) : "-";
+                  const minTemp = typeof forecastTempsMin[idx] === "number" ? Math.round(forecastTempsMin[idx]) : "-";
                   const dayName = formatDay(day, idx);
                   const dayWeatherCode = weather?.daily?.weather_code?.[idx] || currentWeatherCode;
                   return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "forecast-row", children: [
-                    /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-sm font-medium", children: dayName }),
-                    /* @__PURE__ */ jsxRuntimeExports.jsx("span", { style: { fontSize: "1.1rem", display: "flex", alignItems: "center", justifyContent: "center" }, children: getWeatherEmoji(dayWeatherCode) }),
-                    /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "font-semibold ml-auto text-sm", children: [
-                      maxTemp,
-                      "°/",
-                      minTemp,
-                      "°"
-                    ] })
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "forecast-day text-sm font-medium", children: dayName }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "forecast-icon", style: { fontSize: "1.1rem", display: "flex", alignItems: "center", justifyContent: "center" }, children: getWeatherEmoji(dayWeatherCode) }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "forecast-temp font-semibold ml-auto text-sm text-cyan-100", children: formatTempRange(minTemp, maxTemp) })
                   ] }, day);
                 }) : /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "opacity-50 text-xs", children: "Loading forecast..." }) })
               ] }),
@@ -23517,7 +23657,7 @@ function Home() {
                       wakeState === "loading" && "Waking...",
                       wakeState === "sent" && "✓ Signal Sent",
                       wakeState === "error" && "✗ Failed",
-                      wakeState === "idle" && "Wake PC Oscar"
+                      wakeState === "idle" && "Start PC"
                     ] })
                   ]
                 }
@@ -23530,12 +23670,15 @@ function Home() {
                   animate: { opacity: 1 },
                   transition: { duration: 0.4, delay: 0.4 },
                   children: [
-                    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-xs opacity-70 mb-2 font-semibold", children: "LATEST NEWS & ALERTS" }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-xs opacity-70 mb-2 font-semibold tracking-[0.18em]", children: "LATEST NEWS & ALERTS" }),
                     /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-1", children: [
                       alertsError && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-xs opacity-70", children: alertsError }),
-                      alerts.length > 0 ? alerts.slice(0, 4).map((item, idx) => /* @__PURE__ */ jsxRuntimeExports.jsxs("a", { href: item.url || "#", target: "_blank", rel: "noreferrer", className: "alert-item", children: [
-                        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "alert-source", children: item.source || "Alert" }),
-                        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "alert-title", children: item.title.slice(0, 50) })
+                      alertsSorted.length > 0 ? alertsSorted.slice(0, 4).map((item, idx) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "alert-item alert-item-static", children: [
+                        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "alert-row-top", children: [
+                          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "alert-source", children: item.source || "Alert" }),
+                          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "alert-priority", children: item.priority_label || "News" })
+                        ] }),
+                        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "alert-title", children: item.title })
                       ] }, `${item.title}-${idx}`)) : /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-xs opacity-50", children: "No items yet" })
                     ] })
                   ]
@@ -37067,7 +37210,8 @@ const items = [
   { to: "/chat", label: "Chat", icon: MessageCircle },
   { to: "/music", label: "Music", icon: Music2 },
   { to: "/news", label: "News", icon: Newspaper },
-  { to: "/weather", label: "Weather", icon: CloudSun }
+  { to: "/weather", label: "Weather", icon: CloudSun },
+  { to: "/settings", label: "Config", icon: SlidersHorizontal }
 ];
 function SideNav() {
   return /* @__PURE__ */ jsxRuntimeExports.jsx("aside", { className: "nova-side-nav", "aria-label": "NOVA navigation", children: items.map((item) => {
@@ -37089,6 +37233,7 @@ function SideNav() {
 }
 function MusicPage() {
   const [isPlaying, setIsPlaying] = reactExports.useState(false);
+  const [volume, setVolume] = reactExports.useState(72);
   return /* @__PURE__ */ jsxRuntimeExports.jsx(
     motion.div,
     {
@@ -37097,9 +37242,11 @@ function MusicPage() {
       animate: { opacity: 1, y: 0 },
       exit: { opacity: 0, y: -20 },
       transition: { duration: 0.5, ease: "easeOut" },
-      children: /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "glass-card p-6 max-w-3xl w-full mx-auto", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "nova-title", children: "Music Control" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "nova-subtitle", children: "Spotify-style controls are ready for integration." }),
+      children: /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "glass-card p-6 max-w-3xl w-full mx-auto flex flex-col gap-5 min-h-full", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "nova-title", children: "Music Control" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "nova-subtitle", children: "Spotify-style controls are ready for integration." })
+        ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "music-card mt-6", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xl font-semibold", children: "No Track Selected" }),
@@ -37121,42 +37268,211 @@ function MusicPage() {
             /* @__PURE__ */ jsxRuntimeExports.jsx("button", { className: "round-btn", "aria-label": "Next", children: /* @__PURE__ */ jsxRuntimeExports.jsx(SkipForward, { size: 22 }) }),
             /* @__PURE__ */ jsxRuntimeExports.jsx("button", { className: "round-btn", "aria-label": "Repeat", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Repeat, { size: 22 }) })
           ] })
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "music-volume-panel mt-auto", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between gap-3", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2 text-cyan-100 font-semibold", children: [
+              volume === 0 ? /* @__PURE__ */ jsxRuntimeExports.jsx(Volume1, { size: 18 }) : /* @__PURE__ */ jsxRuntimeExports.jsx(Volume2, { size: 18 }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: "Volume" })
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-sm text-cyan-200/70 w-12 text-right", children: [
+              volume,
+              "%"
+            ] })
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "input",
+            {
+              type: "range",
+              min: "0",
+              max: "100",
+              value: volume,
+              onChange: (event) => setVolume(Number(event.target.value)),
+              className: "music-volume-slider",
+              "aria-label": "Volume adjuster"
+            }
+          )
         ] })
       ] })
     }
   );
 }
+const KEY_ALERT_REGION = "pocket-ai.alertRegion";
+const KEY_ALERT_UPDATE_MODE = "pocket-ai.alertUpdateMode";
+const KEY_ALERT_UPDATE_TIME = "pocket-ai.alertUpdateTime";
+const REGION_OPTIONS = [
+  { value: "nacka", label: "Nacka" },
+  { value: "stockholm", label: "Stockholm" },
+  { value: "sweden", label: "Sweden" }
+];
+const STATS_ORDER = [
+  "Alla samtal",
+  "Polisen",
+  "Vårdbehov",
+  "Räddning",
+  "Ej akuta behov"
+];
+function readStoredValue(key, fallback) {
+  try {
+    return localStorage.getItem(key) || fallback;
+  } catch {
+    return fallback;
+  }
+}
+function normalizeRegion(region) {
+  if (region === "nacka" || region === "stockholm" || region === "sweden") return region;
+  return "nacka";
+}
+function normalizeUpdateMode(mode) {
+  if (mode === "daily" || mode === "weekly") return mode;
+  return "daily";
+}
+function normalizeTimeText(value) {
+  if (typeof value === "string" && /^\d{2}:\d{2}$/.test(value)) return value;
+  return "08:00";
+}
+function getMsUntilNextRun(updateMode, hhmm) {
+  const [hoursRaw, minutesRaw] = (hhmm || "08:00").split(":");
+  const hours = Number(hoursRaw);
+  const minutes = Number(minutesRaw);
+  const safeHours = Number.isFinite(hours) ? Math.min(Math.max(hours, 0), 23) : 8;
+  const safeMinutes = Number.isFinite(minutes) ? Math.min(Math.max(minutes, 0), 59) : 0;
+  const now2 = /* @__PURE__ */ new Date();
+  const next = new Date(now2);
+  next.setHours(safeHours, safeMinutes, 0, 0);
+  if (updateMode === "weekly") {
+    const targetDay = 1;
+    const currentDay = next.getDay();
+    let daysAhead = (targetDay - currentDay + 7) % 7;
+    if (daysAhead === 0 && next <= now2) {
+      daysAhead = 7;
+    }
+    next.setDate(next.getDate() + daysAhead);
+  } else if (next <= now2) {
+    next.setDate(next.getDate() + 1);
+  }
+  return Math.max(1e3, next.getTime() - now2.getTime());
+}
+function toDisplayText(value) {
+  if (value == null) return "";
+  if (typeof value === "string" || typeof value === "number" || typeof value === "boolean") {
+    return String(value).trim();
+  }
+  if (Array.isArray(value)) {
+    return value.map(toDisplayText).filter(Boolean).join(", ").trim();
+  }
+  if (typeof value === "object") {
+    const preferred = value.Description || value.description || value.name || value.title || value.Type || value.type;
+    if (preferred != null) return toDisplayText(preferred);
+    try {
+      return JSON.stringify(value);
+    } catch {
+      return "";
+    }
+  }
+  return "";
+}
+function normalizeAlertItem(item) {
+  const source = toDisplayText(item?.source) || "Alert";
+  const title = toDisplayText(item?.title) || toDisplayText(item?.Description) || "Untitled alert";
+  const location = toDisplayText(item?.location ?? item?.Area ?? item?.area);
+  const published = toDisplayText(item?.published);
+  const priorityLabel = toDisplayText(item?.priority_label) || "News";
+  const priorityRank = Number(item?.priority_rank) || 0;
+  return {
+    ...item,
+    source,
+    title,
+    location,
+    published,
+    priority_label: priorityLabel,
+    priority_rank: priorityRank
+  };
+}
+function formatPublished(value) {
+  if (!value) return "";
+  const parsed = new Date(value);
+  if (Number.isNaN(parsed.getTime())) {
+    return value;
+  }
+  return parsed.toLocaleString("sv-SE", {
+    month: "short",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit"
+  });
+}
 function NewsPage() {
   const [items2, setItems] = reactExports.useState([]);
   const [loading, setLoading] = reactExports.useState(true);
+  const [refreshing, setRefreshing] = reactExports.useState(false);
   const [error, setError] = reactExports.useState(null);
-  reactExports.useEffect(() => {
-    let mounted = true;
-    async function load() {
-      setLoading(true);
-      setError(null);
+  const [region, setRegion] = reactExports.useState(() => normalizeRegion(readStoredValue(KEY_ALERT_REGION, "nacka")));
+  const [statistics, setStatistics] = reactExports.useState({});
+  const [lastUpdated, setLastUpdated] = reactExports.useState(null);
+  const [updateMode, setUpdateMode] = reactExports.useState(() => normalizeUpdateMode(readStoredValue(KEY_ALERT_UPDATE_MODE, "daily")));
+  const [updateTime, setUpdateTime] = reactExports.useState(() => normalizeTimeText(readStoredValue(KEY_ALERT_UPDATE_TIME, "08:00")));
+  const scheduleIntervalRef = reactExports.useRef(null);
+  const loadAlerts = reactExports.useCallback(
+    async ({ initial = false } = {}) => {
+      if (initial) {
+        setLoading(true);
+      } else {
+        setRefreshing(true);
+      }
+      if (initial) setError(null);
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 1e4);
       try {
-        const data = await apiFetch("/integrations/swedish-alerts?limit=20");
-        if (mounted) {
-          setItems(data.items || []);
-        }
+        const query = new URLSearchParams({
+          limit: "20",
+          region
+        });
+        const data = await apiFetch(`/integrations/swedish-alerts?${query.toString()}`, { signal: controller.signal });
+        const rawItems = Array.isArray(data?.items) ? data.items : [];
+        setItems(rawItems.map(normalizeAlertItem));
+        setStatistics(data?.statistics && typeof data.statistics === "object" ? data.statistics : {});
+        setLastUpdated(/* @__PURE__ */ new Date());
+        setError(null);
       } catch (err) {
         console.error("Failed to load alerts", err);
-        if (mounted) {
-          setError("Failed to load alerts");
-          setItems([]);
-        }
+        setError(err?.name === "AbortError" ? "Loading alerts timed out. Retry in a moment." : "Failed to load alerts");
+        setItems([]);
       } finally {
-        if (mounted) setLoading(false);
+        clearTimeout(timeoutId);
+        setLoading(false);
+        setRefreshing(false);
       }
-    }
-    load();
-    const timer = setInterval(load, 12e4);
+    },
+    [region]
+  );
+  reactExports.useEffect(() => {
+    loadAlerts({ initial: true });
+  }, [loadAlerts]);
+  reactExports.useEffect(() => {
+    localStorage.setItem(KEY_ALERT_REGION, region);
+  }, [region]);
+  reactExports.useEffect(() => {
+    localStorage.setItem(KEY_ALERT_UPDATE_MODE, updateMode);
+  }, [updateMode]);
+  reactExports.useEffect(() => {
+    localStorage.setItem(KEY_ALERT_UPDATE_TIME, updateTime);
+  }, [updateTime]);
+  reactExports.useEffect(() => {
+    const intervalMs = updateMode === "weekly" ? 7 * 24 * 60 * 60 * 1e3 : 24 * 60 * 60 * 1e3;
+    const firstDelay = getMsUntilNextRun(updateMode, updateTime);
+    const timeoutId = window.setTimeout(() => {
+      loadAlerts({ initial: false });
+      scheduleIntervalRef.current = window.setInterval(() => loadAlerts({ initial: false }), intervalMs);
+    }, firstDelay);
     return () => {
-      mounted = false;
-      clearInterval(timer);
+      window.clearTimeout(timeoutId);
+      if (scheduleIntervalRef.current) {
+        window.clearInterval(scheduleIntervalRef.current);
+        scheduleIntervalRef.current = null;
+      }
     };
-  }, []);
+  }, [loadAlerts, updateMode, updateTime]);
   const getSourceIcon = (source) => {
     if (source?.toLowerCase().includes("polisen")) return "🚔";
     if (source?.toLowerCase().includes("krisis")) return "⚠️";
@@ -37169,22 +37485,105 @@ function NewsPage() {
     if (source?.toLowerCase().includes("sos")) return "border-red-400/60 bg-red-500/10";
     return "border-cyan-400/60 bg-cyan-500/10";
   };
+  const sortedItems = [...items2].sort((a, b) => (b.priority_rank || 0) - (a.priority_rank || 0));
+  const statsEntries = reactExports.useMemo(() => {
+    if (region !== "nacka") return [];
+    return STATS_ORDER.filter((key) => statistics[key] != null && key !== "Samverkan").map((key) => ({ key, value: String(statistics[key]) }));
+  }, [region, statistics]);
+  const lastUpdatedText = reactExports.useMemo(() => {
+    if (!lastUpdated) return "Waiting for first update";
+    return lastUpdated.toLocaleString("sv-SE", {
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit"
+    });
+  }, [lastUpdated]);
   return /* @__PURE__ */ jsxRuntimeExports.jsxs(
     motion.div,
     {
-      className: "w-full h-full min-h-0 flex flex-col gap-0 bg-transparent",
+      className: "w-full h-full min-h-0 flex flex-col gap-0 bg-transparent overflow-y-auto touch-scroll-y",
       initial: { opacity: 0, y: 20 },
       animate: { opacity: 1, y: 0 },
       transition: { duration: 0.5, ease: "easeOut" },
       children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex-shrink-0 px-6 py-4 border-b border-cyan-400/20", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-3", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-2xl", children: "🔔" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "text-xl font-bold text-white font-['Plus_Jakarta_Sans']", children: "SWEDISH ALERTS" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-cyan-300/70", children: "Polisen • Krisinformation • SOS Alarm" })
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex-shrink-0 px-6 py-4 border-b border-cyan-400/20", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-end justify-between gap-4 flex-wrap", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "text-2xl font-black text-white font-['Plus_Jakarta_Sans']", children: "Swedish Alerts" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-[11px] mt-1 uppercase tracking-[0.22em] text-cyan-300/60", children: "JARVIS threat monitor" })
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-xs text-cyan-300/60", children: refreshing ? "Refreshing..." : `Last update: ${lastUpdatedText}` })
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mt-4 rounded-2xl border border-cyan-300/30 bg-cyan-500/5 p-3 space-y-3", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between gap-3 flex-wrap", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex items-center gap-2 flex-wrap", children: REGION_OPTIONS.map((option) => {
+                const active = option.value === region;
+                return /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  "button",
+                  {
+                    type: "button",
+                    onClick: () => setRegion(option.value),
+                    className: `px-3 py-1.5 text-xs rounded-full border font-semibold tracking-[0.14em] uppercase transition ${active ? "border-cyan-200 bg-cyan-300/25 text-white" : "border-cyan-400/30 bg-cyan-500/10 text-cyan-100 hover:bg-cyan-400/20"}`,
+                    children: option.label
+                  },
+                  option.value
+                );
+              }) }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                "button",
+                {
+                  type: "button",
+                  onClick: () => loadAlerts({ initial: false }),
+                  className: "px-3 py-1.5 text-xs rounded-full border border-cyan-300/40 bg-cyan-400/15 text-cyan-50 hover:bg-cyan-300/25 transition uppercase tracking-[0.14em] font-semibold",
+                  children: "Refresh now"
+                }
+              )
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid grid-cols-1 md:grid-cols-3 gap-2 items-center", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "md:col-span-1 text-[11px] uppercase tracking-[0.18em] text-cyan-200/80 flex items-center gap-2", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(Clock3, { size: 12 }),
+                "Update schedule"
+              ] }),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                "select",
+                {
+                  value: updateMode,
+                  onChange: (event) => setUpdateMode(normalizeUpdateMode(event.target.value)),
+                  className: "md:col-span-1 bg-slate-900/70 border border-cyan-300/30 rounded-lg px-3 py-2 text-sm text-cyan-50",
+                  children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "daily", children: "Daily update" }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "weekly", children: "Weekly update" })
+                  ]
+                }
+              ),
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                "input",
+                {
+                  type: "time",
+                  value: updateTime,
+                  onChange: (event) => setUpdateTime(normalizeTimeText(event.target.value)),
+                  className: "md:col-span-1 bg-slate-900/70 border border-cyan-300/30 rounded-lg px-3 py-2 text-sm text-cyan-50"
+                }
+              )
+            ] })
           ] })
-        ] }) }),
+        ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex-1 min-h-0 overflow-y-auto touch-scroll-y", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "px-6 py-4 space-y-3", children: [
+          region === "nacka" && statsEntries.length > 0 && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "grid grid-cols-2 md:grid-cols-5 gap-2", children: statsEntries.map((entry, idx) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
+            motion.div,
+            {
+              initial: { opacity: 0, y: 8 },
+              animate: { opacity: 1, y: 0 },
+              transition: { duration: 0.25, delay: idx * 0.04 },
+              className: "rounded-xl border border-cyan-300/25 bg-slate-900/60 px-3 py-2",
+              children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-[10px] uppercase tracking-[0.14em] text-cyan-200/70", children: entry.key }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-xl font-black text-white", children: entry.value })
+              ]
+            },
+            entry.key
+          )) }),
           loading && /* @__PURE__ */ jsxRuntimeExports.jsxs(
             motion.div,
             {
@@ -37213,29 +37612,27 @@ function NewsPage() {
               ]
             }
           ),
-          items2.map((item, idx) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+          sortedItems.map((item, idx) => /* @__PURE__ */ jsxRuntimeExports.jsx(
             motion.div,
             {
-              className: `block p-4 rounded-lg border transition-all hover:border-opacity-100 hover:shadow-lg cursor-default ${getSourceColor(item.source)}`,
+              className: `block p-4 rounded-2xl border transition-all cursor-default ${getSourceColor(item.source)}`,
               initial: { opacity: 0, x: -20 },
               animate: { opacity: 1, x: 0 },
               transition: { duration: 0.4, delay: idx * 0.05 },
-              whileHover: { scale: 1.01, x: 2 },
+              whileHover: { scale: 1.01 },
               children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex gap-3", children: [
                 /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-2xl flex-shrink-0", children: getSourceIcon(item.source) }),
                 /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex-1 min-w-0", children: [
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-sm font-bold text-cyan-200 uppercase tracking-wider", children: item.source || "Alert" }),
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-sm text-white mt-1 line-clamp-2", children: item.title }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2 flex-wrap", children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-sm font-bold text-cyan-200 uppercase tracking-wider", children: item.source || "Alert" }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-[10px] px-2 py-0.5 rounded-full border border-cyan-300/20 bg-cyan-400/10 text-cyan-100 font-semibold uppercase tracking-[0.18em]", children: item.priority_label || "News" })
+                  ] }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-sm text-white mt-1 line-clamp-2 font-semibold", children: item.title }),
                   item.location && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-xs text-cyan-300/60 mt-1 flex items-center gap-1", children: [
                     /* @__PURE__ */ jsxRuntimeExports.jsx(Globe, { size: 12 }),
                     item.location
                   ] }),
-                  item.published && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-xs text-cyan-300/50 mt-1 opacity-70", children: new Date(item.published).toLocaleString("sv-SE", {
-                    month: "short",
-                    day: "numeric",
-                    hour: "2-digit",
-                    minute: "2-digit"
-                  }) })
+                  item.published && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-xs text-cyan-300/50 mt-1 opacity-70", children: formatPublished(item.published) })
                 ] })
               ] })
             },
@@ -37281,27 +37678,64 @@ function WeatherPage() {
   const days = Array.isArray(daily.time) ? daily.time : [];
   const hourly = weather?.hourly || {};
   const hours = Array.isArray(hourly.time) ? hourly.time.slice(0, 12) : [];
+  const current = weather?.current || {};
+  const formatTempRange = (minTemp, maxTemp) => {
+    const low = typeof minTemp === "number" ? Math.round(minTemp) : "-";
+    const high = typeof maxTemp === "number" ? Math.round(maxTemp) : "-";
+    return `${low}° - ${high}°`;
+  };
   return /* @__PURE__ */ jsxRuntimeExports.jsx(
     motion.div,
     {
-      className: "w-full h-full overflow-y-auto touch-scroll-y p-4",
+      className: "weather-page w-full h-full min-h-0 overflow-y-auto touch-scroll-y p-4",
       initial: { opacity: 0, y: 20 },
       animate: { opacity: 1, y: 0 },
       exit: { opacity: 0, y: -20 },
       transition: { duration: 0.5, ease: "easeOut" },
-      children: /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "glass-card p-6 flex flex-col gap-5", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "nova-title", children: "Weather" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "nova-subtitle", children: "Stockholm live + hourly + 7-day outlook" })
+      children: /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "weather-shell glass-card p-4 sm:p-6 flex flex-col gap-5", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "weather-hero", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "weather-hero-copy", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "weather-kicker", children: "Stockholm live weather" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "nova-title", children: "Weather" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "weather-hero-subtitle", children: "Hourly forecasts, daily ranges, and current conditions in one glance." })
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "weather-hero-temp", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "weather-hero-value", children: [
+              typeof current.temperature_2m === "number" ? Math.round(current.temperature_2m) : "-",
+              "°"
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "weather-hero-meta", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: getWeatherEmoji(current.weather_code ?? 0) }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: typeof current.apparent_temperature === "number" ? `${Math.round(current.apparent_temperature)}° feels like` : "Feels-like unavailable" })
+            ] })
+          ] })
         ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "text-sm font-semibold mb-2 text-cyan-200/90", children: "NEXT 12 HOURS" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "weather-grid", children: [
-            hours.length === 0 && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "weather-day", children: "Hourly data unavailable." }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "weather-metrics-grid", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "weather-metric-card", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: "Wind" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { children: typeof current.wind_speed_10m === "number" ? `${Math.round(current.wind_speed_10m)} km/h` : "-" })
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "weather-metric-card", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: "Humidity" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { children: typeof current.relative_humidity_2m === "number" ? `${Math.round(current.relative_humidity_2m)}%` : "-" })
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "weather-metric-card", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: "UV Index" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { children: typeof current.uv_index === "number" ? Math.round(current.uv_index * 10) / 10 : "-" })
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "weather-metric-card weather-metric-card-highlight", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: "Rain chance" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { children: typeof daily.precipitation_probability_max?.[0] === "number" ? `${Math.round(daily.precipitation_probability_max[0])}%` : "-" })
+          ] })
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "weather-section", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "weather-section-title", children: "Next 12 hours" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "weather-grid weather-grid-wide", children: [
+            hours.length === 0 && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "weather-day weather-empty", children: "Hourly data unavailable." }),
             hours.map((hour, index2) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
               motion.div,
               {
-                className: "weather-day",
+                className: "weather-day weather-day-compact",
                 initial: { opacity: 0, scale: 0.94 },
                 animate: { opacity: 1, scale: 1 },
                 transition: { duration: 0.2, delay: index2 * 0.02 },
@@ -37323,26 +37757,21 @@ function WeatherPage() {
             ))
           ] })
         ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "text-sm font-semibold mb-2 text-cyan-200/90", children: "7-DAY" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "weather-grid mt-1", children: [
-            days.length === 0 && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "weather-day", children: "Weather data unavailable." }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "weather-section", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "weather-section-title", children: "7-day outlook" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "weather-grid weather-grid-wide mt-1", children: [
+            days.length === 0 && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "weather-day weather-empty", children: "Weather data unavailable." }),
             days.map((day, index2) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
               motion.div,
               {
-                className: "weather-day",
+                className: "weather-day weather-day-wide",
                 initial: { opacity: 0, scale: 0.9 },
                 animate: { opacity: 1, scale: 1 },
                 transition: { duration: 0.3, delay: index2 * 0.05 },
                 children: [
                   /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: new Date(day).toLocaleDateString("en-US", { weekday: "short" }) }),
                   /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-xl", children: getWeatherEmoji(daily.weather_code?.[index2]) }),
-                  /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-                    Math.round(daily.temperature_2m_max?.[index2] ?? 0),
-                    "° / ",
-                    Math.round(daily.temperature_2m_min?.[index2] ?? 0),
-                    "°"
-                  ] }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: formatTempRange(daily.temperature_2m_min?.[index2], daily.temperature_2m_max?.[index2]) }),
                   /* @__PURE__ */ jsxRuntimeExports.jsxs("small", { children: [
                     "Rain ",
                     Math.round(daily.precipitation_probability_max?.[index2] ?? 0),
@@ -37358,9 +37787,46 @@ function WeatherPage() {
     }
   );
 }
+const VERSION = "1.4.0";
+const KEY_VOICE_AUTO_RECONNECT = "pocket-ai.voiceAutoReconnect";
+const KEY_SCANLINES_ENABLED$1 = "pocket-ai.scanlinesEnabled";
+const KEY_UI_DENSITY$1 = "pocket-ai.uiDensity";
+function readStoredBool(key, defaultValue = true) {
+  try {
+    const value = localStorage.getItem(key);
+    if (value === null) return defaultValue;
+    return value === "true";
+  } catch {
+    return defaultValue;
+  }
+}
+function readStoredDensity() {
+  try {
+    const value = localStorage.getItem(KEY_UI_DENSITY$1);
+    return value === "compact" ? "compact" : "comfortable";
+  } catch {
+    return "comfortable";
+  }
+}
 function Settings() {
   const navigate = useNavigate();
   const { keyboardEnabled, setKeyboardEnabled } = useKeyboardSettings();
+  const [voiceReconnectEnabled, setVoiceReconnectEnabled] = React.useState(() => readStoredBool(KEY_VOICE_AUTO_RECONNECT, true));
+  const [scanlinesEnabled, setScanlinesEnabled] = React.useState(() => readStoredBool(KEY_SCANLINES_ENABLED$1, true));
+  const [uiDensity, setUiDensity] = React.useState(readStoredDensity);
+  React.useEffect(() => {
+    localStorage.setItem(KEY_VOICE_AUTO_RECONNECT, String(voiceReconnectEnabled));
+    window.dispatchEvent(new CustomEvent("nova-settings-updated"));
+  }, [voiceReconnectEnabled]);
+  React.useEffect(() => {
+    localStorage.setItem(KEY_SCANLINES_ENABLED$1, String(scanlinesEnabled));
+    window.dispatchEvent(new CustomEvent("nova-settings-updated"));
+  }, [scanlinesEnabled]);
+  React.useEffect(() => {
+    localStorage.setItem(KEY_UI_DENSITY$1, uiDensity);
+    document.body.dataset.novaDensity = uiDensity;
+    window.dispatchEvent(new CustomEvent("nova-settings-updated"));
+  }, [uiDensity]);
   const handleCloseApp = async () => {
     try {
       await fetch(`${API_BASE_URL}/shutdown`, { method: "POST" });
@@ -37393,12 +37859,12 @@ function Settings() {
           ),
           /* @__PURE__ */ jsxRuntimeExports.jsx("h1", { className: "ml-4 text-xl font-['Press_Start_2P'] text-[var(--pixel-primary)]", children: "SETTINGS" })
         ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex-1 p-6 flex flex-col items-center justify-center space-y-8", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex-1 p-6 flex flex-col items-center justify-center space-y-8 overflow-y-auto", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-center", children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "text-2xl font-['VT323'] text-[var(--pixel-text)] mb-2 uppercase tracking-widest", children: "System Configuration" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-[var(--pixel-secondary)] font-['VT323'] text-lg", children: "MANAGE TERMINAL PREFERENCES" })
+            /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-[var(--pixel-secondary)] font-['VT323'] text-lg", children: "MANAGE AI RUNTIME AND UI PREFERENCES" })
           ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "w-full max-w-xs space-y-4 p-6 border-4 border-[var(--pixel-border)] bg-[var(--pixel-surface)] shadow-[8px_8px_0_0_rgba(0,0,0,0.3)]", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "w-full max-w-2xl space-y-4 p-6 border-4 border-[var(--pixel-border)] bg-[var(--pixel-surface)] shadow-[8px_8px_0_0_rgba(0,0,0,0.3)]", children: [
             /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between gap-4 py-3 border-b-2 border-[var(--pixel-border)]", children: [
               /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "font-['VT323'] text-xl text-[var(--pixel-text)] flex items-center gap-2", children: [
                 /* @__PURE__ */ jsxRuntimeExports.jsx(Keyboard, { size: 22, className: "text-[var(--pixel-primary)]" }),
@@ -37421,6 +37887,77 @@ function Settings() {
                 }
               )
             ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between gap-4 py-3 border-b-2 border-[var(--pixel-border)]", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "font-['VT323'] text-xl text-[var(--pixel-text)] flex items-center gap-2", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(Radio, { size: 22, className: "text-[var(--pixel-primary)]" }),
+                "Voice auto reconnect"
+              ] }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                "button",
+                {
+                  type: "button",
+                  role: "switch",
+                  "aria-checked": voiceReconnectEnabled,
+                  onClick: () => setVoiceReconnectEnabled((prev) => !prev),
+                  className: `relative w-14 h-8 border-4 flex-shrink-0 transition-colors ${voiceReconnectEnabled ? "bg-[var(--pixel-accent)] border-[var(--pixel-accent)]" : "bg-[var(--pixel-bg)] border-[var(--pixel-border)]"}`,
+                  children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+                    "span",
+                    {
+                      className: `absolute top-0.5 left-0.5 w-6 h-6 border-2 border-[var(--pixel-border)] bg-[var(--pixel-text)] transition-transform ${voiceReconnectEnabled ? "translate-x-7" : "translate-x-0"}`
+                    }
+                  )
+                }
+              )
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between gap-4 py-3 border-b-2 border-[var(--pixel-border)]", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "font-['VT323'] text-xl text-[var(--pixel-text)] flex items-center gap-2", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(ScanLine, { size: 22, className: "text-[var(--pixel-primary)]" }),
+                "Ambient scanlines"
+              ] }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                "button",
+                {
+                  type: "button",
+                  role: "switch",
+                  "aria-checked": scanlinesEnabled,
+                  onClick: () => setScanlinesEnabled((prev) => !prev),
+                  className: `relative w-14 h-8 border-4 flex-shrink-0 transition-colors ${scanlinesEnabled ? "bg-[var(--pixel-accent)] border-[var(--pixel-accent)]" : "bg-[var(--pixel-bg)] border-[var(--pixel-border)]"}`,
+                  children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+                    "span",
+                    {
+                      className: `absolute top-0.5 left-0.5 w-6 h-6 border-2 border-[var(--pixel-border)] bg-[var(--pixel-text)] transition-transform ${scanlinesEnabled ? "translate-x-7" : "translate-x-0"}`
+                    }
+                  )
+                }
+              )
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between gap-4 py-3 border-b-2 border-[var(--pixel-border)]", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "font-['VT323'] text-xl text-[var(--pixel-text)] flex items-center gap-2", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(LayoutGrid, { size: 22, className: "text-[var(--pixel-primary)]" }),
+                "UI density"
+              ] }),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  "button",
+                  {
+                    type: "button",
+                    onClick: () => setUiDensity("comfortable"),
+                    className: `px-3 py-1.5 border-2 font-['VT323'] text-lg ${uiDensity === "comfortable" ? "bg-[var(--pixel-accent)] text-black border-[var(--pixel-accent)]" : "bg-[var(--pixel-bg)] text-[var(--pixel-text)] border-[var(--pixel-border)]"}`,
+                    children: "Comfortable"
+                  }
+                ),
+                /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  "button",
+                  {
+                    type: "button",
+                    onClick: () => setUiDensity("compact"),
+                    className: `px-3 py-1.5 border-2 font-['VT323'] text-lg ${uiDensity === "compact" ? "bg-[var(--pixel-accent)] text-black border-[var(--pixel-accent)]" : "bg-[var(--pixel-bg)] text-[var(--pixel-text)] border-[var(--pixel-border)]"}`,
+                    children: "Compact"
+                  }
+                )
+              ] })
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "font-['VT323'] text-lg text-[var(--pixel-secondary)] pt-1", children: "Voice mode now keeps replies stable across reconnects and applies smoother TTS playback." }),
             /* @__PURE__ */ jsxRuntimeExports.jsxs(
               "button",
               {
@@ -37433,7 +37970,10 @@ function Settings() {
               }
             )
           ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-xs font-['Press_Start_2P'] text-[var(--pixel-border)] mt-auto pt-12", children: "VER 1.0.0" })
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-xs font-['Press_Start_2P'] text-[var(--pixel-border)] mt-auto pt-8", children: [
+            "VER ",
+            VERSION
+          ] })
         ] })
       ]
     }
@@ -37568,7 +38108,7 @@ const StatusBar = () => {
       ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-1 text-[var(--nova-text)]", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx(Zap, { size: 14, className: "text-cyan-200/70" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-cyan-100", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-green-400", children: [
           stats.wattage.toFixed(1),
           "W"
         ] })
@@ -37576,498 +38116,6 @@ const StatusBar = () => {
     ] })
   ] });
 };
-const formatSchedule = (schedule) => {
-  if (!schedule || typeof schedule !== "object") return "No schedule";
-  if (schedule.kind === "every") {
-    const ms = schedule.everyMs;
-    const days = ms / (1e3 * 60 * 60 * 24);
-    if (days >= 1 && Number.isInteger(days)) return `Every ${days} day${days > 1 ? "s" : ""}`;
-    const hours = ms / (1e3 * 60 * 60);
-    if (hours >= 1 && Number.isInteger(hours)) return `Every ${hours} hour${hours > 1 ? "s" : ""}`;
-    const mins = ms / (1e3 * 60);
-    return `Every ${Math.round(mins)} minute${Math.round(mins) !== 1 ? "s" : ""}`;
-  }
-  if (schedule.kind === "at") {
-    return `At ${new Date(schedule.atMs).toLocaleString()}`;
-  }
-  return "Scheduled";
-};
-function TaskManager() {
-  const navigate = useNavigate();
-  const scrollContainerRef = reactExports.useRef(null);
-  const dragScrollRef = reactExports.useRef(null);
-  const { sendMessage, addEventListener } = useWebSocket();
-  const [jobs, setJobs] = reactExports.useState([]);
-  const onScrollPointerDown = reactExports.useCallback((e) => {
-    if (e.target.closest?.('button, a, input, select, textarea, [role="button"]')) return;
-    const el = scrollContainerRef.current;
-    if (!el || el.scrollHeight <= el.clientHeight) return;
-    dragScrollRef.current = { clientY: e.clientY, scrollTop: el.scrollTop };
-    el.setPointerCapture(e.pointerId);
-  }, []);
-  const onScrollPointerMove = reactExports.useCallback((e) => {
-    const state = dragScrollRef.current;
-    if (!state) return;
-    const el = scrollContainerRef.current;
-    if (!el) return;
-    const deltaY = e.clientY - state.clientY;
-    const newTop = Math.max(0, Math.min(el.scrollHeight - el.clientHeight, state.scrollTop - deltaY));
-    el.scrollTop = newTop;
-    state.scrollTop = newTop;
-    state.clientY = e.clientY;
-    e.preventDefault();
-  }, []);
-  const onScrollPointerUp = reactExports.useCallback((e) => {
-    if (dragScrollRef.current) {
-      scrollContainerRef.current?.releasePointerCapture(e.pointerId);
-      dragScrollRef.current = null;
-    }
-  }, []);
-  reactExports.useEffect(() => {
-    sendMessage("task.list", {});
-    const removeList = addEventListener("task_list", (data) => {
-      setJobs(data.jobs || []);
-    });
-    const removeRemoved = addEventListener("task_removed", () => {
-      sendMessage("task.list", {});
-    });
-    const removeUpdated = addEventListener("task_updated", () => {
-      sendMessage("task.list", {});
-    });
-    return () => {
-      removeList();
-      removeRemoved();
-      removeUpdated();
-    };
-  }, [sendMessage, addEventListener]);
-  const handleEditJob = (job) => {
-    navigate("/tasks/edit", { state: { job } });
-  };
-  const handleRemoveJob = (id2) => {
-    if (confirm("Delete this scheduled task?")) {
-      sendMessage("task.remove", { id: id2 });
-    }
-  };
-  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "w-full h-full mx-auto flex flex-col bg-[var(--pixel-bg)] text-[var(--pixel-text)] font-['VT323'] overflow-hidden min-h-0", children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex-shrink-0 flex items-center justify-between px-4 py-4 bg-[var(--pixel-surface)] border-b-4 border-[var(--pixel-border)] z-10", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-3", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "button",
-          {
-            type: "button",
-            onClick: () => navigate("/"),
-            className: "pixel-btn p-3 min-h-[48px] min-w-[48px] touch-manipulation",
-            "aria-label": "Back",
-            children: /* @__PURE__ */ jsxRuntimeExports.jsx(ArrowLeft, { size: 24 })
-          }
-        ),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("h1", { className: "text-lg font-['Press_Start_2P'] text-[var(--pixel-primary)] leading-tight", children: "TASKS" })
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx(
-        "button",
-        {
-          type: "button",
-          onClick: () => navigate("/tasks/add"),
-          className: "pixel-btn p-3 min-h-[48px] min-w-[48px] touch-manipulation bg-[var(--pixel-accent)] text-black",
-          "aria-label": "New task",
-          children: /* @__PURE__ */ jsxRuntimeExports.jsx(Plus, { size: 24 })
-        }
-      )
-    ] }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx(
-      "div",
-      {
-        ref: scrollContainerRef,
-        className: "flex-1 min-h-0 overflow-y-auto p-4 space-y-4 scroller-pixel touch-scroll-y",
-        onPointerDown: onScrollPointerDown,
-        onPointerMove: onScrollPointerMove,
-        onPointerUp: onScrollPointerUp,
-        onPointerCancel: onScrollPointerUp,
-        onPointerLeave: onScrollPointerUp,
-        children: jobs.length === 0 ? /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col items-center justify-center py-20 text-[var(--pixel-border)]", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx(Clock, { size: 48, className: "mb-4 opacity-50" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xl", children: "NO ACTIVE TASKS" })
-        ] }) : jobs.map((job) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
-          motion.div,
-          {
-            initial: { opacity: 0, y: 10 },
-            animate: { opacity: 1, y: 0 },
-            className: "bg-[var(--pixel-surface)] p-5 border-4 border-[var(--pixel-border)] shadow-[4px_4px_0_0_rgba(0,0,0,0.5)] group",
-            children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex justify-between items-start gap-3 mb-3", children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "min-w-0 flex-1", children: [
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "font-['Press_Start_2P'] text-[var(--pixel-text)] text-xs mb-1 uppercase leading-relaxed", children: job.name }),
-                  job.description && /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-lg text-gray-500 mt-0.5", children: job.description })
-                ] }),
-                /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-1", children: [
-                  /* @__PURE__ */ jsxRuntimeExports.jsx(
-                    "button",
-                    {
-                      type: "button",
-                      onClick: () => handleEditJob(job),
-                      className: "p-3 min-h-[44px] min-w-[44px] flex items-center justify-center text-[var(--pixel-primary)] hover:bg-[var(--pixel-primary)]/20 border-2 border-transparent hover:border-[var(--pixel-primary)] transition-all touch-manipulation",
-                      "aria-label": "Edit task",
-                      children: /* @__PURE__ */ jsxRuntimeExports.jsx(Pencil, { size: 20 })
-                    }
-                  ),
-                  /* @__PURE__ */ jsxRuntimeExports.jsx(
-                    "button",
-                    {
-                      type: "button",
-                      onClick: () => handleRemoveJob(job.id),
-                      className: "p-3 min-h-[44px] min-w-[44px] flex items-center justify-center text-red-500 hover:bg-red-900/30 border-2 border-transparent hover:border-red-500 transition-all touch-manipulation",
-                      "aria-label": "Delete task",
-                      children: /* @__PURE__ */ jsxRuntimeExports.jsx(Trash2, { size: 20 })
-                    }
-                  )
-                ] })
-              ] }),
-              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col gap-2", children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center text-sm text-[var(--pixel-secondary)]", children: [
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-6 flex justify-center mr-2 opacity-70", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Clock, { size: 16 }) }),
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-medium bg-[var(--pixel-bg)] px-2 py-1 border border-[var(--pixel-border)]", children: formatSchedule(job.schedule) })
-                ] }),
-                job.payload && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-start text-sm text-gray-400 mt-1", children: [
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-6 flex justify-center mr-2 opacity-70 mt-0.5", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Zap, { size: 16 }) }),
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex-1 bg-[var(--pixel-bg)] p-2 border border-[var(--pixel-border)] text-[var(--pixel-primary)] text-sm font-['VT323']", children: job.payload.text || job.payload.message || JSON.stringify(job.payload) })
-                ] })
-              ] })
-            ]
-          },
-          job.id
-        ))
-      }
-    )
-  ] });
-}
-function jobToFormState(job) {
-  if (!job) return { name: "", description: "", scheduleType: "every", intervalValue: 30, intervalUnit: "minutes", targetDate: "", agentMessage: "" };
-  const s = job.schedule || {};
-  const payload = job.payload || {};
-  let scheduleType = "every";
-  let intervalValue = 30;
-  let intervalUnit = "minutes";
-  let targetDate = "";
-  if (s.kind === "at" && s.atMs != null) {
-    scheduleType = "at";
-    const d = new Date(s.atMs);
-    targetDate = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}T${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
-  } else if (s.kind === "every" && s.everyMs != null) {
-    const ms = s.everyMs;
-    const days = ms / (1e3 * 60 * 60 * 24);
-    const hours = ms / (1e3 * 60 * 60);
-    const mins = ms / (1e3 * 60);
-    if (days >= 1 && Math.abs(days - Math.round(days)) < 0.01) {
-      intervalValue = Math.round(days);
-      intervalUnit = "days";
-    } else if (hours >= 1 && Math.abs(hours - Math.round(hours)) < 0.01) {
-      intervalValue = Math.round(hours);
-      intervalUnit = "hours";
-    } else {
-      intervalValue = Math.max(1, Math.round(mins));
-      intervalUnit = "minutes";
-    }
-  }
-  const agentMessage = payload && (payload.message || payload.text) || "";
-  return { name: job.name || "", description: job.description || "", scheduleType, intervalValue, intervalUnit, targetDate, agentMessage };
-}
-function TaskAdd() {
-  const navigate = useNavigate();
-  const location = useLocation();
-  const editJob = location.state?.job;
-  const isEdit = !!editJob;
-  const initial = jobToFormState(editJob);
-  reactExports.useEffect(() => {
-    if (location.pathname === "/tasks/edit" && !editJob) {
-      navigate("/tasks", { replace: true });
-    }
-  }, [location.pathname, editJob, navigate]);
-  const formRef = reactExports.useRef(null);
-  const scrollContainerRef = reactExports.useRef(null);
-  const dragScrollRef = reactExports.useRef(null);
-  const { sendMessage, addEventListener } = useWebSocket();
-  const { onFocus: onKeyboardFocus, onBlur: onKeyboardBlur } = useFocusableInput(false);
-  const { keyboardEnabled, focusState, setFocusState, focusedElementRef, syncInputValueRef } = useKeyboardSettings();
-  const showInlineKeyboard = keyboardEnabled && !!focusState;
-  const scrollFocusedIntoView = reactExports.useCallback((el) => {
-    if (!el) return;
-    const timer = setTimeout(() => {
-      el.scrollIntoView({ behavior: "smooth", block: "center" });
-    }, 150);
-    return () => clearTimeout(timer);
-  }, []);
-  const bindKeyboardSync = (setState) => ({
-    onFocus: (e) => {
-      onKeyboardFocus(e);
-      syncInputValueRef.current = (v) => setState(v ?? "");
-      scrollFocusedIntoView(e.target);
-    },
-    onBlur: (e) => {
-      onKeyboardBlur(e);
-      syncInputValueRef.current = null;
-    }
-  });
-  const bindKeyboardSyncNumber = (setState) => ({
-    onFocus: (e) => {
-      onKeyboardFocus(e);
-      syncInputValueRef.current = (v) => setState(Math.max(1, parseInt(String(v), 10) || 1));
-      scrollFocusedIntoView(e.target);
-    },
-    onBlur: (e) => {
-      onKeyboardBlur(e);
-      syncInputValueRef.current = null;
-    }
-  });
-  const [name2, setName] = reactExports.useState(initial.name);
-  const [description, setDescription] = reactExports.useState(initial.description);
-  const [scheduleType, setScheduleType] = reactExports.useState(initial.scheduleType);
-  const [intervalValue, setIntervalValue] = reactExports.useState(initial.intervalValue);
-  const [intervalUnit, setIntervalUnit] = reactExports.useState(initial.intervalUnit);
-  const [targetDate, setTargetDate] = reactExports.useState(initial.targetDate);
-  const [agentMessage, setAgentMessage] = reactExports.useState(initial.agentMessage);
-  reactExports.useEffect(() => {
-    const removeAdded = addEventListener("task_added", (data) => {
-      if (data.result) navigate("/tasks", { replace: true });
-    });
-    const removeUpdated = addEventListener("task_updated", (data) => {
-      if (data.result) navigate("/tasks", { replace: true });
-    });
-    return () => {
-      removeAdded();
-      removeUpdated();
-    };
-  }, [addEventListener, navigate]);
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    let schedule = null;
-    if (scheduleType === "every") {
-      let ms = intervalValue * 1e3 * 60;
-      if (intervalUnit === "hours") ms *= 60;
-      if (intervalUnit === "days") ms *= 60 * 24;
-      schedule = { kind: "every", everyMs: ms };
-    } else if (scheduleType === "at") {
-      schedule = { kind: "at", atMs: new Date(targetDate).getTime() };
-    }
-    const payload = agentMessage ? { kind: "agentTurn", message: agentMessage } : {};
-    if (Object.keys(payload).length === 0 && !confirm("No agent message provided. Save anyway?")) return;
-    if (isEdit) {
-      sendMessage("task.update", { id: editJob.id, name: name2, description, schedule, payload });
-    } else {
-      sendMessage("task.add", { name: name2, description, schedule, payload });
-    }
-  };
-  const handleFormKeyDown = reactExports.useCallback((e) => {
-    if (e.key !== "Enter") return;
-    const target = e.target;
-    if (target?.tagName !== "INPUT" && target?.tagName !== "TEXTAREA") return;
-    if (target?.type === "datetime-local") return;
-    e.preventDefault();
-    formRef.current?.requestSubmit();
-  }, []);
-  const closeKeyboard = reactExports.useCallback(() => {
-    setFocusState(null);
-    focusedElementRef.current = null;
-  }, [setFocusState, focusedElementRef]);
-  const handleAreaPointerDown = reactExports.useCallback(
-    (e) => {
-      if (!focusState) return;
-      const target = e.target;
-      if (target?.closest?.("[data-virtual-keyboard]")) return;
-      if (target?.closest?.("[data-task-form]")) return;
-      if (target?.closest?.("[data-task-scroll]")) return;
-      closeKeyboard();
-    },
-    [focusState, closeKeyboard]
-  );
-  const onScrollAreaPointerDown = reactExports.useCallback((e) => {
-    if (e.target.closest?.('button, a, input, select, textarea, [role="button"]')) return;
-    const el = scrollContainerRef.current;
-    if (!el || el.scrollHeight <= el.clientHeight) return;
-    dragScrollRef.current = { clientY: e.clientY, scrollTop: el.scrollTop };
-    el.setPointerCapture(e.pointerId);
-  }, []);
-  const onScrollAreaPointerMove = reactExports.useCallback((e) => {
-    const state = dragScrollRef.current;
-    if (!state) return;
-    const el = scrollContainerRef.current;
-    if (!el) return;
-    const deltaY = e.clientY - state.clientY;
-    const newTop = Math.max(0, Math.min(el.scrollHeight - el.clientHeight, state.scrollTop - deltaY));
-    el.scrollTop = newTop;
-    state.scrollTop = newTop;
-    state.clientY = e.clientY;
-    e.preventDefault();
-  }, []);
-  const onScrollAreaPointerUp = reactExports.useCallback((e) => {
-    if (dragScrollRef.current) {
-      scrollContainerRef.current?.releasePointerCapture(e.pointerId);
-      dragScrollRef.current = null;
-    }
-  }, []);
-  return /* @__PURE__ */ jsxRuntimeExports.jsxs(
-    "div",
-    {
-      className: "w-full h-full flex flex-col bg-[var(--pixel-bg)] text-[var(--pixel-text)] font-['VT323'] overflow-hidden min-h-0",
-      onPointerDown: handleAreaPointerDown,
-      children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("header", { className: "flex-shrink-0 flex items-center justify-between px-4 py-4 bg-[var(--pixel-surface)] border-b-4 border-[var(--pixel-border)] z-10", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx(
-            "button",
-            {
-              type: "button",
-              onClick: () => navigate("/tasks"),
-              className: "pixel-btn p-3 min-h-[48px] min-w-[48px] touch-manipulation",
-              "aria-label": "Back to tasks",
-              children: /* @__PURE__ */ jsxRuntimeExports.jsx(ArrowLeft, { size: 24 })
-            }
-          ),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("h1", { className: "text-lg font-['Press_Start_2P'] text-[var(--pixel-primary)] leading-tight", children: isEdit ? "EDIT TASK" : "NEW TASK" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-12" })
-        ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "div",
-          {
-            ref: scrollContainerRef,
-            "data-task-scroll": true,
-            className: "flex-1 min-h-0 overflow-y-auto p-4 scroller-pixel touch-scroll-y",
-            onPointerDown: onScrollAreaPointerDown,
-            onPointerMove: onScrollAreaPointerMove,
-            onPointerUp: onScrollAreaPointerUp,
-            onPointerCancel: onScrollAreaPointerUp,
-            onPointerLeave: onScrollAreaPointerUp,
-            children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "bg-[var(--pixel-surface)] border-4 border-[var(--pixel-border)] p-5 shadow-[8px_8px_0_0_rgba(0,0,0,0.5)]", "data-task-form": true, children: /* @__PURE__ */ jsxRuntimeExports.jsxs("form", { ref: formRef, onSubmit: handleSubmit, onKeyDown: handleFormKeyDown, className: "space-y-5", children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-2", children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-sm font-['Press_Start_2P'] text-[var(--pixel-border)] uppercase", children: "Name" }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx(
-                  "input",
-                  {
-                    value: name2,
-                    onChange: (e) => setName(e.target.value),
-                    ...bindKeyboardSync(setName),
-                    className: "w-full p-4 min-h-[48px] text-xl bg-[var(--pixel-bg)] border-2 border-[var(--pixel-border)] text-[var(--pixel-text)] placeholder-[var(--pixel-border)] focus:border-[var(--pixel-primary)] outline-none touch-manipulation",
-                    placeholder: "TASK NAME...",
-                    required: true
-                  }
-                )
-              ] }),
-              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-2", children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-sm font-['Press_Start_2P'] text-[var(--pixel-border)] uppercase", children: "Description (optional)" }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx(
-                  "input",
-                  {
-                    value: description,
-                    onChange: (e) => setDescription(e.target.value),
-                    ...bindKeyboardSync(setDescription),
-                    className: "w-full p-4 min-h-[48px] text-xl bg-[var(--pixel-bg)] border-2 border-[var(--pixel-border)] text-[var(--pixel-text)] placeholder-[var(--pixel-border)] focus:border-[var(--pixel-primary)] outline-none touch-manipulation",
-                    placeholder: "OPTIONAL..."
-                  }
-                )
-              ] }),
-              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-3", children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-xs font-['Press_Start_2P'] text-[var(--pixel-secondary)]", children: "SCHEDULE TYPE" }),
-                /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex bg-[var(--pixel-bg)] p-1.5 border-2 border-[var(--pixel-border)] gap-1", children: [
-                  /* @__PURE__ */ jsxRuntimeExports.jsx(
-                    "button",
-                    {
-                      type: "button",
-                      onClick: () => setScheduleType("every"),
-                      className: `flex-1 py-4 text-center font-['VT323'] text-xl min-h-[48px] touch-manipulation transition-colors border-2 ${scheduleType === "every" ? "bg-[var(--pixel-primary)] text-black border-[var(--pixel-primary)]" : "border-transparent text-[var(--pixel-text)] hover:bg-[var(--pixel-surface)]"}`,
-                      children: "INTERVAL"
-                    }
-                  ),
-                  /* @__PURE__ */ jsxRuntimeExports.jsx(
-                    "button",
-                    {
-                      type: "button",
-                      onClick: () => setScheduleType("at"),
-                      className: `flex-1 py-4 text-center font-['VT323'] text-xl min-h-[48px] touch-manipulation transition-colors border-2 ${scheduleType === "at" ? "bg-[var(--pixel-primary)] text-black border-[var(--pixel-primary)]" : "border-transparent text-[var(--pixel-text)] hover:bg-[var(--pixel-surface)]"}`,
-                      children: "DATE & TIME"
-                    }
-                  )
-                ] })
-              ] }),
-              scheduleType === "every" && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col sm:flex-row gap-4", children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex-1 space-y-2", children: [
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-xs font-['Press_Start_2P'] text-[var(--pixel-secondary)]", children: "INTERVAL" }),
-                  /* @__PURE__ */ jsxRuntimeExports.jsx(
-                    "input",
-                    {
-                      type: "number",
-                      min: "1",
-                      value: intervalValue,
-                      onChange: (e) => setIntervalValue(parseInt(e.target.value) || 1),
-                      ...bindKeyboardSyncNumber(setIntervalValue),
-                      className: "pixel-input w-full min-h-[48px] text-xl p-4 touch-manipulation"
-                    }
-                  )
-                ] }),
-                /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex-1 space-y-2", children: [
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-xs font-['Press_Start_2P'] text-[var(--pixel-secondary)]", children: "UNIT" }),
-                  /* @__PURE__ */ jsxRuntimeExports.jsxs(
-                    "select",
-                    {
-                      value: intervalUnit,
-                      onChange: (e) => setIntervalUnit(e.target.value),
-                      className: "pixel-select w-full min-h-[48px] text-xl p-4 touch-manipulation",
-                      children: [
-                        /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "minutes", children: "MINUTES" }),
-                        /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "hours", children: "HOURS" }),
-                        /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "days", children: "DAYS" })
-                      ]
-                    }
-                  )
-                ] })
-              ] }),
-              scheduleType === "at" && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-2", children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-xs font-['Press_Start_2P'] text-[var(--pixel-secondary)]", children: "DATE & TIME" }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx(
-                  "input",
-                  {
-                    type: "datetime-local",
-                    value: targetDate,
-                    onChange: (e) => setTargetDate(e.target.value),
-                    ...bindKeyboardSync(setTargetDate),
-                    className: "w-full p-4 min-h-[48px] text-xl bg-[var(--pixel-surface)] border-2 border-[var(--pixel-border)] text-[var(--pixel-text)] touch-manipulation",
-                    required: scheduleType === "at"
-                  }
-                )
-              ] }),
-              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-2", children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsxs("label", { className: "block text-xs font-['Press_Start_2P'] text-[var(--pixel-secondary)] flex items-center gap-2", children: [
-                  /* @__PURE__ */ jsxRuntimeExports.jsx(MessageSquare, { size: 14 }),
-                  " Agent Instruction"
-                ] }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx(
-                  "textarea",
-                  {
-                    value: agentMessage,
-                    onChange: (e) => setAgentMessage(e.target.value),
-                    ...bindKeyboardSync(setAgentMessage),
-                    className: "w-full p-4 bg-[var(--pixel-bg)] border-2 border-[var(--pixel-border)] text-[var(--pixel-text)] text-xl focus:border-[var(--pixel-primary)] outline-none min-h-[100px] resize-none touch-manipulation",
-                    placeholder: "INSTRUCTIONS FOR AGENT..."
-                  }
-                )
-              ] }),
-              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col-reverse sm:flex-row gap-3 pt-2", children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx(
-                  "button",
-                  {
-                    type: "button",
-                    onClick: () => navigate("/tasks"),
-                    className: "pixel-btn flex-1 py-4 min-h-[52px] text-sm touch-manipulation bg-[var(--pixel-bg)] text-[var(--pixel-text)]",
-                    children: "CANCEL"
-                  }
-                ),
-                /* @__PURE__ */ jsxRuntimeExports.jsx("button", { type: "submit", className: "pixel-btn flex-1 py-4 min-h-[52px] text-sm touch-manipulation bg-[var(--pixel-primary)] text-black", children: isEdit ? "SAVE TASK" : "ADD TASK" })
-              ] })
-            ] }) })
-          }
-        ),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(VirtualKeyboard, { visible: showInlineKeyboard, mode: "inline", focusedElementRef, syncInputValueRef })
-      ]
-    }
-  );
-}
 function HeartbeatManager() {
   const navigate = useNavigate();
   const { sendMessage, addEventListener } = useWebSocket();
@@ -38422,12 +38470,28 @@ class ErrorBoundary extends React.Component {
     return this.props.children;
   }
 }
+const KEY_SCANLINES_ENABLED = "pocket-ai.scanlinesEnabled";
+const KEY_UI_DENSITY = "pocket-ai.uiDensity";
+function readScanlinesEnabled() {
+  try {
+    const value = localStorage.getItem(KEY_SCANLINES_ENABLED);
+    return value !== "false";
+  } catch {
+    return true;
+  }
+}
+function readDensity() {
+  try {
+    return localStorage.getItem(KEY_UI_DENSITY) === "compact" ? "compact" : "comfortable";
+  } catch {
+    return "comfortable";
+  }
+}
 function OverlayKeyboard() {
   const location = useLocation();
   const { keyboardEnabled, focusState, focusedElementRef, syncInputValueRef } = useKeyboardSettings();
   const isOnChatRoute = location.pathname === "/chat";
-  const isOnTasksRoute = location.pathname.startsWith("/tasks");
-  const show = keyboardEnabled && focusState && (!isOnChatRoute || !focusState.isChatInput) && !isOnTasksRoute;
+  const show = keyboardEnabled && focusState && (!isOnChatRoute || !focusState.isChatInput);
   return /* @__PURE__ */ jsxRuntimeExports.jsx(VirtualKeyboard, { visible: show, mode: "overlay", focusedElementRef, syncInputValueRef });
 }
 const AnimatedRoutes = () => {
@@ -38436,7 +38500,7 @@ const AnimatedRoutes = () => {
   const navigate = useNavigate();
   const lastNavAtRef = React.useRef(0);
   const pointerStartRef = React.useRef(null);
-  const routes = ["/", "/chat", "/music", "/news", "/weather", "/tasks", "/settings"];
+  const routes = ["/", "/chat", "/music", "/news", "/weather", "/settings"];
   const currentIndex = routes.indexOf(location.pathname);
   const canNavigateNow = () => Date.now() - lastNavAtRef.current > 450;
   const navigateBy = (direction) => {
@@ -38473,7 +38537,7 @@ const AnimatedRoutes = () => {
   return /* @__PURE__ */ jsxRuntimeExports.jsx(AnimatePresence, { mode: "wait", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
     motion.div,
     {
-      className: "h-full min-h-0",
+      className: "h-full min-h-0 overflow-hidden",
       initial: { opacity: 0, x: swipeDirection * 100 },
       animate: { opacity: 1, x: 0 },
       exit: { opacity: 0, x: -swipeDirection * 100 },
@@ -38487,9 +38551,6 @@ const AnimatedRoutes = () => {
         /* @__PURE__ */ jsxRuntimeExports.jsx(Route, { path: "/music", element: /* @__PURE__ */ jsxRuntimeExports.jsx(MusicPage, {}) }),
         /* @__PURE__ */ jsxRuntimeExports.jsx(Route, { path: "/news", element: /* @__PURE__ */ jsxRuntimeExports.jsx(NewsPage, {}) }),
         /* @__PURE__ */ jsxRuntimeExports.jsx(Route, { path: "/weather", element: /* @__PURE__ */ jsxRuntimeExports.jsx(WeatherPage, {}) }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(Route, { path: "/tasks", element: /* @__PURE__ */ jsxRuntimeExports.jsx(TaskManager, {}) }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(Route, { path: "/tasks/add", element: /* @__PURE__ */ jsxRuntimeExports.jsx(TaskAdd, {}) }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(Route, { path: "/tasks/edit", element: /* @__PURE__ */ jsxRuntimeExports.jsx(TaskAdd, {}) }),
         /* @__PURE__ */ jsxRuntimeExports.jsx(Route, { path: "/heartbeat", element: /* @__PURE__ */ jsxRuntimeExports.jsx(HeartbeatManager, {}) }),
         /* @__PURE__ */ jsxRuntimeExports.jsx(Route, { path: "/gpio", element: /* @__PURE__ */ jsxRuntimeExports.jsx(GPIOControl, {}) }),
         /* @__PURE__ */ jsxRuntimeExports.jsx(Route, { path: "/settings", element: /* @__PURE__ */ jsxRuntimeExports.jsx(Settings, {}) })
@@ -38526,10 +38587,24 @@ function RandomScanlineOverlay() {
   ] });
 }
 function App() {
+  const [scanlinesEnabled, setScanlinesEnabled] = reactExports.useState(readScanlinesEnabled);
+  reactExports.useEffect(() => {
+    const applyPrefs = () => {
+      setScanlinesEnabled(readScanlinesEnabled());
+      document.body.dataset.novaDensity = readDensity();
+    };
+    applyPrefs();
+    window.addEventListener("storage", applyPrefs);
+    window.addEventListener("nova-settings-updated", applyPrefs);
+    return () => {
+      window.removeEventListener("storage", applyPrefs);
+      window.removeEventListener("nova-settings-updated", applyPrefs);
+    };
+  }, []);
   return /* @__PURE__ */ jsxRuntimeExports.jsx(HashRouter, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(WebSocketProvider, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(KeyboardProvider, { children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col h-screen w-screen overflow-hidden bg-[var(--nova-bg)] text-[var(--nova-text)]", children: [
     /* @__PURE__ */ jsxRuntimeExports.jsx(StatusBar, {}),
     /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex-1 overflow-hidden relative w-full flex", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx(RandomScanlineOverlay, {}),
+      scanlinesEnabled ? /* @__PURE__ */ jsxRuntimeExports.jsx(RandomScanlineOverlay, {}) : null,
       /* @__PURE__ */ jsxRuntimeExports.jsx(SideNav, {}),
       /* @__PURE__ */ jsxRuntimeExports.jsx(ErrorBoundary, { children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex-1 min-w-0 min-h-0", children: /* @__PURE__ */ jsxRuntimeExports.jsx(AnimatedRoutes, {}) }) })
     ] }),

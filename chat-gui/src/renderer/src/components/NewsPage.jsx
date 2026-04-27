@@ -1,7 +1,74 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Globe } from 'lucide-react';
+import { Clock3, Globe } from 'lucide-react';
 import { apiFetch } from '../apiClient.js';
+
+const KEY_ALERT_REGION = 'pocket-ai.alertRegion';
+const KEY_ALERT_UPDATE_MODE = 'pocket-ai.alertUpdateMode';
+const KEY_ALERT_UPDATE_TIME = 'pocket-ai.alertUpdateTime';
+
+const REGION_OPTIONS = [
+    { value: 'nacka', label: 'Nacka' },
+    { value: 'stockholm', label: 'Stockholm' },
+    { value: 'sweden', label: 'Sweden' },
+];
+
+const STATS_ORDER = [
+    'Alla samtal',
+    'Polisen',
+    'Vårdbehov',
+    'Räddning',
+    'Ej akuta behov',
+];
+
+function readStoredValue(key, fallback) {
+    try {
+        return localStorage.getItem(key) || fallback;
+    } catch {
+        return fallback;
+    }
+}
+
+function normalizeRegion(region) {
+    if (region === 'nacka' || region === 'stockholm' || region === 'sweden') return region;
+    return 'nacka';
+}
+
+function normalizeUpdateMode(mode) {
+    if (mode === 'daily' || mode === 'weekly') return mode;
+    return 'daily';
+}
+
+function normalizeTimeText(value) {
+    if (typeof value === 'string' && /^\d{2}:\d{2}$/.test(value)) return value;
+    return '08:00';
+}
+
+function getMsUntilNextRun(updateMode, hhmm) {
+    const [hoursRaw, minutesRaw] = (hhmm || '08:00').split(':');
+    const hours = Number(hoursRaw);
+    const minutes = Number(minutesRaw);
+    const safeHours = Number.isFinite(hours) ? Math.min(Math.max(hours, 0), 23) : 8;
+    const safeMinutes = Number.isFinite(minutes) ? Math.min(Math.max(minutes, 0), 59) : 0;
+
+    const now = new Date();
+    const next = new Date(now);
+    next.setHours(safeHours, safeMinutes, 0, 0);
+
+    if (updateMode === 'weekly') {
+        const targetDay = 1; // Monday
+        const currentDay = next.getDay();
+        let daysAhead = (targetDay - currentDay + 7) % 7;
+        if (daysAhead === 0 && next <= now) {
+            daysAhead = 7;
+        }
+        next.setDate(next.getDate() + daysAhead);
+    } else if (next <= now) {
+        next.setDate(next.getDate() + 1);
+    }
+
+    return Math.max(1000, next.getTime() - now.getTime());
+}
 
 function toDisplayText(value) {
     if (value == null) return '';
@@ -61,10 +128,15 @@ export default function NewsPage() {
     const [loading, setLoading] = useState(true);
     const [refreshing, setRefreshing] = useState(false);
     const [error, setError] = useState(null);
+    const [region, setRegion] = useState(() => normalizeRegion(readStoredValue(KEY_ALERT_REGION, 'nacka')));
+    const [statistics, setStatistics] = useState({});
+    const [lastUpdated, setLastUpdated] = useState(null);
+    const [updateMode, setUpdateMode] = useState(() => normalizeUpdateMode(readStoredValue(KEY_ALERT_UPDATE_MODE, 'daily')));
+    const [updateTime, setUpdateTime] = useState(() => normalizeTimeText(readStoredValue(KEY_ALERT_UPDATE_TIME, '08:00')));
+    const scheduleIntervalRef = useRef(null);
 
-    useEffect(() => {
-        let mounted = true;
-        async function load({ initial = false } = {}) {
+    const loadAlerts = useCallback(
+        async ({ initial = false } = {}) => {
             if (initial) {
                 setLoading(true);
             } else {
@@ -76,33 +148,62 @@ export default function NewsPage() {
             const timeoutId = setTimeout(() => controller.abort(), 10000);
 
             try {
-                const data = await apiFetch('/integrations/swedish-alerts?limit=20', { signal: controller.signal });
-                if (mounted) {
-                    const rawItems = Array.isArray(data?.items) ? data.items : [];
-                    setItems(rawItems.map(normalizeAlertItem));
-                    setError(null);
-                }
+                const query = new URLSearchParams({
+                    limit: '20',
+                    region,
+                });
+                const data = await apiFetch(`/integrations/swedish-alerts?${query.toString()}`, { signal: controller.signal });
+                const rawItems = Array.isArray(data?.items) ? data.items : [];
+                setItems(rawItems.map(normalizeAlertItem));
+                setStatistics(data?.statistics && typeof data.statistics === 'object' ? data.statistics : {});
+                setLastUpdated(new Date());
+                setError(null);
             } catch (err) {
                 console.error('Failed to load alerts', err);
-                if (mounted) {
-                    setError(err?.name === 'AbortError' ? 'Loading alerts timed out. Retry in a moment.' : 'Failed to load alerts');
-                    setItems([]);
-                }
+                setError(err?.name === 'AbortError' ? 'Loading alerts timed out. Retry in a moment.' : 'Failed to load alerts');
+                setItems([]);
             } finally {
                 clearTimeout(timeoutId);
-                if (mounted) {
-                    setLoading(false);
-                    setRefreshing(false);
-                }
+                setLoading(false);
+                setRefreshing(false);
             }
-        }
-        load({ initial: true });
-        const timer = setInterval(() => load({ initial: false }), 120000);
+        },
+        [region]
+    );
+
+    useEffect(() => {
+        loadAlerts({ initial: true });
+    }, [loadAlerts]);
+
+    useEffect(() => {
+        localStorage.setItem(KEY_ALERT_REGION, region);
+    }, [region]);
+
+    useEffect(() => {
+        localStorage.setItem(KEY_ALERT_UPDATE_MODE, updateMode);
+    }, [updateMode]);
+
+    useEffect(() => {
+        localStorage.setItem(KEY_ALERT_UPDATE_TIME, updateTime);
+    }, [updateTime]);
+
+    useEffect(() => {
+        const intervalMs = updateMode === 'weekly' ? 7 * 24 * 60 * 60 * 1000 : 24 * 60 * 60 * 1000;
+        const firstDelay = getMsUntilNextRun(updateMode, updateTime);
+
+        const timeoutId = window.setTimeout(() => {
+            loadAlerts({ initial: false });
+            scheduleIntervalRef.current = window.setInterval(() => loadAlerts({ initial: false }), intervalMs);
+        }, firstDelay);
+
         return () => {
-            mounted = false;
-            clearInterval(timer);
+            window.clearTimeout(timeoutId);
+            if (scheduleIntervalRef.current) {
+                window.clearInterval(scheduleIntervalRef.current);
+                scheduleIntervalRef.current = null;
+            }
         };
-    }, []);
+    }, [loadAlerts, updateMode, updateTime]);
 
     const getSourceIcon = (source) => {
         if (source?.toLowerCase().includes('polisen')) return '🚔';
@@ -119,6 +220,22 @@ export default function NewsPage() {
     };
 
     const sortedItems = [...items].sort((a, b) => (b.priority_rank || 0) - (a.priority_rank || 0));
+    const statsEntries = useMemo(() => {
+        if (region !== 'nacka') return [];
+        return STATS_ORDER
+            .filter((key) => statistics[key] != null && key !== 'Samverkan')
+            .map((key) => ({ key, value: String(statistics[key]) }));
+    }, [region, statistics]);
+
+    const lastUpdatedText = useMemo(() => {
+        if (!lastUpdated) return 'Waiting for first update';
+        return lastUpdated.toLocaleString('sv-SE', {
+            month: 'short',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+        });
+    }, [lastUpdated]);
 
     return (
         <motion.div
@@ -132,14 +249,85 @@ export default function NewsPage() {
                 <div className="flex items-end justify-between gap-4 flex-wrap">
                     <div>
                         <h2 className="text-2xl font-black text-white font-['Plus_Jakarta_Sans']">Swedish Alerts</h2>
+                        <div className="text-[11px] mt-1 uppercase tracking-[0.22em] text-cyan-300/60">JARVIS threat monitor</div>
                     </div>
-                    <div className="text-xs text-cyan-300/60">{refreshing ? 'Refreshing...' : 'Sorted by priority'}</div>
+                    <div className="text-xs text-cyan-300/60">{refreshing ? 'Refreshing...' : `Last update: ${lastUpdatedText}`}</div>
+                </div>
+
+                <div className="mt-4 rounded-2xl border border-cyan-300/30 bg-cyan-500/5 p-3 space-y-3">
+                    <div className="flex items-center justify-between gap-3 flex-wrap">
+                        <div className="flex items-center gap-2 flex-wrap">
+                            {REGION_OPTIONS.map((option) => {
+                                const active = option.value === region;
+                                return (
+                                    <button
+                                        key={option.value}
+                                        type="button"
+                                        onClick={() => setRegion(option.value)}
+                                        className={`px-3 py-1.5 text-xs rounded-full border font-semibold tracking-[0.14em] uppercase transition ${
+                                            active
+                                                ? 'border-cyan-200 bg-cyan-300/25 text-white'
+                                                : 'border-cyan-400/30 bg-cyan-500/10 text-cyan-100 hover:bg-cyan-400/20'
+                                        }`}
+                                    >
+                                        {option.label}
+                                    </button>
+                                );
+                            })}
+                        </div>
+
+                        <button
+                            type="button"
+                            onClick={() => loadAlerts({ initial: false })}
+                            className="px-3 py-1.5 text-xs rounded-full border border-cyan-300/40 bg-cyan-400/15 text-cyan-50 hover:bg-cyan-300/25 transition uppercase tracking-[0.14em] font-semibold"
+                        >
+                            Refresh now
+                        </button>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-2 items-center">
+                        <div className="md:col-span-1 text-[11px] uppercase tracking-[0.18em] text-cyan-200/80 flex items-center gap-2">
+                            <Clock3 size={12} />
+                            Update schedule
+                        </div>
+                        <select
+                            value={updateMode}
+                            onChange={(event) => setUpdateMode(normalizeUpdateMode(event.target.value))}
+                            className="md:col-span-1 bg-slate-900/70 border border-cyan-300/30 rounded-lg px-3 py-2 text-sm text-cyan-50"
+                        >
+                            <option value="daily">Daily update</option>
+                            <option value="weekly">Weekly update</option>
+                        </select>
+                        <input
+                            type="time"
+                            value={updateTime}
+                            onChange={(event) => setUpdateTime(normalizeTimeText(event.target.value))}
+                            className="md:col-span-1 bg-slate-900/70 border border-cyan-300/30 rounded-lg px-3 py-2 text-sm text-cyan-50"
+                        />
+                    </div>
                 </div>
             </div>
 
             {/* Content */}
             <div className="flex-1 min-h-0 overflow-y-auto touch-scroll-y">
                 <div className="px-6 py-4 space-y-3">
+                    {region === 'nacka' && statsEntries.length > 0 && (
+                        <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
+                            {statsEntries.map((entry, idx) => (
+                                <motion.div
+                                    key={entry.key}
+                                    initial={{ opacity: 0, y: 8 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ duration: 0.25, delay: idx * 0.04 }}
+                                    className="rounded-xl border border-cyan-300/25 bg-slate-900/60 px-3 py-2"
+                                >
+                                    <div className="text-[10px] uppercase tracking-[0.14em] text-cyan-200/70">{entry.key}</div>
+                                    <div className="text-xl font-black text-white">{entry.value}</div>
+                                </motion.div>
+                            ))}
+                        </div>
+                    )}
+
                     {loading && (
                         <motion.div 
                             className="text-center py-12"

@@ -357,6 +357,68 @@ def _alert_priority(source: str, title: str = "") -> tuple[int, str]:
     return 20, "News"
 
 
+def _normalize_alert_region(region: str) -> str:
+    value = (region or "").strip().lower()
+    if value in {"nacka", "stockholm", "sweden"}:
+        return value
+    return "nacka"
+
+
+def _match_region_text(region: str, *parts: str) -> bool:
+    if region == "sweden":
+        return True
+
+    haystack = " ".join((part or "") for part in parts).lower()
+    if region == "nacka":
+        return "nacka" in haystack
+
+    # Stockholm mode includes common county/city spellings.
+    return (
+        "stockholm" in haystack
+        or "stockholms" in haystack
+        or "södertälje" in haystack
+        or "sodertalje" in haystack
+    )
+
+
+def _extract_sos_statistics(payload: object) -> dict[str, str]:
+    if not isinstance(payload, dict):
+        return {}
+
+    def _canonicalize_stats(source: dict) -> dict[str, str]:
+        aliases: dict[str, tuple[str, ...]] = {
+            "Alla samtal": ("alla samtal",),
+            "Polisen": ("polisen",),
+            "Vårdbehov": ("vårdbehov", "vÃ¥rdbehov", "vardbehov"),
+            "Räddning": ("räddning", "rÃ¤ddning", "raddning"),
+            "Ej akuta behov": ("ej akuta behov",),
+        }
+
+        normalized: dict[str, str] = {
+            str(k).strip().lower(): str(v)
+            for k, v in source.items()
+            if k is not None and v is not None
+        }
+
+        result: dict[str, str] = {}
+        for canonical, keys in aliases.items():
+            for key in keys:
+                if key in normalized:
+                    result[canonical] = normalized[key]
+                    break
+        return result
+
+    for key in ["statistics", "statistik", "stats", "summary"]:
+        candidate = payload.get(key)
+        if isinstance(candidate, dict):
+            canonical = _canonicalize_stats(candidate)
+            if canonical:
+                return canonical
+
+    # Fallback: if the statistics are flattened on top-level keys.
+    return _canonicalize_stats(payload)
+
+
 @app.get("/integrations/weather")
 async def weather_open_meteo(latitude: float = 59.3293, longitude: float = 18.0686, timezone: str = "auto"):
     """Weather for dashboard cards via Open-Meteo (current + hourly + 7-day forecast)."""
@@ -389,10 +451,12 @@ async def weather_open_meteo(latitude: float = 59.3293, longitude: float = 18.06
 
 
 @app.get("/integrations/swedish-alerts")
-async def swedish_alerts(limit: int = 12):
+async def swedish_alerts(limit: int = 12, region: str = "nacka"):
     """Aggregate Sweden-focused alerts/news from official APIs."""
+    selected_region = _normalize_alert_region(region)
     items: list[dict] = []
     source_errors: list[str] = []
+    area_statistics: dict[str, str] = {}
 
     def _as_items(payload: object, keys: list[str]) -> list[dict]:
         if isinstance(payload, list):
@@ -408,15 +472,20 @@ async def swedish_alerts(limit: int = 12):
     try:
         polisen_data = _fetch_json("https://polisen.se/api/events")
         for entry in (polisen_data or [])[:limit]:
+            title = (entry.get("name") or "Polisen event").strip()
+            location = entry.get("location", {}).get("name") or ""
+            if not _match_region_text(selected_region, title, location):
+                continue
+
             items.append(
                 {
                     "source": "Polisen",
-                    "title": (entry.get("name") or "Polisen event").strip(),
+                    "title": title,
                     "url": entry.get("url") or "https://polisen.se/aktuellt/",
                     "published": entry.get("datetime") or "",
-                    "location": entry.get("location", {}).get("name") or "",
-                    "priority_rank": _alert_priority("Polisen", entry.get("name") or "")[0],
-                    "priority_label": _alert_priority("Polisen", entry.get("name") or "")[1],
+                    "location": location,
+                    "priority_rank": _alert_priority("Polisen", title)[0],
+                    "priority_label": _alert_priority("Polisen", title)[1],
                 }
             )
         logger.debug("Polisen: fetched %d items", len(polisen_data or []))
@@ -434,28 +503,38 @@ async def swedish_alerts(limit: int = 12):
         news_items = _as_items(krisis_news, ["news", "items", "data"])
 
         for entry in vma_items[:limit]:
+            title = (entry.get("Headline") or entry.get("headline") or entry.get("title") or "VMA").strip()[:100]
+            location = entry.get("Area") or entry.get("area") or ""
+            if not _match_region_text(selected_region, title, location):
+                continue
+
             items.append(
                 {
                     "source": "Krisinformation VMA",
-                    "title": (entry.get("Headline") or entry.get("headline") or entry.get("title") or "VMA").strip()[:100],
+                    "title": title,
                     "url": entry.get("Link") or entry.get("link") or "https://krisinformation.se/",
                     "published": entry.get("Published") or entry.get("published") or entry.get("Updated") or "",
-                    "location": entry.get("Area") or entry.get("area") or "",
-                    "priority_rank": _alert_priority("Krisinformation VMA", entry.get("Headline") or entry.get("headline") or entry.get("title") or "VMA")[0],
-                    "priority_label": _alert_priority("Krisinformation VMA", entry.get("Headline") or entry.get("headline") or entry.get("title") or "VMA")[1],
+                    "location": location,
+                    "priority_rank": _alert_priority("Krisinformation VMA", title)[0],
+                    "priority_label": _alert_priority("Krisinformation VMA", title)[1],
                 }
             )
 
         for entry in news_items[:limit]:
+            title = (entry.get("Headline") or entry.get("headline") or entry.get("Title") or entry.get("title") or "Alert").strip()[:100]
+            location = entry.get("Area") or entry.get("area") or ""
+            if not _match_region_text(selected_region, title, location):
+                continue
+
             items.append(
                 {
                     "source": "Krisinformation",
-                    "title": (entry.get("Headline") or entry.get("headline") or entry.get("Title") or entry.get("title") or "Alert").strip()[:100],
+                    "title": title,
                     "url": entry.get("Link") or entry.get("link") or "https://krisinformation.se/",
                     "published": entry.get("Published") or entry.get("published") or entry.get("Updated") or entry.get("updated") or "",
-                    "location": entry.get("Area") or entry.get("area") or "",
-                    "priority_rank": _alert_priority("Krisinformation", entry.get("Headline") or entry.get("headline") or entry.get("Title") or entry.get("title") or "Alert")[0],
-                    "priority_label": _alert_priority("Krisinformation", entry.get("Headline") or entry.get("headline") or entry.get("Title") or entry.get("title") or "Alert")[1],
+                    "location": location,
+                    "priority_rank": _alert_priority("Krisinformation", title)[0],
+                    "priority_label": _alert_priority("Krisinformation", title)[1],
                 }
             )
         logger.debug("Krisinformation: fetched %d VMAs and %d news items", len(vma_items), len(news_items))
@@ -463,21 +542,33 @@ async def swedish_alerts(limit: int = 12):
         error_msg = str(exc)[:40]
         source_errors.append(f"Krisinformation: {error_msg}")
 
-    # 3) SOS Alarm proxy changed API structure in 2025 and root no longer returns JSON feed entries.
-    # Keep this source optional; do not spam warning logs on each polling request.
+    # 3) SOS Alarm feed. Region-specific source for Nacka statistics.
     try:
-        sos_data = _fetch_json("https://henrikhjelm.se/api/sos/")
+        if selected_region == "nacka":
+            sos_url = "https://www.henrikhjelm.se/api/sos/Nacka_kommun.json"
+        else:
+            sos_url = "https://henrikhjelm.se/api/sos/"
+
+        sos_data = _fetch_json(sos_url)
+        if selected_region == "nacka":
+            area_statistics = _extract_sos_statistics(sos_data)
+
         sos_items = _as_items(sos_data, ["items", "data", "results"])
         for entry in sos_items[:limit]:
+            title = (entry.get("headline") or entry.get("title") or "SOS Event").strip()[:100]
+            location = entry.get("location") or ""
+            if not _match_region_text(selected_region, title, location):
+                continue
+
             items.append(
                 {
                     "source": "SOS Alarm",
-                    "title": (entry.get("headline") or entry.get("title") or "SOS Event").strip()[:100],
+                    "title": title,
                     "url": entry.get("url") or "https://www.sosalarm.se/",
                     "published": entry.get("timestamp") or entry.get("updated") or entry.get("published") or "",
-                    "location": entry.get("location") or "",
-                    "priority_rank": _alert_priority("SOS Alarm", entry.get("headline") or entry.get("title") or "SOS Event")[0],
-                    "priority_label": _alert_priority("SOS Alarm", entry.get("headline") or entry.get("title") or "SOS Event")[1],
+                    "location": location,
+                    "priority_rank": _alert_priority("SOS Alarm", title)[0],
+                    "priority_label": _alert_priority("SOS Alarm", title)[1],
                 }
             )
         logger.debug("SOS Alarm: fetched %d items", len(sos_items))
@@ -529,6 +620,8 @@ async def swedish_alerts(limit: int = 12):
     result = {
         "items": deduped,
         "count": len(deduped),
+        "region": selected_region,
+        "statistics": area_statistics if selected_region == "nacka" else {},
         "errors": source_errors if source_errors else [],
         "sources": ["Polisen", "Krisinformation", "SOS Alarm"],
     }
