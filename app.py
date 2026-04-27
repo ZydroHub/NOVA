@@ -110,6 +110,8 @@ async def lifespan(_app):
     _initialize_backend_once()
     telegram_bot = start_telegram_bot()
     try:
+        if telegram_bot is not None:
+            telegram_bot.send_startup_notification()
         yield
     finally:
         if telegram_bot is not None:

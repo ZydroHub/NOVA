@@ -65,3 +65,33 @@ def test_telegram_dispatch_deduplicates_alerts(tmp_path):
 
     alert_messages = [message for message in sent_messages if message[1].startswith("Traffic: Road closure")]
     assert len(alert_messages) == 1
+
+
+def test_telegram_startup_notification_broadcasts_to_subscribers(tmp_path):
+    from telegram_bot import TelegramAlertBot
+
+    sent_messages = []
+
+    def fake_sender(chat_id, text):
+        sent_messages.append((chat_id, text))
+        return True
+
+    bot = TelegramAlertBot(
+        token="token",
+        subscriptions_file=str(tmp_path / "subs.json"),
+        alert_fetcher=lambda limit, region: {"items": []},
+        send_message_fn=fake_sender,
+        poll_interval_seconds=15,
+        request_timeout_seconds=3,
+    )
+
+    bot.subscribe(42, "nacka")
+    bot.subscribe(99, "stockholm")
+
+    sent_count = bot.send_startup_notification()
+
+    assert sent_count == 2
+    assert sent_messages == [
+        (42, "NOVA started successfully and is now monitoring alerts."),
+        (99, "NOVA started successfully and is now monitoring alerts."),
+    ]

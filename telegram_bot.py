@@ -28,6 +28,8 @@ _HELP_TEXT = (
     "Send /test to verify the bot reply."
 )
 
+_STARTUP_TEXT = "NOVA started successfully and is now monitoring alerts."
+
 
 def _coerce_chat_id(value: object) -> int | None:
     try:
@@ -158,6 +160,22 @@ class TelegramAlertBot:
     def poll_once(self) -> None:
         self._poll_updates_once()
         self._poll_alerts_once()
+
+    def send_startup_notification(self) -> int:
+        with self._state_lock:
+            chat_ids = sorted({chat_id for ids in self._subscriptions.values() for chat_id in ids})
+
+        sent_count = 0
+        for chat_id in chat_ids:
+            if self._send_message(chat_id, _STARTUP_TEXT):
+                sent_count += 1
+
+        if sent_count:
+            logger.info("Telegram startup notification sent to %d chat(s).", sent_count)
+        else:
+            logger.debug("No Telegram startup notification sent; no subscribed chats yet.")
+
+        return sent_count
 
     def _run(self) -> None:
         while not self._stop_event.is_set():
