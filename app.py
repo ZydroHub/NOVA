@@ -19,6 +19,8 @@ import psutil
 import uvicorn
 
 from config import PORT, setup_logging
+from news_alerts import fetch_swedish_alerts
+from telegram_bot import start_telegram_bot, stop_telegram_bot
 
 
 def _pip_reinstall(packages):
@@ -106,7 +108,14 @@ def _initialize_backend_once() -> None:
 @asynccontextmanager
 async def lifespan(_app):
     _initialize_backend_once()
-    yield
+    telegram_bot = start_telegram_bot()
+    try:
+        yield
+    finally:
+        if telegram_bot is not None:
+            telegram_bot.stop()
+        else:
+            stop_telegram_bot()
 
 app = FastAPI(title="NOVA Unified Backend", lifespan=lifespan)
 
@@ -632,226 +641,7 @@ async def weather_open_meteo(latitude: float = 59.3293, longitude: float = 18.06
 @app.get("/integrations/swedish-alerts")
 async def swedish_alerts(limit: int = 12, region: str = "nacka"):
     """Aggregate Sweden-focused alerts/news from official APIs."""
-    selected_region = _normalize_alert_region(region)
-    items: list[dict] = []
-    source_errors: list[str] = []
-    area_statistics: dict[str, str] = {}
-    polisen_data_cache: list[dict] = []
-    days_back = 30
-
-    def _as_items(payload: object, keys: list[str]) -> list[dict]:
-        if isinstance(payload, list):
-            return [x for x in payload if isinstance(x, dict)]
-        if isinstance(payload, dict):
-            for key in keys:
-                value = payload.get(key)
-                if isinstance(value, list):
-                    return [x for x in value if isinstance(x, dict)]
-        return []
-
-    # 1) Polisen events API (JSON) - https://polisen.se/om-polisen/om-webbplatsen/oppna-data/api-over-polisens-handelser/
-    try:
-        polisen_data = _fetch_json("https://polisen.se/api/events", timeout=5.0)
-        polisen_data_cache = [entry for entry in (polisen_data or []) if isinstance(entry, dict)]
-        for entry in polisen_data_cache:
-            title = (entry.get("name") or "Polisen event").strip()
-            summary = (entry.get("summary") or "").strip()
-            location = _polisen_location_name(entry)
-            published = entry.get("datetime") or ""
-            if not _match_region_text(selected_region, title, location, summary):
-                continue
-            if not _is_within_last_days(published, days=days_back):
-                continue
-
-            items.append(
-                {
-                    "source": "Polisen",
-                    "title": title,
-                    "url": entry.get("url") or "https://polisen.se/aktuellt/",
-                    "published": published,
-                    "location": location,
-                    "priority_rank": _alert_priority("Polisen", title)[0],
-                    "priority_label": _alert_priority("Polisen", title)[1],
-                }
-            )
-        logger.debug("Polisen: fetched %d items", len(polisen_data or []))
-    except Exception as exc:
-        error_msg = str(exc)[:40]
-        source_errors.append(f"Polisen: {error_msg}")
-
-    # 2) Krisinformation API v3 (v4 is not available)
-    try:
-        # Combine VMAs (critical alerts) with news headlines.
-        krisis_vmas = _fetch_json("https://api.krisinformation.se/v3/vmas?language=sv", timeout=4.0)
-        krisis_news = _fetch_json(
-            f"https://api.krisinformation.se/v3/news?language=sv&numberOfNewsArticles={max(limit, 10)}",
-            timeout=4.0,
-        )
-
-        vma_items = _as_items(krisis_vmas, ["vmas", "items", "data"])
-        news_items = _as_items(krisis_news, ["news", "items", "data"])
-        scan_limit = max(limit * 20, 200)
-
-        for entry in vma_items[:scan_limit]:
-            title = (entry.get("Headline") or entry.get("headline") or entry.get("title") or "VMA").strip()[:100]
-            location = entry.get("Area") or entry.get("area") or ""
-            published = entry.get("Published") or entry.get("published") or entry.get("Updated") or ""
-            if not _match_region_text(selected_region, title, location):
-                continue
-            if not _is_within_last_days(published, days=days_back):
-                continue
-
-            items.append(
-                {
-                    "source": "Krisinformation VMA",
-                    "title": title,
-                    "url": entry.get("Link") or entry.get("link") or "https://krisinformation.se/",
-                    "published": published,
-                    "location": location,
-                    "priority_rank": _alert_priority("Krisinformation VMA", title)[0],
-                    "priority_label": _alert_priority("Krisinformation VMA", title)[1],
-                }
-            )
-
-        for entry in news_items[:scan_limit]:
-            title = (entry.get("Headline") or entry.get("headline") or entry.get("Title") or entry.get("title") or "Alert").strip()[:100]
-            location = entry.get("Area") or entry.get("area") or ""
-            published = entry.get("Published") or entry.get("published") or entry.get("Updated") or entry.get("updated") or ""
-            if not _match_region_text(selected_region, title, location):
-                continue
-            if not _is_within_last_days(published, days=days_back):
-                continue
-
-            items.append(
-                {
-                    "source": "Krisinformation",
-                    "title": title,
-                    "url": entry.get("Link") or entry.get("link") or "https://krisinformation.se/",
-                    "published": published,
-                    "location": location,
-                    "priority_rank": _alert_priority("Krisinformation", title)[0],
-                    "priority_label": _alert_priority("Krisinformation", title)[1],
-                }
-            )
-        logger.debug("Krisinformation: fetched %d VMAs and %d news items", len(vma_items), len(news_items))
-    except Exception as exc:
-        error_msg = str(exc)[:40]
-        source_errors.append(f"Krisinformation: {error_msg}")
-
-    # 3) SOS Alarm feed. Region-specific source for Nacka statistics.
-    try:
-        if selected_region == "nacka":
-            sos_url = "https://www.henrikhjelm.se/api/sos/Nacka_kommun.json"
-        else:
-            sos_url = "https://henrikhjelm.se/api/sos/"
-
-        sos_data = _fetch_json(sos_url, timeout=4.0)
-        if selected_region == "nacka":
-            area_statistics = _extract_sos_statistics(sos_data)
-
-        sos_items = _as_items(sos_data, ["items", "data", "results"])
-        scan_limit = max(limit * 20, 200)
-        for entry in sos_items[:scan_limit]:
-            title = (entry.get("headline") or entry.get("title") or "SOS Event").strip()[:100]
-            location = entry.get("location") or ""
-            published = entry.get("timestamp") or entry.get("updated") or entry.get("published") or ""
-            if not _match_region_text(selected_region, title, location):
-                continue
-            if not _is_within_last_days(published, days=days_back):
-                continue
-
-            items.append(
-                {
-                    "source": "SOS Alarm",
-                    "title": title,
-                    "url": entry.get("url") or "https://www.sosalarm.se/",
-                    "published": published,
-                    "location": location,
-                    "priority_rank": _alert_priority("SOS Alarm", title)[0],
-                    "priority_label": _alert_priority("SOS Alarm", title)[1],
-                }
-            )
-        logger.debug("SOS Alarm: fetched %d items", len(sos_items))
-    except Exception as exc:
-        error_msg = str(exc)[:40]
-        source_errors.append(f"SOS Alarm: {error_msg}")
-
-    # 4) Trafikverket traffic situations (requires API key).
-    if selected_region != "nacka":
-        try:
-            trafik_items, trafik_error = _fetch_trafikverket_items(limit=limit, region=selected_region)
-            if trafik_items:
-                for item in trafik_items:
-                    if _is_within_last_days(item.get("published") or "", days=days_back):
-                        items.append(item)
-            elif trafik_error:
-                source_errors.append(f"Trafikverket: {trafik_error[:60]}")
-        except Exception as exc:
-            error_msg = str(exc)[:60]
-            source_errors.append(f"Trafikverket: {error_msg}")
-
-    # Deduplicate by title and source, keep first seen entries
-    deduped: list[dict] = []
-    seen: set[tuple[str, str]] = set()
-    for item in items:
-        key = ((item.get("source") or "").strip(), (item.get("title") or "").strip())
-        if key in seen:
-            continue
-        seen.add(key)
-        deduped.append(item)
-
-    deduped.sort(
-        key=lambda item: (
-            -int(item.get("priority_rank") or 0),
-            -_published_sort_value(item.get("published") or ""),
-            (item.get("title") or ""),
-        )
-    )
-
-    if selected_region == "sweden":
-        deduped = _balance_items_by_source(deduped)
-
-    # If Stockholm is empty, backfill with broader recent Polisen events.
-    if not deduped and selected_region == "stockholm" and polisen_data_cache:
-        for entry in polisen_data_cache[: max(limit * 10, 120)]:
-            title = (entry.get("name") or "Polisen event").strip()
-            if not title:
-                continue
-            deduped.append(
-                {
-                    "source": "Polisen",
-                    "title": title,
-                    "url": entry.get("url") or "https://polisen.se/aktuellt/",
-                    "published": entry.get("datetime") or "",
-                    "location": _polisen_location_name(entry),
-                    "priority_rank": _alert_priority("Polisen", title)[0],
-                    "priority_label": "Police",
-                }
-            )
-            if len(deduped) >= limit:
-                break
-
-        if deduped:
-            source_errors.append(f"{selected_region}: local filter empty; using broader Polisen fallback")
-
-    deduped = deduped[:limit]
-
-    # Return results with error log
-    result = {
-        "items": deduped,
-        "count": len(deduped),
-        "region": selected_region,
-        "statistics": area_statistics if selected_region == "nacka" else {},
-        "errors": source_errors if source_errors else [],
-        "sources": ["Polisen", "Krisinformation", "SOS Alarm", "Trafikverket"],
-    }
-    
-    if not deduped:
-        logger.warning("No Swedish alerts fetched. Errors: %s", source_errors)
-    elif source_errors:
-        logger.info("Swedish alerts fetched with partial source errors: %s", source_errors)
-    
-    return result
+    return fetch_swedish_alerts(limit=limit, region=region)
 
 
 def _send_magic_packet(mac: str, broadcast_ip: str, port: int = 9) -> None:
