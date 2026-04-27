@@ -13,7 +13,7 @@ import urllib.request
 import threading
 from contextlib import asynccontextmanager
 from asyncio import sleep
-from datetime import datetime
+from datetime import datetime, timedelta
 
 import psutil
 import uvicorn
@@ -479,6 +479,41 @@ def _polisen_location_name(entry: dict) -> str:
     return ""
 
 
+def _parse_published_datetime(value: str) -> datetime | None:
+    text = (value or "").strip()
+    if not text:
+        return None
+
+    # Handle common ISO variants from Swedish public APIs.
+    iso_candidate = text.replace("Z", "+00:00")
+    try:
+        return datetime.fromisoformat(iso_candidate)
+    except ValueError:
+        pass
+
+    for fmt in (
+        "%Y-%m-%d %H:%M:%S%z",
+        "%Y-%m-%d %H:%M:%S",
+        "%a, %d %b %Y %H:%M:%S %z",
+    ):
+        try:
+            return datetime.strptime(text, fmt)
+        except ValueError:
+            continue
+
+    return None
+
+
+def _is_within_last_days(value: str, days: int = 30) -> bool:
+    parsed = _parse_published_datetime(value)
+    if parsed is None:
+        # Keep entries with unknown date rather than hiding useful alerts.
+        return True
+
+    now = datetime.now(parsed.tzinfo) if parsed.tzinfo else datetime.now()
+    return parsed >= (now - timedelta(days=days))
+
+
 def _extract_sos_statistics(payload: object) -> dict[str, str]:
     if not isinstance(payload, dict):
         return {}
@@ -556,6 +591,7 @@ async def swedish_alerts(limit: int = 12, region: str = "nacka"):
     source_errors: list[str] = []
     area_statistics: dict[str, str] = {}
     polisen_data_cache: list[dict] = []
+    days_back = 30
 
     def _as_items(payload: object, keys: list[str]) -> list[dict]:
         if isinstance(payload, list):
@@ -575,7 +611,10 @@ async def swedish_alerts(limit: int = 12, region: str = "nacka"):
             title = (entry.get("name") or "Polisen event").strip()
             summary = (entry.get("summary") or "").strip()
             location = _polisen_location_name(entry)
+            published = entry.get("datetime") or ""
             if not _match_region_text(selected_region, title, location, summary):
+                continue
+            if not _is_within_last_days(published, days=days_back):
                 continue
 
             items.append(
@@ -583,7 +622,7 @@ async def swedish_alerts(limit: int = 12, region: str = "nacka"):
                     "source": "Polisen",
                     "title": title,
                     "url": entry.get("url") or "https://polisen.se/aktuellt/",
-                    "published": entry.get("datetime") or "",
+                    "published": published,
                     "location": location,
                     "priority_rank": _alert_priority("Polisen", title)[0],
                     "priority_label": _alert_priority("Polisen", title)[1],
@@ -605,11 +644,15 @@ async def swedish_alerts(limit: int = 12, region: str = "nacka"):
 
         vma_items = _as_items(krisis_vmas, ["vmas", "items", "data"])
         news_items = _as_items(krisis_news, ["news", "items", "data"])
+        scan_limit = max(limit * 20, 200)
 
-        for entry in vma_items[:limit]:
+        for entry in vma_items[:scan_limit]:
             title = (entry.get("Headline") or entry.get("headline") or entry.get("title") or "VMA").strip()[:100]
             location = entry.get("Area") or entry.get("area") or ""
+            published = entry.get("Published") or entry.get("published") or entry.get("Updated") or ""
             if not _match_region_text(selected_region, title, location):
+                continue
+            if not _is_within_last_days(published, days=days_back):
                 continue
 
             items.append(
@@ -617,17 +660,20 @@ async def swedish_alerts(limit: int = 12, region: str = "nacka"):
                     "source": "Krisinformation VMA",
                     "title": title,
                     "url": entry.get("Link") or entry.get("link") or "https://krisinformation.se/",
-                    "published": entry.get("Published") or entry.get("published") or entry.get("Updated") or "",
+                    "published": published,
                     "location": location,
                     "priority_rank": _alert_priority("Krisinformation VMA", title)[0],
                     "priority_label": _alert_priority("Krisinformation VMA", title)[1],
                 }
             )
 
-        for entry in news_items[:limit]:
+        for entry in news_items[:scan_limit]:
             title = (entry.get("Headline") or entry.get("headline") or entry.get("Title") or entry.get("title") or "Alert").strip()[:100]
             location = entry.get("Area") or entry.get("area") or ""
+            published = entry.get("Published") or entry.get("published") or entry.get("Updated") or entry.get("updated") or ""
             if not _match_region_text(selected_region, title, location):
+                continue
+            if not _is_within_last_days(published, days=days_back):
                 continue
 
             items.append(
@@ -635,7 +681,7 @@ async def swedish_alerts(limit: int = 12, region: str = "nacka"):
                     "source": "Krisinformation",
                     "title": title,
                     "url": entry.get("Link") or entry.get("link") or "https://krisinformation.se/",
-                    "published": entry.get("Published") or entry.get("published") or entry.get("Updated") or entry.get("updated") or "",
+                    "published": published,
                     "location": location,
                     "priority_rank": _alert_priority("Krisinformation", title)[0],
                     "priority_label": _alert_priority("Krisinformation", title)[1],
@@ -658,10 +704,14 @@ async def swedish_alerts(limit: int = 12, region: str = "nacka"):
             area_statistics = _extract_sos_statistics(sos_data)
 
         sos_items = _as_items(sos_data, ["items", "data", "results"])
-        for entry in sos_items[:limit]:
+        scan_limit = max(limit * 20, 200)
+        for entry in sos_items[:scan_limit]:
             title = (entry.get("headline") or entry.get("title") or "SOS Event").strip()[:100]
             location = entry.get("location") or ""
+            published = entry.get("timestamp") or entry.get("updated") or entry.get("published") or ""
             if not _match_region_text(selected_region, title, location):
+                continue
+            if not _is_within_last_days(published, days=days_back):
                 continue
 
             items.append(
@@ -669,7 +719,7 @@ async def swedish_alerts(limit: int = 12, region: str = "nacka"):
                     "source": "SOS Alarm",
                     "title": title,
                     "url": entry.get("url") or "https://www.sosalarm.se/",
-                    "published": entry.get("timestamp") or entry.get("updated") or entry.get("published") or "",
+                    "published": published,
                     "location": location,
                     "priority_rank": _alert_priority("SOS Alarm", title)[0],
                     "priority_label": _alert_priority("SOS Alarm", title)[1],
@@ -685,7 +735,9 @@ async def swedish_alerts(limit: int = 12, region: str = "nacka"):
         try:
             trafik_items, trafik_error = _fetch_trafikverket_items(limit=limit, region=selected_region)
             if trafik_items:
-                items.extend(trafik_items)
+                for item in trafik_items:
+                    if _is_within_last_days(item.get("published") or "", days=days_back):
+                        items.append(item)
             elif trafik_error:
                 source_errors.append(f"Trafikverket: {trafik_error[:60]}")
         except Exception as exc:

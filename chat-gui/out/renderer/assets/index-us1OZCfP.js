@@ -37390,7 +37390,7 @@ function NewsPage() {
       const timeoutId = setTimeout(() => controller.abort(), 2e4);
       try {
         const query = new URLSearchParams({
-          limit: "20",
+          limit: "60",
           region
         });
         const data = await apiFetch(`/integrations/swedish-alerts?${query.toString()}`, { signal: controller.signal });
@@ -37451,10 +37451,7 @@ function NewsPage() {
       transition: { duration: 0.5, ease: "easeOut" },
       children: [
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex-shrink-0 px-6 py-4 border-b border-cyan-400/20", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-end justify-between gap-4 flex-wrap", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "text-2xl font-black text-white font-['Plus_Jakarta_Sans']", children: "Swedish Alerts" }) }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-xs text-cyan-300/60", children: refreshing ? "Refreshing..." : "" })
-          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex items-end gap-4 flex-wrap", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "text-2xl font-black text-white font-['Plus_Jakarta_Sans']", children: "Swedish Alerts" }) }) }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mt-4 rounded-2xl border border-cyan-300/30 bg-cyan-500/5 p-3 space-y-3", children: [
             /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between gap-3 flex-wrap", children: [
               /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex items-center gap-2 flex-wrap", children: REGION_OPTIONS.map((option) => {

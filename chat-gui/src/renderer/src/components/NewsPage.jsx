@@ -108,7 +108,7 @@ export default function NewsPage() {
 
             try {
                 const query = new URLSearchParams({
-                    limit: '20',
+                    limit: '60',
                     region,
                 });
                 const data = await apiFetch(`/integrations/swedish-alerts?${query.toString()}`, { signal: controller.signal });
@@ -179,11 +179,10 @@ export default function NewsPage() {
         >
             {/* Header */}
             <div className="flex-shrink-0 px-6 py-4 border-b border-cyan-400/20">
-                <div className="flex items-end justify-between gap-4 flex-wrap">
+                <div className="flex items-end gap-4 flex-wrap">
                     <div>
                         <h2 className="text-2xl font-black text-white font-['Plus_Jakarta_Sans']">Swedish Alerts</h2>
                     </div>
-                    <div className="text-xs text-cyan-300/60">{refreshing ? 'Refreshing...' : ''}</div>
                 </div>
 
                 <div className="mt-4 rounded-2xl border border-cyan-300/30 bg-cyan-500/5 p-3 space-y-3">
