@@ -63,6 +63,10 @@ From the **project root** (the folder that contains `app.py` and `requirements.t
 
 3. **Optional:** Copy `.env.example` to `.env` to change `PORT`, paths, or model IDs without editing code.
 
+### Telegram alerts
+
+If you want alert notifications in Telegram, set `TELEGRAM_BOT_TOKEN` in `.env` and start the backend. There is no chat id to hardcode: the bot learns each chat automatically when a user sends `/Nacka`, `/stockholm`, or `/test` to the bot.
+
 ### One-click desktop launcher (Raspberry Pi OS desktop)
 
 To start the whole app (backend + GUI) from a desktop icon:

@@ -347,71 +347,6 @@ def _fetch_json_post(url: str, payload: str, timeout: float = 8.0, headers: dict
         return json.loads(resp.read().decode("utf-8", errors="replace"))
 
 
-def _fetch_trafikverket_items(limit: int, region: str) -> tuple[list[dict], str | None]:
-    api_key = (os.environ.get("TRAFIKVERKET_API_KEY") or "").strip()
-    if not api_key:
-        return [], "Trafikverket API key missing (set TRAFIKVERKET_API_KEY)"
-
-    request_xml = f"""<REQUEST>
-  <LOGIN authenticationkey=\"{api_key}\" />
-  <QUERY objecttype=\"Situation\" schemaversion=\"1.5\" limit=\"{max(1, min(limit * 2, 50))}\">
-    <FILTER>
-      <EQ name=\"Deleted\" value=\"false\" />
-    </FILTER>
-    <INCLUDE>Id</INCLUDE>
-    <INCLUDE>Header</INCLUDE>
-    <INCLUDE>Description</INCLUDE>
-    <INCLUDE>Deviation</INCLUDE>
-    <INCLUDE>TrafficRestrictionType</INCLUDE>
-    <INCLUDE>StartTime</INCLUDE>
-    <INCLUDE>EndTime</INCLUDE>
-    <INCLUDE>LocationDescriptor</INCLUDE>
-    <INCLUDE>WebLink</INCLUDE>
-  </QUERY>
-</REQUEST>"""
-
-    payload = _fetch_json_post("https://api.trafikinfo.trafikverket.se/v2/data.json", request_xml, timeout=10.0)
-
-    response = payload.get("RESPONSE") if isinstance(payload, dict) else None
-    results = response.get("RESULT") if isinstance(response, dict) else None
-    situations: list[dict] = []
-    if isinstance(results, list):
-        for result in results:
-            if not isinstance(result, dict):
-                continue
-            candidate = result.get("Situation")
-            if isinstance(candidate, list):
-                situations.extend([x for x in candidate if isinstance(x, dict)])
-
-    items: list[dict] = []
-    for entry in situations:
-        title = (entry.get("Header") or entry.get("Description") or "Trafikinfo").strip()[:120]
-        location = (entry.get("LocationDescriptor") or "").strip()
-        if not _match_region_text(region, title, location):
-            continue
-
-        description = (entry.get("Deviation") or entry.get("Description") or "").strip()
-        if description and description != title:
-            title = f"{title} - {description[:80]}"
-
-        published = entry.get("StartTime") or entry.get("EndTime") or ""
-        items.append(
-            {
-                "source": "Trafikverket",
-                "title": title,
-                "url": entry.get("WebLink") or "https://www.trafikverket.se/trafikinformation/",
-                "published": published,
-                "location": location,
-                "priority_rank": 50,
-                "priority_label": "Traffic",
-            }
-        )
-        if len(items) >= limit:
-            break
-
-    return items, None
-
-
 def _alert_priority(source: str, title: str = "") -> tuple[int, str]:
     source_l = source.lower()
     title_l = title.lower()
@@ -421,8 +356,6 @@ def _alert_priority(source: str, title: str = "") -> tuple[int, str]:
         return 80, "Police"
     if "sos" in source_l:
         return 70, "Emergency"
-    if "trafikverket" in source_l:
-        return 50, "Traffic"
     if "krisinformation" in source_l:
         if any(word in title_l for word in ["varning", "störning", "brand", "explosion", "olycka", "farlig"]):
             return 90, "Alert"
@@ -543,7 +476,6 @@ def _balance_items_by_source(items: list[dict]) -> list[dict]:
         "SOS Alarm",
         "Polisen",
         "Krisinformation",
-        "Trafikverket",
     ]
 
     buckets: dict[str, list[dict]] = {}

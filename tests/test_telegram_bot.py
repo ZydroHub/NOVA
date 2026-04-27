@@ -42,7 +42,7 @@ def test_telegram_dispatch_deduplicates_alerts(tmp_path):
                     "title": "Road closure",
                     "description": "Detour in place",
                     "priority": "Traffic",
-                    "type": "Trafikverket",
+                    "type": "Traffic",
                     "timestamp": "2026-04-27T10:00:00Z",
                     "location": "Nacka",
                     "url": "https://example.invalid/alert",

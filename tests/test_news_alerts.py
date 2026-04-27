@@ -55,7 +55,6 @@ def test_fetch_swedish_alerts_deduplicates_by_source_and_title(monkeypatch):
         return {}
 
     monkeypatch.setattr(news_alerts, "fetch_json", fake_fetch_json)
-    monkeypatch.setattr(news_alerts, "fetch_trafikverket_items", lambda limit, region: ([], None))
 
     result = news_alerts.fetch_swedish_alerts(limit=12, region="stockholm")
 
