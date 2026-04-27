@@ -37310,6 +37310,40 @@ const STATS_ORDER = [
   "Räddning",
   "Ej akuta behov"
 ];
+const shellVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.6,
+      ease: [0.22, 1, 0.36, 1],
+      when: "beforeChildren",
+      staggerChildren: 0.06
+    }
+  }
+};
+const fadeUpVariants = {
+  hidden: { opacity: 0, y: 14 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.45, ease: [0.22, 1, 0.36, 1] }
+  }
+};
+const listItemVariants = {
+  hidden: { opacity: 0, x: -24, scale: 0.985 },
+  visible: (idx) => ({
+    opacity: 1,
+    x: 0,
+    scale: 1,
+    transition: {
+      duration: 0.42,
+      delay: idx * 0.035,
+      ease: [0.22, 1, 0.36, 1]
+    }
+  })
+};
 function readStoredValue(key, fallback) {
   try {
     return localStorage.getItem(key) || fallback;
@@ -37446,111 +37480,244 @@ function NewsPage() {
     motion.div,
     {
       className: "w-full h-full min-h-0 flex flex-col gap-0 bg-transparent overflow-hidden touch-pan-y",
-      initial: { opacity: 0, y: 20 },
-      animate: { opacity: 1, y: 0 },
-      transition: { duration: 0.5, ease: "easeOut" },
+      variants: shellVariants,
+      initial: "hidden",
+      animate: "visible",
       children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex-shrink-0 px-6 py-4 border-b border-cyan-400/20", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex items-end gap-4 flex-wrap", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "text-2xl font-black text-white font-['Plus_Jakarta_Sans']", children: "Swedish Alerts" }) }) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          motion.div,
+          {
+            "aria-hidden": "true",
+            className: "pointer-events-none absolute inset-0 opacity-30",
+            style: {
+              background: "radial-gradient(circle at 15% 12%, rgba(20, 126, 201, 0.25), transparent 28%), radial-gradient(circle at 82% 18%, rgba(27, 197, 255, 0.20), transparent 30%)"
+            },
+            animate: { opacity: [0.22, 0.34, 0.22] },
+            transition: { duration: 6.5, repeat: Infinity, ease: "easeInOut" }
+          }
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs(motion.div, { variants: fadeUpVariants, className: "relative flex-shrink-0 px-6 py-4 border-b border-cyan-400/20", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex items-end gap-4 flex-wrap", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+            motion.h2,
+            {
+              className: "text-2xl font-black text-white font-['Plus_Jakarta_Sans']",
+              initial: { letterSpacing: "0.08em", opacity: 0 },
+              animate: { letterSpacing: "-0.01em", opacity: 1 },
+              transition: { duration: 0.55, ease: [0.22, 1, 0.36, 1] },
+              children: "Swedish Alerts"
+            }
+          ) }) }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mt-4 rounded-2xl border border-cyan-300/30 bg-cyan-500/5 p-3 space-y-3", children: [
             /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between gap-3 flex-wrap", children: [
               /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex items-center gap-2 flex-wrap", children: REGION_OPTIONS.map((option) => {
                 const active = option.value === region;
                 return /* @__PURE__ */ jsxRuntimeExports.jsx(
-                  "button",
+                  motion.button,
                   {
                     type: "button",
                     onClick: () => setRegion(option.value),
                     "data-no-swipe-nav": "true",
                     className: `px-3 py-1.5 text-xs rounded-full border font-semibold tracking-[0.14em] uppercase transition ${active ? "border-cyan-200 bg-cyan-300/25 text-white" : "border-cyan-400/30 bg-cyan-500/10 text-cyan-100 hover:bg-cyan-400/20"}`,
+                    whileHover: { y: -1, scale: 1.02 },
+                    whileTap: { scale: 0.98 },
                     children: option.label
                   },
                   option.value
                 );
               }) }),
               /* @__PURE__ */ jsxRuntimeExports.jsx(
-                "button",
+                motion.button,
                 {
                   type: "button",
                   onClick: () => loadAlerts({ initial: false }),
                   "data-no-swipe-nav": "true",
                   className: "px-3 py-1.5 text-xs rounded-full border border-cyan-300/40 bg-cyan-400/15 text-cyan-50 hover:bg-cyan-300/25 transition uppercase tracking-[0.14em] font-semibold",
+                  whileHover: { y: -1, scale: 1.02 },
+                  whileTap: { scale: 0.98 },
                   children: "Refresh now"
                 }
               )
             ] }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-[11px] uppercase tracking-[0.18em] text-cyan-200/80", children: "Auto refresh every 2 minutes" })
-          ] })
-        ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex-1 min-h-0 overflow-y-auto touch-scroll-y", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "px-6 py-4 space-y-3", children: [
-          region === "nacka" && statsEntries.length > 0 && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "grid grid-cols-2 md:grid-cols-5 gap-2", children: statsEntries.map((entry, idx) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2 text-[11px] uppercase tracking-[0.18em] text-cyan-200/80", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                motion.span,
+                {
+                  className: "inline-block h-1.5 w-1.5 rounded-full bg-cyan-200",
+                  animate: { opacity: refreshing ? [0.35, 1, 0.35] : [0.9, 0.9, 0.9], scale: refreshing ? [1, 1.35, 1] : [1, 1, 1] },
+                  transition: { duration: 0.8, repeat: Infinity, ease: "easeInOut" }
+                }
+              ),
+              "Auto refresh every 2 minutes"
+            ] })
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(AnimatePresence, { children: refreshing && /* @__PURE__ */ jsxRuntimeExports.jsx(
             motion.div,
             {
+              className: "absolute left-0 right-0 bottom-0 h-[2px] bg-gradient-to-r from-transparent via-cyan-300 to-transparent",
+              initial: { opacity: 0, scaleX: 0.2 },
+              animate: { opacity: 1, scaleX: [0.2, 1, 0.2] },
+              exit: { opacity: 0 },
+              transition: { duration: 1.1, repeat: Infinity, ease: "easeInOut" }
+            }
+          ) })
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(motion.div, { variants: fadeUpVariants, className: "flex-1 min-h-0 overflow-y-auto touch-scroll-y", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "px-6 py-4 space-y-3 pb-8", children: [
+          region === "nacka" && statsEntries.length > 0 && /* @__PURE__ */ jsxRuntimeExports.jsx(
+            motion.div,
+            {
+              className: "grid grid-cols-2 md:grid-cols-5 gap-2",
               initial: { opacity: 0, y: 8 },
               animate: { opacity: 1, y: 0 },
-              transition: { duration: 0.25, delay: idx * 0.04 },
-              className: "rounded-xl border border-cyan-300/25 bg-slate-900/60 px-3 py-2",
-              children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-[10px] uppercase tracking-[0.14em] text-cyan-200/70", children: entry.key }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-xl font-black text-white", children: entry.value })
-              ]
+              transition: { duration: 0.32, ease: [0.22, 1, 0.36, 1] },
+              children: statsEntries.map((entry, idx) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                motion.div,
+                {
+                  initial: { opacity: 0, y: 10, scale: 0.98 },
+                  animate: { opacity: 1, y: 0 },
+                  transition: { duration: 0.28, delay: idx * 0.05 },
+                  className: "rounded-xl border border-cyan-300/25 bg-slate-900/60 px-3 py-2",
+                  whileHover: { y: -2, borderColor: "rgba(154, 240, 255, 0.5)" },
+                  children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-[10px] uppercase tracking-[0.14em] text-cyan-200/70", children: entry.key }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-xl font-black text-white", children: entry.value })
+                  ]
+                },
+                entry.key
+              ))
             },
-            entry.key
-          )) }),
-          loading && /* @__PURE__ */ jsxRuntimeExports.jsxs(
-            motion.div,
-            {
-              className: "text-center py-12",
-              initial: { opacity: 0 },
-              animate: { opacity: 1 },
-              transition: { duration: 0.3 },
-              children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-3xl mb-2 animate-pulse", children: "⏳" }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-cyan-300", children: "Loading alerts..." })
-              ]
-            }
+            `stats-${region}`
           ),
-          error && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "bg-red-500/20 border border-red-400/50 rounded-lg p-4 text-red-200 text-sm", children: error }),
-          !loading && items2.length === 0 && /* @__PURE__ */ jsxRuntimeExports.jsxs(
-            motion.div,
-            {
-              className: "text-center py-12",
-              initial: { opacity: 0 },
-              animate: { opacity: 1 },
-              transition: { duration: 0.3 },
-              children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-4xl mb-2", children: "✨" }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-cyan-300/70", children: "No active alerts in Sweden right now" }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-cyan-300/50 mt-1", children: "All systems clear" })
-              ]
-            }
-          ),
-          sortedItems.map((item, idx) => /* @__PURE__ */ jsxRuntimeExports.jsx(
-            motion.div,
-            {
-              className: `block p-4 rounded-2xl border transition-all cursor-default ${getSourceColor(item.source)}`,
-              initial: { opacity: 0, x: -20 },
-              animate: { opacity: 1, x: 0 },
-              transition: { duration: 0.4, delay: idx * 0.05 },
-              whileHover: { scale: 1.01 },
-              children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex gap-3", children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-2xl flex-shrink-0", children: getSourceIcon(item.source) }),
-                /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex-1 min-w-0", children: [
-                  /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2 flex-wrap", children: [
-                    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-sm font-bold text-cyan-200 uppercase tracking-wider", children: item.source || "Alert" }),
-                    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-[10px] px-2 py-0.5 rounded-full border border-cyan-300/20 bg-cyan-400/10 text-cyan-100 font-semibold uppercase tracking-[0.18em]", children: item.priority_label || "News" })
-                  ] }),
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-sm text-white mt-1 line-clamp-2 font-semibold", children: item.title }),
-                  item.location && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-xs text-cyan-300/60 mt-1 flex items-center gap-1", children: [
-                    /* @__PURE__ */ jsxRuntimeExports.jsx(Globe, { size: 12 }),
-                    item.location
-                  ] }),
-                  item.published && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-xs text-cyan-300/50 mt-1 opacity-70", children: formatPublished(item.published) })
-                ] })
-              ] })
-            },
-            `${item.title}-${idx}`
-          ))
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(AnimatePresence, { mode: "wait", children: [
+            loading && /* @__PURE__ */ jsxRuntimeExports.jsx(
+              motion.div,
+              {
+                className: "space-y-3 py-2",
+                initial: { opacity: 0 },
+                animate: { opacity: 1 },
+                exit: { opacity: 0 },
+                transition: { duration: 0.22 },
+                children: Array.from({ length: 5 }).map((_, idx) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                  motion.div,
+                  {
+                    className: "rounded-2xl border border-cyan-400/20 bg-slate-900/55 px-4 py-3 overflow-hidden",
+                    initial: { opacity: 0, y: 8 },
+                    animate: { opacity: 1, y: 0 },
+                    transition: { delay: idx * 0.05, duration: 0.28 },
+                    children: [
+                      /* @__PURE__ */ jsxRuntimeExports.jsx(
+                        motion.div,
+                        {
+                          className: "h-3 w-24 rounded bg-cyan-300/20 mb-3",
+                          animate: { opacity: [0.3, 0.7, 0.3] },
+                          transition: { duration: 1.1, repeat: Infinity, delay: idx * 0.08 }
+                        }
+                      ),
+                      /* @__PURE__ */ jsxRuntimeExports.jsx(
+                        motion.div,
+                        {
+                          className: "h-2.5 w-4/5 rounded bg-cyan-300/15 mb-2",
+                          animate: { opacity: [0.25, 0.55, 0.25] },
+                          transition: { duration: 1.2, repeat: Infinity, delay: idx * 0.1 }
+                        }
+                      ),
+                      /* @__PURE__ */ jsxRuntimeExports.jsx(
+                        motion.div,
+                        {
+                          className: "h-2 w-2/5 rounded bg-cyan-300/12",
+                          animate: { opacity: [0.2, 0.5, 0.2] },
+                          transition: { duration: 1.15, repeat: Infinity, delay: idx * 0.12 }
+                        }
+                      )
+                    ]
+                  },
+                  `skeleton-${idx}`
+                ))
+              },
+              "loading"
+            ),
+            !loading && error && /* @__PURE__ */ jsxRuntimeExports.jsx(
+              motion.div,
+              {
+                className: "bg-red-500/20 border border-red-400/50 rounded-lg p-4 text-red-200 text-sm",
+                initial: { opacity: 0, y: 10 },
+                animate: { opacity: 1, y: 0 },
+                exit: { opacity: 0, y: -6 },
+                transition: { duration: 0.3 },
+                children: error
+              },
+              "error"
+            ),
+            !loading && !error && items2.length === 0 && /* @__PURE__ */ jsxRuntimeExports.jsxs(
+              motion.div,
+              {
+                className: "text-center py-12",
+                initial: { opacity: 0, y: 8 },
+                animate: { opacity: 1, y: 0 },
+                exit: { opacity: 0 },
+                transition: { duration: 0.3 },
+                children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(
+                    motion.div,
+                    {
+                      className: "text-4xl mb-2",
+                      animate: { y: [0, -4, 0], opacity: [0.6, 1, 0.6] },
+                      transition: { duration: 2, repeat: Infinity, ease: "easeInOut" },
+                      children: "✨"
+                    }
+                  ),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-cyan-300/70", children: "No active alerts in Sweden right now" }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-cyan-300/50 mt-1", children: "All systems clear" })
+                ]
+              },
+              "empty"
+            ),
+            !loading && !error && items2.length > 0 && /* @__PURE__ */ jsxRuntimeExports.jsx(
+              motion.div,
+              {
+                initial: { opacity: 0 },
+                animate: { opacity: 1 },
+                exit: { opacity: 0 },
+                transition: { duration: 0.24 },
+                className: "space-y-3",
+                children: sortedItems.map((item, idx) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  motion.div,
+                  {
+                    custom: idx,
+                    variants: listItemVariants,
+                    initial: "hidden",
+                    animate: "visible",
+                    className: `block p-4 rounded-2xl border transition-all cursor-default ${getSourceColor(item.source)}`,
+                    whileHover: { scale: 1.012, y: -1 },
+                    children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex gap-3", children: [
+                      /* @__PURE__ */ jsxRuntimeExports.jsx(
+                        motion.div,
+                        {
+                          className: "text-2xl flex-shrink-0",
+                          animate: { rotate: [0, 5, -5, 0] },
+                          transition: { duration: 0.65, delay: idx * 0.03 },
+                          children: getSourceIcon(item.source)
+                        }
+                      ),
+                      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex-1 min-w-0", children: [
+                        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2 flex-wrap", children: [
+                          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-sm font-bold text-cyan-200 uppercase tracking-wider", children: item.source || "Alert" }),
+                          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-[10px] px-2 py-0.5 rounded-full border border-cyan-300/20 bg-cyan-400/10 text-cyan-100 font-semibold uppercase tracking-[0.18em]", children: item.priority_label || "News" })
+                        ] }),
+                        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-sm text-white mt-1 line-clamp-2 font-semibold", children: item.title }),
+                        item.location && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-xs text-cyan-300/60 mt-1 flex items-center gap-1", children: [
+                          /* @__PURE__ */ jsxRuntimeExports.jsx(Globe, { size: 12 }),
+                          item.location
+                        ] }),
+                        item.published && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-xs text-cyan-300/50 mt-1 opacity-70", children: formatPublished(item.published) })
+                      ] })
+                    ] })
+                  },
+                  `${item.title}-${idx}`
+                ))
+              },
+              `list-${region}`
+            )
+          ] })
         ] }) })
       ]
     }
