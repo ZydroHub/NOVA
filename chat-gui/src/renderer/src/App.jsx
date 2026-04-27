@@ -58,6 +58,15 @@ const AnimatedRoutes = () => {
 
   const canNavigateNow = () => Date.now() - lastNavAtRef.current > 450;
 
+  const isNoSwipeTarget = (target) => {
+    if (!target || typeof target.closest !== 'function') return false;
+    return Boolean(
+      target.closest(
+        'button, a, input, select, textarea, option, [role="button"], [role="listbox"], [role="option"], [data-no-swipe-nav]'
+      )
+    );
+  };
+
   const navigateBy = (direction) => {
     if (!canNavigateNow()) return;
     const nextIndex = currentIndex + direction;
@@ -76,10 +85,18 @@ const AnimatedRoutes = () => {
   };
 
   const handlePointerDown = (e) => {
+    if (isNoSwipeTarget(e.target)) {
+      pointerStartRef.current = null;
+      return;
+    }
     pointerStartRef.current = { x: e.clientX, y: e.clientY, ts: Date.now() };
   };
 
   const handlePointerUp = (e) => {
+    if (isNoSwipeTarget(e.target)) {
+      pointerStartRef.current = null;
+      return;
+    }
     const start = pointerStartRef.current;
     pointerStartRef.current = null;
     if (!start) return;
@@ -99,7 +116,7 @@ const AnimatedRoutes = () => {
     <AnimatePresence mode="wait">
       <motion.div
         key={location.pathname}
-        className="h-full min-h-0 overflow-hidden"
+        className="h-full min-h-0 overflow-hidden touch-pan-y"
         initial={{ opacity: 0, x: swipeDirection * 100 }}
         animate={{ opacity: 1, x: 0 }}
         exit={{ opacity: 0, x: -swipeDirection * 100 }}

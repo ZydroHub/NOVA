@@ -10,7 +10,6 @@ import sys
 import urllib.error
 import urllib.parse
 import urllib.request
-import xml.etree.ElementTree as ET
 import threading
 from contextlib import asynccontextmanager
 from asyncio import sleep
@@ -325,20 +324,83 @@ def _fetch_json(url: str, timeout: float = 8.0) -> dict:
         return json.loads(resp.read().decode("utf-8", errors="replace"))
 
 
-def _fetch_rss_items(url: str, source: str, limit: int = 8) -> list[dict]:
-    req = urllib.request.Request(url, headers={"User-Agent": "NOVA/1.0"})
-    with urllib.request.urlopen(req, timeout=8.0) as resp:
-        xml_text = resp.read().decode("utf-8", errors="replace")
-    root = ET.fromstring(xml_text)
+def _fetch_json_post(url: str, payload: str, timeout: float = 8.0, headers: dict[str, str] | None = None) -> dict:
+    req_headers = {"User-Agent": "NOVA/1.0", "Content-Type": "text/xml"}
+    if headers:
+        req_headers.update(headers)
+    req = urllib.request.Request(
+        url,
+        data=payload.encode("utf-8"),
+        headers=req_headers,
+        method="POST",
+    )
+    with urllib.request.urlopen(req, timeout=timeout) as resp:
+        return json.loads(resp.read().decode("utf-8", errors="replace"))
+
+
+def _fetch_trafikverket_items(limit: int, region: str) -> tuple[list[dict], str | None]:
+    api_key = (os.environ.get("TRAFIKVERKET_API_KEY") or "").strip()
+    if not api_key:
+        return [], "Trafikverket API key missing (set TRAFIKVERKET_API_KEY)"
+
+    request_xml = f"""<REQUEST>
+  <LOGIN authenticationkey=\"{api_key}\" />
+  <QUERY objecttype=\"Situation\" schemaversion=\"1.5\" limit=\"{max(1, min(limit * 2, 50))}\">
+    <FILTER>
+      <EQ name=\"Deleted\" value=\"false\" />
+    </FILTER>
+    <INCLUDE>Id</INCLUDE>
+    <INCLUDE>Header</INCLUDE>
+    <INCLUDE>Description</INCLUDE>
+    <INCLUDE>Deviation</INCLUDE>
+    <INCLUDE>TrafficRestrictionType</INCLUDE>
+    <INCLUDE>StartTime</INCLUDE>
+    <INCLUDE>EndTime</INCLUDE>
+    <INCLUDE>LocationDescriptor</INCLUDE>
+    <INCLUDE>WebLink</INCLUDE>
+  </QUERY>
+</REQUEST>"""
+
+    payload = _fetch_json_post("https://api.trafikinfo.trafikverket.se/v2/data.json", request_xml, timeout=10.0)
+
+    response = payload.get("RESPONSE") if isinstance(payload, dict) else None
+    results = response.get("RESULT") if isinstance(response, dict) else None
+    situations: list[dict] = []
+    if isinstance(results, list):
+        for result in results:
+            if not isinstance(result, dict):
+                continue
+            candidate = result.get("Situation")
+            if isinstance(candidate, list):
+                situations.extend([x for x in candidate if isinstance(x, dict)])
+
     items: list[dict] = []
-    for item in root.findall(".//item")[:limit]:
-        title = (item.findtext("title") or "").strip()
-        link = (item.findtext("link") or "").strip()
-        pub_date = (item.findtext("pubDate") or "").strip()
-        if not title:
+    for entry in situations:
+        title = (entry.get("Header") or entry.get("Description") or "Trafikinfo").strip()[:120]
+        location = (entry.get("LocationDescriptor") or "").strip()
+        if not _match_region_text(region, title, location):
             continue
-        items.append({"source": source, "title": title, "url": link, "published": pub_date})
-    return items
+
+        description = (entry.get("Deviation") or entry.get("Description") or "").strip()
+        if description and description != title:
+            title = f"{title} - {description[:80]}"
+
+        published = entry.get("StartTime") or entry.get("EndTime") or ""
+        items.append(
+            {
+                "source": "Trafikverket",
+                "title": title,
+                "url": entry.get("WebLink") or "https://www.trafikverket.se/trafikinformation/",
+                "published": published,
+                "location": location,
+                "priority_rank": 50,
+                "priority_label": "Traffic",
+            }
+        )
+        if len(items) >= limit:
+            break
+
+    return items, None
 
 
 def _alert_priority(source: str, title: str = "") -> tuple[int, str]:
@@ -350,6 +412,8 @@ def _alert_priority(source: str, title: str = "") -> tuple[int, str]:
         return 80, "Police"
     if "sos" in source_l:
         return 70, "Emergency"
+    if "trafikverket" in source_l:
+        return 50, "Traffic"
     if "krisinformation" in source_l:
         if any(word in title_l for word in ["varning", "störning", "brand", "explosion", "olycka", "farlig"]):
             return 90, "Alert"
@@ -576,26 +640,16 @@ async def swedish_alerts(limit: int = 12, region: str = "nacka"):
         error_msg = str(exc)[:40]
         source_errors.append(f"SOS Alarm: {error_msg}")
 
-    # 4) RSS fallback so UI still shows items even if JSON APIs fail
-    if not items:
-        fallback_feeds = [
-            ("https://www.svt.se/nyheter/rss.xml", "SVT Nyheter"),
-            ("https://feeds.expressen.se/nyheter", "Expressen"),
-            ("https://www.svd.se/?service=rss", "Svenska Dagbladet"),
-        ]
-        for feed_url, source in fallback_feeds:
-            try:
-                feed_items = _fetch_rss_items(feed_url, source, limit=limit)
-                for item in feed_items:
-                    priority_rank, priority_label = _alert_priority(source, item.get("title", ""))
-                    item["priority_rank"] = priority_rank
-                    item["priority_label"] = priority_label
-                items.extend(feed_items)
-                if len(items) >= limit:
-                    break
-            except Exception as exc:
-                error_msg = str(exc)[:40]
-                source_errors.append(f"{source}: {error_msg}")
+    # 4) Trafikverket traffic situations (requires API key).
+    try:
+        trafik_items, trafik_error = _fetch_trafikverket_items(limit=limit, region=selected_region)
+        if trafik_items:
+            items.extend(trafik_items)
+        elif trafik_error:
+            source_errors.append(f"Trafikverket: {trafik_error[:60]}")
+    except Exception as exc:
+        error_msg = str(exc)[:60]
+        source_errors.append(f"Trafikverket: {error_msg}")
 
     # Deduplicate by title and source, keep first seen entries
     deduped: list[dict] = []
@@ -623,7 +677,7 @@ async def swedish_alerts(limit: int = 12, region: str = "nacka"):
         "region": selected_region,
         "statistics": area_statistics if selected_region == "nacka" else {},
         "errors": source_errors if source_errors else [],
-        "sources": ["Polisen", "Krisinformation", "SOS Alarm"],
+        "sources": ["Polisen", "Krisinformation", "SOS Alarm", "Trafikverket"],
     }
     
     if not deduped:

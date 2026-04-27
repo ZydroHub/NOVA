@@ -249,7 +249,6 @@ export default function NewsPage() {
                 <div className="flex items-end justify-between gap-4 flex-wrap">
                     <div>
                         <h2 className="text-2xl font-black text-white font-['Plus_Jakarta_Sans']">Swedish Alerts</h2>
-                        <div className="text-[11px] mt-1 uppercase tracking-[0.22em] text-cyan-300/60">JARVIS threat monitor</div>
                     </div>
                     <div className="text-xs text-cyan-300/60">{refreshing ? 'Refreshing...' : `Last update: ${lastUpdatedText}`}</div>
                 </div>
@@ -264,6 +263,7 @@ export default function NewsPage() {
                                         key={option.value}
                                         type="button"
                                         onClick={() => setRegion(option.value)}
+                                        data-no-swipe-nav="true"
                                         className={`px-3 py-1.5 text-xs rounded-full border font-semibold tracking-[0.14em] uppercase transition ${
                                             active
                                                 ? 'border-cyan-200 bg-cyan-300/25 text-white'
@@ -279,6 +279,7 @@ export default function NewsPage() {
                         <button
                             type="button"
                             onClick={() => loadAlerts({ initial: false })}
+                            data-no-swipe-nav="true"
                             className="px-3 py-1.5 text-xs rounded-full border border-cyan-300/40 bg-cyan-400/15 text-cyan-50 hover:bg-cyan-300/25 transition uppercase tracking-[0.14em] font-semibold"
                         >
                             Refresh now
@@ -293,6 +294,7 @@ export default function NewsPage() {
                         <select
                             value={updateMode}
                             onChange={(event) => setUpdateMode(normalizeUpdateMode(event.target.value))}
+                            data-no-swipe-nav="true"
                             className="md:col-span-1 bg-slate-900/70 border border-cyan-300/30 rounded-lg px-3 py-2 text-sm text-cyan-50"
                         >
                             <option value="daily">Daily update</option>
@@ -302,6 +304,7 @@ export default function NewsPage() {
                             type="time"
                             value={updateTime}
                             onChange={(event) => setUpdateTime(normalizeTimeText(event.target.value))}
+                            data-no-swipe-nav="true"
                             className="md:col-span-1 bg-slate-900/70 border border-cyan-300/30 rounded-lg px-3 py-2 text-sm text-cyan-50"
                         />
                     </div>

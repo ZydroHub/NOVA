@@ -37509,10 +37509,7 @@ function NewsPage() {
       children: [
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex-shrink-0 px-6 py-4 border-b border-cyan-400/20", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-end justify-between gap-4 flex-wrap", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "text-2xl font-black text-white font-['Plus_Jakarta_Sans']", children: "Swedish Alerts" }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-[11px] mt-1 uppercase tracking-[0.22em] text-cyan-300/60", children: "JARVIS threat monitor" })
-            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "text-2xl font-black text-white font-['Plus_Jakarta_Sans']", children: "Swedish Alerts" }) }),
             /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-xs text-cyan-300/60", children: refreshing ? "Refreshing..." : `Last update: ${lastUpdatedText}` })
           ] }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mt-4 rounded-2xl border border-cyan-300/30 bg-cyan-500/5 p-3 space-y-3", children: [
@@ -37524,6 +37521,7 @@ function NewsPage() {
                   {
                     type: "button",
                     onClick: () => setRegion(option.value),
+                    "data-no-swipe-nav": "true",
                     className: `px-3 py-1.5 text-xs rounded-full border font-semibold tracking-[0.14em] uppercase transition ${active ? "border-cyan-200 bg-cyan-300/25 text-white" : "border-cyan-400/30 bg-cyan-500/10 text-cyan-100 hover:bg-cyan-400/20"}`,
                     children: option.label
                   },
@@ -37535,6 +37533,7 @@ function NewsPage() {
                 {
                   type: "button",
                   onClick: () => loadAlerts({ initial: false }),
+                  "data-no-swipe-nav": "true",
                   className: "px-3 py-1.5 text-xs rounded-full border border-cyan-300/40 bg-cyan-400/15 text-cyan-50 hover:bg-cyan-300/25 transition uppercase tracking-[0.14em] font-semibold",
                   children: "Refresh now"
                 }
@@ -37550,6 +37549,7 @@ function NewsPage() {
                 {
                   value: updateMode,
                   onChange: (event) => setUpdateMode(normalizeUpdateMode(event.target.value)),
+                  "data-no-swipe-nav": "true",
                   className: "md:col-span-1 bg-slate-900/70 border border-cyan-300/30 rounded-lg px-3 py-2 text-sm text-cyan-50",
                   children: [
                     /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "daily", children: "Daily update" }),
@@ -37563,6 +37563,7 @@ function NewsPage() {
                   type: "time",
                   value: updateTime,
                   onChange: (event) => setUpdateTime(normalizeTimeText(event.target.value)),
+                  "data-no-swipe-nav": "true",
                   className: "md:col-span-1 bg-slate-900/70 border border-cyan-300/30 rounded-lg px-3 py-2 text-sm text-cyan-50"
                 }
               )
@@ -38503,6 +38504,14 @@ const AnimatedRoutes = () => {
   const routes = ["/", "/chat", "/music", "/news", "/weather", "/settings"];
   const currentIndex = routes.indexOf(location.pathname);
   const canNavigateNow = () => Date.now() - lastNavAtRef.current > 450;
+  const isNoSwipeTarget = (target) => {
+    if (!target || typeof target.closest !== "function") return false;
+    return Boolean(
+      target.closest(
+        'button, a, input, select, textarea, option, [role="button"], [role="listbox"], [role="option"], [data-no-swipe-nav]'
+      )
+    );
+  };
   const navigateBy = (direction) => {
     if (!canNavigateNow()) return;
     const nextIndex = currentIndex + direction;
@@ -38519,9 +38528,17 @@ const AnimatedRoutes = () => {
     navigateBy(e.deltaX > 0 ? 1 : -1);
   };
   const handlePointerDown = (e) => {
+    if (isNoSwipeTarget(e.target)) {
+      pointerStartRef.current = null;
+      return;
+    }
     pointerStartRef.current = { x: e.clientX, y: e.clientY, ts: Date.now() };
   };
   const handlePointerUp = (e) => {
+    if (isNoSwipeTarget(e.target)) {
+      pointerStartRef.current = null;
+      return;
+    }
     const start = pointerStartRef.current;
     pointerStartRef.current = null;
     if (!start) return;
@@ -38537,7 +38554,7 @@ const AnimatedRoutes = () => {
   return /* @__PURE__ */ jsxRuntimeExports.jsx(AnimatePresence, { mode: "wait", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
     motion.div,
     {
-      className: "h-full min-h-0 overflow-hidden",
+      className: "h-full min-h-0 overflow-hidden touch-pan-y",
       initial: { opacity: 0, x: swipeDirection * 100 },
       animate: { opacity: 1, x: 0 },
       exit: { opacity: 0, x: -swipeDirection * 100 },
