@@ -1385,16 +1385,6 @@
     border-color: var(--color-cyan-200);
   }
 
-  .border-cyan-300\/20 {
-    border-color: #53eafd33;
-  }
-
-  @supports (color: color-mix(in lab, red, red)) {
-    .border-cyan-300\/20 {
-      border-color: color-mix(in oklab, var(--color-cyan-300) 20%, transparent);
-    }
-  }
-
   .border-cyan-300\/25 {
     border-color: #53eafd40;
   }
@@ -1514,6 +1504,16 @@
   @supports (color: color-mix(in lab, red, red)) {
     .border-white\/20 {
       border-color: color-mix(in oklab, var(--color-white) 20%, transparent);
+    }
+  }
+
+  .border-yellow-400\/50 {
+    border-color: #fac80080;
+  }
+
+  @supports (color: color-mix(in lab, red, red)) {
+    .border-yellow-400\/50 {
+      border-color: color-mix(in oklab, var(--color-yellow-400) 50%, transparent);
     }
   }
 
@@ -1709,16 +1709,6 @@
     }
   }
 
-  .bg-cyan-400\/10 {
-    background-color: #00d2ef1a;
-  }
-
-  @supports (color: color-mix(in lab, red, red)) {
-    .bg-cyan-400\/10 {
-      background-color: color-mix(in oklab, var(--color-cyan-400) 10%, transparent);
-    }
-  }
-
   .bg-cyan-400\/15 {
     background-color: #00d2ef26;
   }
@@ -1789,6 +1779,16 @@
     }
   }
 
+  .bg-red-500\/75 {
+    background-color: #fb2c36bf;
+  }
+
+  @supports (color: color-mix(in lab, red, red)) {
+    .bg-red-500\/75 {
+      background-color: color-mix(in oklab, var(--color-red-500) 75%, transparent);
+    }
+  }
+
   .bg-red-900 {
     background-color: var(--color-red-900);
   }
@@ -1838,6 +1838,16 @@
   @supports (color: color-mix(in lab, red, red)) {
     .bg-yellow-500\/10 {
       background-color: color-mix(in oklab, var(--color-yellow-500) 10%, transparent);
+    }
+  }
+
+  .bg-yellow-500\/60 {
+    background-color: #edb20099;
+  }
+
+  @supports (color: color-mix(in lab, red, red)) {
+    .bg-yellow-500\/60 {
+      background-color: color-mix(in oklab, var(--color-yellow-500) 60%, transparent);
     }
   }
 
@@ -2159,6 +2169,11 @@
   .font-semibold {
     --tw-font-weight: var(--font-weight-semibold);
     font-weight: var(--font-weight-semibold);
+  }
+
+  .tracking-\[0\.12em\] {
+    --tw-tracking: .12em;
+    letter-spacing: .12em;
   }
 
   .tracking-\[0\.14em\] {

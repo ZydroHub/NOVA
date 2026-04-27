@@ -201,6 +201,11 @@ export default function NewsPage() {
     };
 
     const sortedItems = [...items].sort((a, b) => (b.priority_rank || 0) - (a.priority_rank || 0));
+    const priorityLabelFromRank = (rank = 0) => {
+        if (rank >= 80) return { text: 'High', color: 'bg-red-500/75 border-red-400/60' };
+        if (rank >= 60) return { text: 'Medium', color: 'bg-yellow-500/60 border-yellow-400/50' };
+        return { text: 'Low', color: 'bg-cyan-500/10 border-cyan-300/30' };
+    };
     const statsEntries = useMemo(() => {
         if (region !== 'nacka') return [];
         return STATS_ORDER
@@ -301,7 +306,14 @@ export default function NewsPage() {
             </motion.div>
 
             {/* Content */}
-            <motion.div variants={fadeUpVariants} className="flex-1 min-h-0 overflow-y-auto touch-scroll-y" data-scroll-lock-nav="true">
+            <motion.div
+                variants={fadeUpVariants}
+                className="flex-1 min-h-0 overflow-y-auto touch-scroll-y"
+                data-scroll-lock-nav="true"
+                onPointerDown={(e) => e.stopPropagation()}
+                onTouchStart={(e) => e.stopPropagation()}
+                onWheel={(e) => e.stopPropagation()}
+            >
                 <div className="px-6 py-4 space-y-3 pb-8">
                     {region === 'nacka' && statsEntries.length > 0 && (
                         <motion.div
@@ -429,11 +441,17 @@ export default function NewsPage() {
                                             <div className="flex-1 min-w-0">
                                                 <div className="flex items-center gap-2 flex-wrap">
                                                     <div className="text-sm font-bold text-cyan-200 uppercase tracking-wider">
-                                                        {item.source || 'Alert'}
-                                                    </div>
-                                                    <div className="text-[10px] px-2 py-0.5 rounded-full border border-cyan-300/20 bg-cyan-400/10 text-cyan-100 font-semibold uppercase tracking-[0.18em]">
-                                                        {item.priority_label || 'News'}
-                                                    </div>
+                                                            {item.source || 'Alert'}
+                                                        </div>
+                                                        {/* Priority pill replaces the old priority_label tag */}
+                                                        {(() => {
+                                                            const p = priorityLabelFromRank(Number(item.priority_rank) || 0);
+                                                            return (
+                                                                <div className={`text-[10px] px-2 py-0.5 rounded-full border font-semibold uppercase tracking-[0.12em] ${p.color} text-white`}> 
+                                                                    {p.text}
+                                                                </div>
+                                                            );
+                                                        })()}
                                                 </div>
                                                 <div className="text-sm text-white mt-1 line-clamp-2 font-semibold">
                                                     {item.title}
@@ -444,11 +462,7 @@ export default function NewsPage() {
                                                         {item.location}
                                                     </div>
                                                 )}
-                                                {item.published && (
-                                                    <div className="text-xs text-cyan-300/50 mt-1 opacity-70">
-                                                        {formatPublished(item.published)}
-                                                    </div>
-                                                )}
+                                                {/* Published datetime removed from item view (shown in subtitle elsewhere) */}
                                             </div>
                                         </div>
                                     </motion.div>

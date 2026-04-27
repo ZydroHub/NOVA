@@ -37391,19 +37391,6 @@ function normalizeAlertItem(item) {
     priority_rank: priorityRank
   };
 }
-function formatPublished(value) {
-  if (!value) return "";
-  const parsed = new Date(value);
-  if (Number.isNaN(parsed.getTime())) {
-    return value;
-  }
-  return parsed.toLocaleString("sv-SE", {
-    month: "short",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit"
-  });
-}
 function NewsPage() {
   const [items2, setItems] = reactExports.useState([]);
   const [loading, setLoading] = reactExports.useState(true);
@@ -37473,6 +37460,11 @@ function NewsPage() {
     return "border-cyan-400/60 bg-cyan-500/10";
   };
   const sortedItems = [...items2].sort((a, b) => (b.priority_rank || 0) - (a.priority_rank || 0));
+  const priorityLabelFromRank = (rank = 0) => {
+    if (rank >= 80) return { text: "High", color: "bg-red-500/75 border-red-400/60" };
+    if (rank >= 60) return { text: "Medium", color: "bg-yellow-500/60 border-yellow-400/50" };
+    return { text: "Low", color: "bg-cyan-500/10 border-cyan-300/30" };
+  };
   const statsEntries = reactExports.useMemo(() => {
     if (region !== "nacka") return [];
     return STATS_ORDER.filter((key) => statistics[key] != null && key !== "Samverkan").map((key) => ({ key, value: String(statistics[key]) }));
@@ -37562,164 +37554,177 @@ function NewsPage() {
             }
           ) })
         ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(motion.div, { variants: fadeUpVariants, className: "flex-1 min-h-0 overflow-y-auto touch-scroll-y", "data-scroll-lock-nav": "true", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "px-6 py-4 space-y-3 pb-8", children: [
-          region === "nacka" && statsEntries.length > 0 && /* @__PURE__ */ jsxRuntimeExports.jsx(
-            motion.div,
-            {
-              className: "grid grid-cols-2 md:grid-cols-5 gap-2",
-              initial: { opacity: 0, y: 8 },
-              animate: { opacity: 1, y: 0 },
-              transition: { duration: 0.32, ease: [0.22, 1, 0.36, 1] },
-              children: statsEntries.map((entry, idx) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          motion.div,
+          {
+            variants: fadeUpVariants,
+            className: "flex-1 min-h-0 overflow-y-auto touch-scroll-y",
+            "data-scroll-lock-nav": "true",
+            onPointerDown: (e) => e.stopPropagation(),
+            onTouchStart: (e) => e.stopPropagation(),
+            onWheel: (e) => e.stopPropagation(),
+            children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "px-6 py-4 space-y-3 pb-8", children: [
+              region === "nacka" && statsEntries.length > 0 && /* @__PURE__ */ jsxRuntimeExports.jsx(
                 motion.div,
                 {
-                  initial: { opacity: 0, y: 10, scale: 0.98 },
+                  className: "grid grid-cols-2 md:grid-cols-5 gap-2",
+                  initial: { opacity: 0, y: 8 },
                   animate: { opacity: 1, y: 0 },
-                  transition: { duration: 0.28, delay: idx * 0.05 },
-                  className: "rounded-xl border border-cyan-300/25 bg-slate-900/60 px-3 py-2",
-                  whileHover: { y: -2, borderColor: "rgba(154, 240, 255, 0.5)" },
-                  children: [
-                    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-[10px] uppercase tracking-[0.14em] text-cyan-200/70", children: entry.key }),
-                    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-xl font-black text-white", children: entry.value })
-                  ]
+                  transition: { duration: 0.32, ease: [0.22, 1, 0.36, 1] },
+                  children: statsEntries.map((entry, idx) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                    motion.div,
+                    {
+                      initial: { opacity: 0, y: 10, scale: 0.98 },
+                      animate: { opacity: 1, y: 0 },
+                      transition: { duration: 0.28, delay: idx * 0.05 },
+                      className: "rounded-xl border border-cyan-300/25 bg-slate-900/60 px-3 py-2",
+                      whileHover: { y: -2, borderColor: "rgba(154, 240, 255, 0.5)" },
+                      children: [
+                        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-[10px] uppercase tracking-[0.14em] text-cyan-200/70", children: entry.key }),
+                        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-xl font-black text-white", children: entry.value })
+                      ]
+                    },
+                    entry.key
+                  ))
                 },
-                entry.key
-              ))
-            },
-            `stats-${region}`
-          ),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs(AnimatePresence, { mode: "wait", children: [
-            loading && /* @__PURE__ */ jsxRuntimeExports.jsx(
-              motion.div,
-              {
-                className: "space-y-3 py-2",
-                initial: { opacity: 0 },
-                animate: { opacity: 1 },
-                exit: { opacity: 0 },
-                transition: { duration: 0.22 },
-                children: Array.from({ length: 5 }).map((_, idx) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                `stats-${region}`
+              ),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs(AnimatePresence, { mode: "wait", children: [
+                loading && /* @__PURE__ */ jsxRuntimeExports.jsx(
                   motion.div,
                   {
-                    className: "rounded-2xl border border-cyan-400/20 bg-slate-900/55 px-4 py-3 overflow-hidden",
+                    className: "space-y-3 py-2",
+                    initial: { opacity: 0 },
+                    animate: { opacity: 1 },
+                    exit: { opacity: 0 },
+                    transition: { duration: 0.22 },
+                    children: Array.from({ length: 5 }).map((_, idx) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                      motion.div,
+                      {
+                        className: "rounded-2xl border border-cyan-400/20 bg-slate-900/55 px-4 py-3 overflow-hidden",
+                        initial: { opacity: 0, y: 8 },
+                        animate: { opacity: 1, y: 0 },
+                        transition: { delay: idx * 0.05, duration: 0.28 },
+                        children: [
+                          /* @__PURE__ */ jsxRuntimeExports.jsx(
+                            motion.div,
+                            {
+                              className: "h-3 w-24 rounded bg-cyan-300/20 mb-3",
+                              animate: { opacity: [0.3, 0.7, 0.3] },
+                              transition: { duration: 1.1, repeat: Infinity, delay: idx * 0.08 }
+                            }
+                          ),
+                          /* @__PURE__ */ jsxRuntimeExports.jsx(
+                            motion.div,
+                            {
+                              className: "h-2.5 w-4/5 rounded bg-cyan-300/15 mb-2",
+                              animate: { opacity: [0.25, 0.55, 0.25] },
+                              transition: { duration: 1.2, repeat: Infinity, delay: idx * 0.1 }
+                            }
+                          ),
+                          /* @__PURE__ */ jsxRuntimeExports.jsx(
+                            motion.div,
+                            {
+                              className: "h-2 w-2/5 rounded bg-cyan-300/12",
+                              animate: { opacity: [0.2, 0.5, 0.2] },
+                              transition: { duration: 1.15, repeat: Infinity, delay: idx * 0.12 }
+                            }
+                          )
+                        ]
+                      },
+                      `skeleton-${idx}`
+                    ))
+                  },
+                  "loading"
+                ),
+                !loading && error && /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  motion.div,
+                  {
+                    className: "bg-red-500/20 border border-red-400/50 rounded-lg p-4 text-red-200 text-sm",
+                    initial: { opacity: 0, y: 10 },
+                    animate: { opacity: 1, y: 0 },
+                    exit: { opacity: 0, y: -6 },
+                    transition: { duration: 0.3 },
+                    children: error
+                  },
+                  "error"
+                ),
+                !loading && !error && items2.length === 0 && /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                  motion.div,
+                  {
+                    className: "text-center py-12",
                     initial: { opacity: 0, y: 8 },
                     animate: { opacity: 1, y: 0 },
-                    transition: { delay: idx * 0.05, duration: 0.28 },
+                    exit: { opacity: 0 },
+                    transition: { duration: 0.3 },
                     children: [
                       /* @__PURE__ */ jsxRuntimeExports.jsx(
                         motion.div,
                         {
-                          className: "h-3 w-24 rounded bg-cyan-300/20 mb-3",
-                          animate: { opacity: [0.3, 0.7, 0.3] },
-                          transition: { duration: 1.1, repeat: Infinity, delay: idx * 0.08 }
+                          className: "text-4xl mb-2",
+                          animate: { y: [0, -4, 0], opacity: [0.6, 1, 0.6] },
+                          transition: { duration: 2, repeat: Infinity, ease: "easeInOut" },
+                          children: "✨"
                         }
                       ),
-                      /* @__PURE__ */ jsxRuntimeExports.jsx(
-                        motion.div,
-                        {
-                          className: "h-2.5 w-4/5 rounded bg-cyan-300/15 mb-2",
-                          animate: { opacity: [0.25, 0.55, 0.25] },
-                          transition: { duration: 1.2, repeat: Infinity, delay: idx * 0.1 }
-                        }
-                      ),
-                      /* @__PURE__ */ jsxRuntimeExports.jsx(
-                        motion.div,
-                        {
-                          className: "h-2 w-2/5 rounded bg-cyan-300/12",
-                          animate: { opacity: [0.2, 0.5, 0.2] },
-                          transition: { duration: 1.15, repeat: Infinity, delay: idx * 0.12 }
-                        }
-                      )
+                      /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-cyan-300/70", children: "No active alerts in Sweden right now" }),
+                      /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-cyan-300/50 mt-1", children: "All systems clear" })
                     ]
                   },
-                  `skeleton-${idx}`
-                ))
-              },
-              "loading"
-            ),
-            !loading && error && /* @__PURE__ */ jsxRuntimeExports.jsx(
-              motion.div,
-              {
-                className: "bg-red-500/20 border border-red-400/50 rounded-lg p-4 text-red-200 text-sm",
-                initial: { opacity: 0, y: 10 },
-                animate: { opacity: 1, y: 0 },
-                exit: { opacity: 0, y: -6 },
-                transition: { duration: 0.3 },
-                children: error
-              },
-              "error"
-            ),
-            !loading && !error && items2.length === 0 && /* @__PURE__ */ jsxRuntimeExports.jsxs(
-              motion.div,
-              {
-                className: "text-center py-12",
-                initial: { opacity: 0, y: 8 },
-                animate: { opacity: 1, y: 0 },
-                exit: { opacity: 0 },
-                transition: { duration: 0.3 },
-                children: [
-                  /* @__PURE__ */ jsxRuntimeExports.jsx(
-                    motion.div,
-                    {
-                      className: "text-4xl mb-2",
-                      animate: { y: [0, -4, 0], opacity: [0.6, 1, 0.6] },
-                      transition: { duration: 2, repeat: Infinity, ease: "easeInOut" },
-                      children: "✨"
-                    }
-                  ),
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-cyan-300/70", children: "No active alerts in Sweden right now" }),
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-cyan-300/50 mt-1", children: "All systems clear" })
-                ]
-              },
-              "empty"
-            ),
-            !loading && !error && items2.length > 0 && /* @__PURE__ */ jsxRuntimeExports.jsx(
-              motion.div,
-              {
-                initial: { opacity: 0 },
-                animate: { opacity: 1 },
-                exit: { opacity: 0 },
-                transition: { duration: 0.24 },
-                className: "space-y-3",
-                children: sortedItems.map((item, idx) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  "empty"
+                ),
+                !loading && !error && items2.length > 0 && /* @__PURE__ */ jsxRuntimeExports.jsx(
                   motion.div,
                   {
-                    custom: idx,
-                    variants: listItemVariants,
-                    initial: "hidden",
-                    animate: "visible",
-                    className: `block p-4 rounded-2xl border transition-all cursor-default ${getSourceColor(item.source)}`,
-                    whileHover: { scale: 1.012, y: -1 },
-                    children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex gap-3", children: [
-                      /* @__PURE__ */ jsxRuntimeExports.jsx(
-                        motion.div,
-                        {
-                          className: "text-2xl flex-shrink-0",
-                          animate: { rotate: [0, 5, -5, 0] },
-                          transition: { duration: 0.65, delay: idx * 0.03 },
-                          children: getSourceIcon(item.source)
-                        }
-                      ),
-                      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex-1 min-w-0", children: [
-                        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2 flex-wrap", children: [
-                          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-sm font-bold text-cyan-200 uppercase tracking-wider", children: item.source || "Alert" }),
-                          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-[10px] px-2 py-0.5 rounded-full border border-cyan-300/20 bg-cyan-400/10 text-cyan-100 font-semibold uppercase tracking-[0.18em]", children: item.priority_label || "News" })
-                        ] }),
-                        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-sm text-white mt-1 line-clamp-2 font-semibold", children: item.title }),
-                        item.location && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-xs text-cyan-300/60 mt-1 flex items-center gap-1", children: [
-                          /* @__PURE__ */ jsxRuntimeExports.jsx(Globe, { size: 12 }),
-                          item.location
-                        ] }),
-                        item.published && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-xs text-cyan-300/50 mt-1 opacity-70", children: formatPublished(item.published) })
-                      ] })
-                    ] })
+                    initial: { opacity: 0 },
+                    animate: { opacity: 1 },
+                    exit: { opacity: 0 },
+                    transition: { duration: 0.24 },
+                    className: "space-y-3",
+                    children: sortedItems.map((item, idx) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+                      motion.div,
+                      {
+                        custom: idx,
+                        variants: listItemVariants,
+                        initial: "hidden",
+                        animate: "visible",
+                        className: `block p-4 rounded-2xl border transition-all cursor-default ${getSourceColor(item.source)}`,
+                        whileHover: { scale: 1.012, y: -1 },
+                        children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex gap-3", children: [
+                          /* @__PURE__ */ jsxRuntimeExports.jsx(
+                            motion.div,
+                            {
+                              className: "text-2xl flex-shrink-0",
+                              animate: { rotate: [0, 5, -5, 0] },
+                              transition: { duration: 0.65, delay: idx * 0.03 },
+                              children: getSourceIcon(item.source)
+                            }
+                          ),
+                          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex-1 min-w-0", children: [
+                            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2 flex-wrap", children: [
+                              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-sm font-bold text-cyan-200 uppercase tracking-wider", children: item.source || "Alert" }),
+                              (() => {
+                                const p = priorityLabelFromRank(Number(item.priority_rank) || 0);
+                                return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: `text-[10px] px-2 py-0.5 rounded-full border font-semibold uppercase tracking-[0.12em] ${p.color} text-white`, children: p.text });
+                              })()
+                            ] }),
+                            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-sm text-white mt-1 line-clamp-2 font-semibold", children: item.title }),
+                            item.location && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-xs text-cyan-300/60 mt-1 flex items-center gap-1", children: [
+                              /* @__PURE__ */ jsxRuntimeExports.jsx(Globe, { size: 12 }),
+                              item.location
+                            ] })
+                          ] })
+                        ] })
+                      },
+                      `${item.title}-${idx}`
+                    ))
                   },
-                  `${item.title}-${idx}`
-                ))
-              },
-              `list-${region}`
-            )
-          ] })
-        ] }) })
+                  `list-${region}`
+                )
+              ] })
+            ] })
+          }
+        )
       ]
     }
   );
