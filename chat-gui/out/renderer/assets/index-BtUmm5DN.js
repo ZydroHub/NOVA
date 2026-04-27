@@ -22628,7 +22628,7 @@ const createLucideIcon = (iconName, iconNode) => {
   Component.displayName = toPascalCase(iconName);
   return Component;
 };
-const __iconNode$x = [
+const __iconNode$w = [
   [
     "path",
     {
@@ -22637,19 +22637,14 @@ const __iconNode$x = [
     }
   ]
 ];
-const Activity = createLucideIcon("activity", __iconNode$x);
-const __iconNode$w = [
+const Activity = createLucideIcon("activity", __iconNode$w);
+const __iconNode$v = [
   ["path", { d: "m12 19-7-7 7-7", key: "1l729n" }],
   ["path", { d: "M19 12H5", key: "x3x0zl" }]
 ];
-const ArrowLeft = createLucideIcon("arrow-left", __iconNode$w);
-const __iconNode$v = [["path", { d: "M20 6 9 17l-5-5", key: "1gmf2c" }]];
-const Check = createLucideIcon("check", __iconNode$v);
-const __iconNode$u = [
-  ["path", { d: "M12 6v6h4", key: "135r8i" }],
-  ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }]
-];
-const Clock3 = createLucideIcon("clock-3", __iconNode$u);
+const ArrowLeft = createLucideIcon("arrow-left", __iconNode$v);
+const __iconNode$u = [["path", { d: "M20 6 9 17l-5-5", key: "1gmf2c" }]];
+const Check = createLucideIcon("check", __iconNode$u);
 const __iconNode$t = [
   ["path", { d: "M12 6v6l4 2", key: "mmk7yg" }],
   ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }]
@@ -23447,18 +23442,23 @@ function Home() {
   reactExports.useEffect(() => {
     let mounted = true;
     async function loadData() {
-      try {
-        const [weatherData, alertsData] = await Promise.all([
-          apiFetch("/integrations/weather?latitude=59.3293&longitude=18.0686"),
-          apiFetch("/integrations/swedish-alerts?limit=12")
-        ]);
-        if (!mounted) return;
-        setWeather(weatherData);
-        setAlerts(alertsData.items || []);
+      const [weatherResult, alertsResult] = await Promise.allSettled([
+        apiFetch("/integrations/weather?latitude=59.3293&longitude=18.0686"),
+        apiFetch("/integrations/swedish-alerts?limit=12&region=sweden")
+      ]);
+      if (!mounted) return;
+      if (weatherResult.status === "fulfilled") {
+        setWeather(weatherResult.value);
+      } else {
+        console.error("Weather load failed", weatherResult.reason);
+        setWeather(null);
+      }
+      if (alertsResult.status === "fulfilled") {
+        setAlerts(alertsResult.value?.items || []);
         setAlertsError(null);
-      } catch (err) {
-        console.error("Dashboard load failed", err);
-        if (!mounted) return;
+      } else {
+        console.error("Alerts load failed", alertsResult.reason);
+        setAlerts([]);
         setAlertsError("Could not load alerts right now.");
       }
     }
@@ -37298,7 +37298,6 @@ function MusicPage() {
   );
 }
 const KEY_ALERT_REGION = "pocket-ai.alertRegion";
-const KEY_ALERT_UPDATE_MODE = "pocket-ai.alertUpdateMode";
 const REGION_OPTIONS = [
   { value: "nacka", label: "Nacka" },
   { value: "stockholm", label: "Stockholm" },
@@ -37321,16 +37320,6 @@ function readStoredValue(key, fallback) {
 function normalizeRegion(region) {
   if (region === "nacka" || region === "stockholm" || region === "sweden") return region;
   return "nacka";
-}
-function normalizeUpdateMode(mode) {
-  if (mode === "live" || mode === "daily" || mode === "weekly" || mode === "monthly") return mode;
-  return "live";
-}
-function getIntervalMs(updateMode) {
-  if (updateMode === "daily") return 24 * 60 * 60 * 1e3;
-  if (updateMode === "weekly") return 7 * 24 * 60 * 60 * 1e3;
-  if (updateMode === "monthly") return 30 * 24 * 60 * 60 * 1e3;
-  return 2 * 60 * 1e3;
 }
 function toDisplayText(value) {
   if (value == null) return "";
@@ -37388,8 +37377,6 @@ function NewsPage() {
   const [error, setError] = reactExports.useState(null);
   const [region, setRegion] = reactExports.useState(() => normalizeRegion(readStoredValue(KEY_ALERT_REGION, "nacka")));
   const [statistics, setStatistics] = reactExports.useState({});
-  const [lastUpdated, setLastUpdated] = reactExports.useState(null);
-  const [updateMode, setUpdateMode] = reactExports.useState(() => normalizeUpdateMode(readStoredValue(KEY_ALERT_UPDATE_MODE, "live")));
   const scheduleIntervalRef = reactExports.useRef(null);
   const loadAlerts = reactExports.useCallback(
     async ({ initial = false } = {}) => {
@@ -37410,7 +37397,6 @@ function NewsPage() {
         const rawItems = Array.isArray(data?.items) ? data.items : [];
         setItems(rawItems.map(normalizeAlertItem));
         setStatistics(data?.statistics && typeof data.statistics === "object" ? data.statistics : {});
-        setLastUpdated(/* @__PURE__ */ new Date());
         setError(null);
       } catch (err) {
         console.error("Failed to load alerts", err);
@@ -37431,18 +37417,14 @@ function NewsPage() {
     localStorage.setItem(KEY_ALERT_REGION, region);
   }, [region]);
   reactExports.useEffect(() => {
-    localStorage.setItem(KEY_ALERT_UPDATE_MODE, updateMode);
-  }, [updateMode]);
-  reactExports.useEffect(() => {
-    const intervalMs = getIntervalMs(updateMode);
-    scheduleIntervalRef.current = window.setInterval(() => loadAlerts({ initial: false }), intervalMs);
+    scheduleIntervalRef.current = window.setInterval(() => loadAlerts({ initial: false }), 12e4);
     return () => {
       if (scheduleIntervalRef.current) {
         window.clearInterval(scheduleIntervalRef.current);
         scheduleIntervalRef.current = null;
       }
     };
-  }, [loadAlerts, updateMode]);
+  }, [loadAlerts]);
   const getSourceIcon = (source) => {
     if (source?.toLowerCase().includes("polisen")) return "🚔";
     if (source?.toLowerCase().includes("krisis")) return "⚠️";
@@ -37460,15 +37442,6 @@ function NewsPage() {
     if (region !== "nacka") return [];
     return STATS_ORDER.filter((key) => statistics[key] != null && key !== "Samverkan").map((key) => ({ key, value: String(statistics[key]) }));
   }, [region, statistics]);
-  const lastUpdatedText = reactExports.useMemo(() => {
-    if (!lastUpdated) return "Waiting for first update";
-    return lastUpdated.toLocaleString("sv-SE", {
-      month: "short",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit"
-    });
-  }, [lastUpdated]);
   return /* @__PURE__ */ jsxRuntimeExports.jsxs(
     motion.div,
     {
@@ -37480,7 +37453,7 @@ function NewsPage() {
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex-shrink-0 px-6 py-4 border-b border-cyan-400/20", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-end justify-between gap-4 flex-wrap", children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "text-2xl font-black text-white font-['Plus_Jakarta_Sans']", children: "Swedish Alerts" }) }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-xs text-cyan-300/60", children: refreshing ? "Refreshing..." : `Last update: ${lastUpdatedText}` })
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-xs text-cyan-300/60", children: refreshing ? "Refreshing..." : "" })
           ] }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mt-4 rounded-2xl border border-cyan-300/30 bg-cyan-500/5 p-3 space-y-3", children: [
             /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between gap-3 flex-wrap", children: [
@@ -37509,28 +37482,7 @@ function NewsPage() {
                 }
               )
             ] }),
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid grid-cols-1 md:grid-cols-3 gap-2 items-center", children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "md:col-span-1 text-[11px] uppercase tracking-[0.18em] text-cyan-200/80 flex items-center gap-2", children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx(Clock3, { size: 12 }),
-                "Update schedule"
-              ] }),
-              /* @__PURE__ */ jsxRuntimeExports.jsxs(
-                "select",
-                {
-                  value: updateMode,
-                  onChange: (event) => setUpdateMode(normalizeUpdateMode(event.target.value)),
-                  "data-no-swipe-nav": "true",
-                  className: "md:col-span-1 bg-slate-900/70 border border-cyan-300/30 rounded-lg px-3 py-2 text-sm text-cyan-50",
-                  children: [
-                    /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "live", children: "Live update" }),
-                    /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "daily", children: "Daily update" }),
-                    /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "weekly", children: "Weekly update" }),
-                    /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "monthly", children: "Monthly update" })
-                  ]
-                }
-              ),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "md:col-span-1 text-xs text-cyan-200/70 uppercase tracking-[0.14em]", children: updateMode === "monthly" ? "Refresh every 30 days" : updateMode === "weekly" ? "Refresh every 7 days" : updateMode === "daily" ? "Refresh every 24 hours" : "Refresh every 2 minutes" })
-            ] })
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-[11px] uppercase tracking-[0.18em] text-cyan-200/80", children: "Auto refresh every 2 minutes" })
           ] })
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex-1 min-h-0 overflow-y-auto touch-scroll-y", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "px-6 py-4 space-y-3", children: [

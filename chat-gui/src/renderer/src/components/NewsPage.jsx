@@ -1,10 +1,9 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Clock3, Globe } from 'lucide-react';
+import { Globe } from 'lucide-react';
 import { apiFetch } from '../apiClient.js';
 
 const KEY_ALERT_REGION = 'pocket-ai.alertRegion';
-const KEY_ALERT_UPDATE_MODE = 'pocket-ai.alertUpdateMode';
 
 const REGION_OPTIONS = [
     { value: 'nacka', label: 'Nacka' },
@@ -31,18 +30,6 @@ function readStoredValue(key, fallback) {
 function normalizeRegion(region) {
     if (region === 'nacka' || region === 'stockholm' || region === 'sweden') return region;
     return 'nacka';
-}
-
-function normalizeUpdateMode(mode) {
-    if (mode === 'live' || mode === 'daily' || mode === 'weekly' || mode === 'monthly') return mode;
-    return 'live';
-}
-
-function getIntervalMs(updateMode) {
-    if (updateMode === 'daily') return 24 * 60 * 60 * 1000;
-    if (updateMode === 'weekly') return 7 * 24 * 60 * 60 * 1000;
-    if (updateMode === 'monthly') return 30 * 24 * 60 * 60 * 1000;
-    return 2 * 60 * 1000; // live mode
 }
 
 function toDisplayText(value) {
@@ -105,8 +92,6 @@ export default function NewsPage() {
     const [error, setError] = useState(null);
     const [region, setRegion] = useState(() => normalizeRegion(readStoredValue(KEY_ALERT_REGION, 'nacka')));
     const [statistics, setStatistics] = useState({});
-    const [lastUpdated, setLastUpdated] = useState(null);
-    const [updateMode, setUpdateMode] = useState(() => normalizeUpdateMode(readStoredValue(KEY_ALERT_UPDATE_MODE, 'live')));
     const scheduleIntervalRef = useRef(null);
 
     const loadAlerts = useCallback(
@@ -130,7 +115,6 @@ export default function NewsPage() {
                 const rawItems = Array.isArray(data?.items) ? data.items : [];
                 setItems(rawItems.map(normalizeAlertItem));
                 setStatistics(data?.statistics && typeof data.statistics === 'object' ? data.statistics : {});
-                setLastUpdated(new Date());
                 setError(null);
             } catch (err) {
                 console.error('Failed to load alerts', err);
@@ -154,12 +138,7 @@ export default function NewsPage() {
     }, [region]);
 
     useEffect(() => {
-        localStorage.setItem(KEY_ALERT_UPDATE_MODE, updateMode);
-    }, [updateMode]);
-
-    useEffect(() => {
-        const intervalMs = getIntervalMs(updateMode);
-        scheduleIntervalRef.current = window.setInterval(() => loadAlerts({ initial: false }), intervalMs);
+        scheduleIntervalRef.current = window.setInterval(() => loadAlerts({ initial: false }), 120000);
 
         return () => {
             if (scheduleIntervalRef.current) {
@@ -167,7 +146,7 @@ export default function NewsPage() {
                 scheduleIntervalRef.current = null;
             }
         };
-    }, [loadAlerts, updateMode]);
+    }, [loadAlerts]);
 
     const getSourceIcon = (source) => {
         if (source?.toLowerCase().includes('polisen')) return '🚔';
@@ -191,16 +170,6 @@ export default function NewsPage() {
             .map((key) => ({ key, value: String(statistics[key]) }));
     }, [region, statistics]);
 
-    const lastUpdatedText = useMemo(() => {
-        if (!lastUpdated) return 'Waiting for first update';
-        return lastUpdated.toLocaleString('sv-SE', {
-            month: 'short',
-            day: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit',
-        });
-    }, [lastUpdated]);
-
     return (
         <motion.div
             className="w-full h-full min-h-0 flex flex-col gap-0 bg-transparent overflow-hidden touch-pan-y"
@@ -214,7 +183,7 @@ export default function NewsPage() {
                     <div>
                         <h2 className="text-2xl font-black text-white font-['Plus_Jakarta_Sans']">Swedish Alerts</h2>
                     </div>
-                    <div className="text-xs text-cyan-300/60">{refreshing ? 'Refreshing...' : `Last update: ${lastUpdatedText}`}</div>
+                    <div className="text-xs text-cyan-300/60">{refreshing ? 'Refreshing...' : ''}</div>
                 </div>
 
                 <div className="mt-4 rounded-2xl border border-cyan-300/30 bg-cyan-500/5 p-3 space-y-3">
@@ -250,25 +219,8 @@ export default function NewsPage() {
                         </button>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-2 items-center">
-                        <div className="md:col-span-1 text-[11px] uppercase tracking-[0.18em] text-cyan-200/80 flex items-center gap-2">
-                            <Clock3 size={12} />
-                            Update schedule
-                        </div>
-                        <select
-                            value={updateMode}
-                            onChange={(event) => setUpdateMode(normalizeUpdateMode(event.target.value))}
-                            data-no-swipe-nav="true"
-                            className="md:col-span-1 bg-slate-900/70 border border-cyan-300/30 rounded-lg px-3 py-2 text-sm text-cyan-50"
-                        >
-                            <option value="live">Live update</option>
-                            <option value="daily">Daily update</option>
-                            <option value="weekly">Weekly update</option>
-                            <option value="monthly">Monthly update</option>
-                        </select>
-                        <div className="md:col-span-1 text-xs text-cyan-200/70 uppercase tracking-[0.14em]">
-                            {updateMode === 'monthly' ? 'Refresh every 30 days' : updateMode === 'weekly' ? 'Refresh every 7 days' : updateMode === 'daily' ? 'Refresh every 24 hours' : 'Refresh every 2 minutes'}
-                        </div>
+                    <div className="text-[11px] uppercase tracking-[0.18em] text-cyan-200/80">
+                        Auto refresh every 2 minutes
                     </div>
                 </div>
             </div>

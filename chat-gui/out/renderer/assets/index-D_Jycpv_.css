@@ -1066,10 +1066,6 @@
     list-style-type: decimal;
   }
 
-  .grid-cols-1 {
-    grid-template-columns: repeat(1, minmax(0, 1fr));
-  }
-
   .grid-cols-2 {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -1731,16 +1727,6 @@
   @supports (color: color-mix(in lab, red, red)) {
     .bg-slate-900\/60 {
       background-color: color-mix(in oklab, var(--color-slate-900) 60%, transparent);
-    }
-  }
-
-  .bg-slate-900\/70 {
-    background-color: #0f172bb3;
-  }
-
-  @supports (color: color-mix(in lab, red, red)) {
-    .bg-slate-900\/70 {
-      background-color: color-mix(in oklab, var(--color-slate-900) 70%, transparent);
     }
   }
 
@@ -2682,14 +2668,6 @@
   }
 
   @media (min-width: 48rem) {
-    .md\:col-span-1 {
-      grid-column: span 1 / span 1;
-    }
-
-    .md\:grid-cols-3 {
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-    }
-
     .md\:grid-cols-5 {
       grid-template-columns: repeat(5, minmax(0, 1fr));
     }

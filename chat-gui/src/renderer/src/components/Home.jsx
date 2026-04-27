@@ -15,18 +15,26 @@ export default function Home() {
     useEffect(() => {
         let mounted = true;
         async function loadData() {
-            try {
-                const [weatherData, alertsData] = await Promise.all([
-                    apiFetch('/integrations/weather?latitude=59.3293&longitude=18.0686'),
-                    apiFetch('/integrations/swedish-alerts?limit=12')
-                ]);
-                if (!mounted) return;
-                setWeather(weatherData);
-                setAlerts(alertsData.items || []);
+            const [weatherResult, alertsResult] = await Promise.allSettled([
+                apiFetch('/integrations/weather?latitude=59.3293&longitude=18.0686'),
+                apiFetch('/integrations/swedish-alerts?limit=12&region=sweden')
+            ]);
+
+            if (!mounted) return;
+
+            if (weatherResult.status === 'fulfilled') {
+                setWeather(weatherResult.value);
+            } else {
+                console.error('Weather load failed', weatherResult.reason);
+                setWeather(null);
+            }
+
+            if (alertsResult.status === 'fulfilled') {
+                setAlerts(alertsResult.value?.items || []);
                 setAlertsError(null);
-            } catch (err) {
-                console.error('Dashboard load failed', err);
-                if (!mounted) return;
+            } else {
+                console.error('Alerts load failed', alertsResult.reason);
+                setAlerts([]);
                 setAlertsError('Could not load alerts right now.');
             }
         }
