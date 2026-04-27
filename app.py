@@ -428,21 +428,46 @@ def _normalize_alert_region(region: str) -> str:
     return "nacka"
 
 
+def _region_keywords(region: str) -> tuple[str, ...]:
+    if region == "nacka":
+        return (
+            "nacka",
+            "saltsjöbaden",
+            "saltsjobaden",
+            "fisksätra",
+            "fisksatra",
+            "orminge",
+            "boo",
+            "saltsjö-boo",
+            "saltsjo-boo",
+        )
+    if region == "stockholm":
+        return (
+            "stockholm",
+            "stockholms",
+            "södertälje",
+            "sodertalje",
+            "solna",
+            "sundbyberg",
+            "huddinge",
+            "botkyrka",
+            "haninge",
+            "täby",
+            "taby",
+            "nacka",
+            "järfälla",
+            "jarfalla",
+        )
+    return ()
+
+
 def _match_region_text(region: str, *parts: str) -> bool:
     if region == "sweden":
         return True
 
     haystack = " ".join((part or "") for part in parts).lower()
-    if region == "nacka":
-        return "nacka" in haystack
-
-    # Stockholm mode includes common county/city spellings.
-    return (
-        "stockholm" in haystack
-        or "stockholms" in haystack
-        or "södertälje" in haystack
-        or "sodertalje" in haystack
-    )
+    keywords = _region_keywords(region)
+    return any(keyword in haystack for keyword in keywords)
 
 
 def _extract_sos_statistics(payload: object) -> dict[str, str]:
@@ -521,6 +546,7 @@ async def swedish_alerts(limit: int = 12, region: str = "nacka"):
     items: list[dict] = []
     source_errors: list[str] = []
     area_statistics: dict[str, str] = {}
+    polisen_data_cache: list[dict] = []
 
     def _as_items(payload: object, keys: list[str]) -> list[dict]:
         if isinstance(payload, list):
@@ -535,7 +561,9 @@ async def swedish_alerts(limit: int = 12, region: str = "nacka"):
     # 1) Polisen events API (JSON) - https://polisen.se/om-polisen/om-webbplatsen/oppna-data/api-over-polisens-handelser/
     try:
         polisen_data = _fetch_json("https://polisen.se/api/events")
-        for entry in (polisen_data or [])[:limit]:
+        polisen_data_cache = [entry for entry in (polisen_data or []) if isinstance(entry, dict)]
+        scan_limit = max(limit * 30, 300)
+        for entry in polisen_data_cache[:scan_limit]:
             title = (entry.get("name") or "Polisen event").strip()
             location = entry.get("location", {}).get("name") or ""
             if not _match_region_text(selected_region, title, location):
@@ -668,6 +696,30 @@ async def swedish_alerts(limit: int = 12, region: str = "nacka"):
             (item.get("title") or ""),
         )
     )
+
+    # If a local region is still empty, backfill with recent Polisen events.
+    if not deduped and selected_region in {"nacka", "stockholm"} and polisen_data_cache:
+        for entry in polisen_data_cache[: max(limit * 10, 120)]:
+            title = (entry.get("name") or "Polisen event").strip()
+            if not title:
+                continue
+            deduped.append(
+                {
+                    "source": "Polisen",
+                    "title": title,
+                    "url": entry.get("url") or "https://polisen.se/aktuellt/",
+                    "published": entry.get("datetime") or "",
+                    "location": entry.get("location", {}).get("name") or "",
+                    "priority_rank": _alert_priority("Polisen", title)[0],
+                    "priority_label": "Police",
+                }
+            )
+            if len(deduped) >= limit:
+                break
+
+        if deduped:
+            source_errors.append(f"{selected_region}: local filter empty; using broader Polisen fallback")
+
     deduped = deduped[:limit]
 
     # Return results with error log

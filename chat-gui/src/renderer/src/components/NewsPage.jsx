@@ -5,7 +5,6 @@ import { apiFetch } from '../apiClient.js';
 
 const KEY_ALERT_REGION = 'pocket-ai.alertRegion';
 const KEY_ALERT_UPDATE_MODE = 'pocket-ai.alertUpdateMode';
-const KEY_ALERT_UPDATE_TIME = 'pocket-ai.alertUpdateTime';
 
 const REGION_OPTIONS = [
     { value: 'nacka', label: 'Nacka' },
@@ -35,39 +34,15 @@ function normalizeRegion(region) {
 }
 
 function normalizeUpdateMode(mode) {
-    if (mode === 'daily' || mode === 'weekly') return mode;
-    return 'daily';
+    if (mode === 'live' || mode === 'daily' || mode === 'weekly' || mode === 'monthly') return mode;
+    return 'live';
 }
 
-function normalizeTimeText(value) {
-    if (typeof value === 'string' && /^\d{2}:\d{2}$/.test(value)) return value;
-    return '08:00';
-}
-
-function getMsUntilNextRun(updateMode, hhmm) {
-    const [hoursRaw, minutesRaw] = (hhmm || '08:00').split(':');
-    const hours = Number(hoursRaw);
-    const minutes = Number(minutesRaw);
-    const safeHours = Number.isFinite(hours) ? Math.min(Math.max(hours, 0), 23) : 8;
-    const safeMinutes = Number.isFinite(minutes) ? Math.min(Math.max(minutes, 0), 59) : 0;
-
-    const now = new Date();
-    const next = new Date(now);
-    next.setHours(safeHours, safeMinutes, 0, 0);
-
-    if (updateMode === 'weekly') {
-        const targetDay = 1; // Monday
-        const currentDay = next.getDay();
-        let daysAhead = (targetDay - currentDay + 7) % 7;
-        if (daysAhead === 0 && next <= now) {
-            daysAhead = 7;
-        }
-        next.setDate(next.getDate() + daysAhead);
-    } else if (next <= now) {
-        next.setDate(next.getDate() + 1);
-    }
-
-    return Math.max(1000, next.getTime() - now.getTime());
+function getIntervalMs(updateMode) {
+    if (updateMode === 'daily') return 24 * 60 * 60 * 1000;
+    if (updateMode === 'weekly') return 7 * 24 * 60 * 60 * 1000;
+    if (updateMode === 'monthly') return 30 * 24 * 60 * 60 * 1000;
+    return 2 * 60 * 1000; // live mode
 }
 
 function toDisplayText(value) {
@@ -131,8 +106,7 @@ export default function NewsPage() {
     const [region, setRegion] = useState(() => normalizeRegion(readStoredValue(KEY_ALERT_REGION, 'nacka')));
     const [statistics, setStatistics] = useState({});
     const [lastUpdated, setLastUpdated] = useState(null);
-    const [updateMode, setUpdateMode] = useState(() => normalizeUpdateMode(readStoredValue(KEY_ALERT_UPDATE_MODE, 'daily')));
-    const [updateTime, setUpdateTime] = useState(() => normalizeTimeText(readStoredValue(KEY_ALERT_UPDATE_TIME, '08:00')));
+    const [updateMode, setUpdateMode] = useState(() => normalizeUpdateMode(readStoredValue(KEY_ALERT_UPDATE_MODE, 'live')));
     const scheduleIntervalRef = useRef(null);
 
     const loadAlerts = useCallback(
@@ -184,26 +158,16 @@ export default function NewsPage() {
     }, [updateMode]);
 
     useEffect(() => {
-        localStorage.setItem(KEY_ALERT_UPDATE_TIME, updateTime);
-    }, [updateTime]);
-
-    useEffect(() => {
-        const intervalMs = updateMode === 'weekly' ? 7 * 24 * 60 * 60 * 1000 : 24 * 60 * 60 * 1000;
-        const firstDelay = getMsUntilNextRun(updateMode, updateTime);
-
-        const timeoutId = window.setTimeout(() => {
-            loadAlerts({ initial: false });
-            scheduleIntervalRef.current = window.setInterval(() => loadAlerts({ initial: false }), intervalMs);
-        }, firstDelay);
+        const intervalMs = getIntervalMs(updateMode);
+        scheduleIntervalRef.current = window.setInterval(() => loadAlerts({ initial: false }), intervalMs);
 
         return () => {
-            window.clearTimeout(timeoutId);
             if (scheduleIntervalRef.current) {
                 window.clearInterval(scheduleIntervalRef.current);
                 scheduleIntervalRef.current = null;
             }
         };
-    }, [loadAlerts, updateMode, updateTime]);
+    }, [loadAlerts, updateMode]);
 
     const getSourceIcon = (source) => {
         if (source?.toLowerCase().includes('polisen')) return '🚔';
@@ -239,7 +203,7 @@ export default function NewsPage() {
 
     return (
         <motion.div
-            className="w-full h-full min-h-0 flex flex-col gap-0 bg-transparent overflow-y-auto touch-scroll-y"
+            className="w-full h-full min-h-0 flex flex-col gap-0 bg-transparent overflow-hidden touch-pan-y"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, ease: 'easeOut' }}
@@ -297,16 +261,14 @@ export default function NewsPage() {
                             data-no-swipe-nav="true"
                             className="md:col-span-1 bg-slate-900/70 border border-cyan-300/30 rounded-lg px-3 py-2 text-sm text-cyan-50"
                         >
+                            <option value="live">Live update</option>
                             <option value="daily">Daily update</option>
                             <option value="weekly">Weekly update</option>
+                            <option value="monthly">Monthly update</option>
                         </select>
-                        <input
-                            type="time"
-                            value={updateTime}
-                            onChange={(event) => setUpdateTime(normalizeTimeText(event.target.value))}
-                            data-no-swipe-nav="true"
-                            className="md:col-span-1 bg-slate-900/70 border border-cyan-300/30 rounded-lg px-3 py-2 text-sm text-cyan-50"
-                        />
+                        <div className="md:col-span-1 text-xs text-cyan-200/70 uppercase tracking-[0.14em]">
+                            {updateMode === 'monthly' ? 'Refresh every 30 days' : updateMode === 'weekly' ? 'Refresh every 7 days' : updateMode === 'daily' ? 'Refresh every 24 hours' : 'Refresh every 2 minutes'}
+                        </div>
                     </div>
                 </div>
             </div>

@@ -2824,9 +2824,14 @@
   -webkit-user-select: none;
   user-select: none;
   -webkit-touch-callout: none;
-  scrollbar-width: thin;
-  scrollbar-color: #1ad1ff73 #070b2266;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
   overflow-y: auto;
+}
+.touch-scroll-y::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  display: none;
 }
 .touch-scroll-y * {
   -webkit-user-select: none;

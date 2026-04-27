@@ -153,8 +153,14 @@
   user-select: none;
   -webkit-user-select: none;
   -webkit-touch-callout: none;
-  scrollbar-width: thin;
-  scrollbar-color: rgba(26, 209, 255, 0.45) rgba(7, 11, 34, 0.4);
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.touch-scroll-y::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  display: none;
 }
 .touch-scroll-y * {
   user-select: none;
