@@ -19,6 +19,7 @@ logger = logging.getLogger(__name__)
 TELEGRAM_BOT_TOKEN = (os.getenv("TELEGRAM_BOT_TOKEN") or "").strip()
 TELEGRAM_SUBSCRIPTIONS_FILE = (os.getenv("TELEGRAM_SUBSCRIPTIONS_FILE") or "telegram_subscriptions.json").strip()
 TELEGRAM_POLL_INTERVAL_SECONDS = max(15, int(os.getenv("TELEGRAM_POLL_INTERVAL_SECONDS", "60")))
+TELEGRAM_UPDATE_POLL_TIMEOUT_SECONDS = max(1, int(os.getenv("TELEGRAM_UPDATE_POLL_TIMEOUT_SECONDS", "30")))
 TELEGRAM_REQUEST_TIMEOUT_SECONDS = max(3, int(os.getenv("TELEGRAM_REQUEST_TIMEOUT_SECONDS", "10")))
 TELEGRAM_MAX_RETRIES = max(1, int(os.getenv("TELEGRAM_MAX_RETRIES", "3")))
 
@@ -105,16 +106,19 @@ class TelegramAlertBot:
         self.token = token
         self.subscriptions_file = subscriptions_file
         self.poll_interval_seconds = max(10, int(poll_interval_seconds))
+        self.update_poll_timeout_seconds = TELEGRAM_UPDATE_POLL_TIMEOUT_SECONDS
         self.request_timeout_seconds = max(3, int(request_timeout_seconds))
         self.max_retries = max(1, int(max_retries))
         self.alert_fetcher = alert_fetcher
         self._send_message_fn = send_message_fn or self._send_message_via_api
         self._stop_event = threading.Event()
-        self._thread: threading.Thread | None = None
+        self._update_thread: threading.Thread | None = None
+        self._alert_thread: threading.Thread | None = None
         self._state_lock = threading.Lock()
         self._subscriptions = self._load_subscriptions()
         self._seen_alert_ids: set[str] = set()
         self._update_offset: int | None = None
+        self._last_alert_poll_at = 0.0
 
     @property
     def enabled(self) -> bool:
@@ -124,19 +128,28 @@ class TelegramAlertBot:
         if not self.enabled:
             logger.info("Telegram bot disabled: TELEGRAM_BOT_TOKEN is not set.")
             return False
-        if self._thread and self._thread.is_alive():
+        if self._update_thread and self._update_thread.is_alive():
             return True
         self._stop_event.clear()
-        self._thread = threading.Thread(target=self._run, name="telegram-alert-bot", daemon=True)
-        self._thread.start()
-        logger.info("Telegram bot worker started.")
+        self._update_thread = threading.Thread(target=self._run_updates, name="telegram-updates", daemon=True)
+        self._alert_thread = threading.Thread(target=self._run_alerts, name="telegram-alerts", daemon=True)
+        self._update_thread.start()
+        self._alert_thread.start()
+        logger.info(
+            "Telegram bot worker started (update poll timeout=%ss, alert poll interval=%ss).",
+            self.update_poll_timeout_seconds,
+            self.poll_interval_seconds,
+        )
         return True
 
     def stop(self) -> None:
         self._stop_event.set()
-        if self._thread and self._thread.is_alive():
-            self._thread.join(timeout=5)
-        self._thread = None
+        if self._update_thread and self._update_thread.is_alive():
+            self._update_thread.join(timeout=5)
+        if self._alert_thread and self._alert_thread.is_alive():
+            self._alert_thread.join(timeout=5)
+        self._update_thread = None
+        self._alert_thread = None
 
     def subscribe(self, chat_id: int, region: str) -> bool:
         normalized_region = normalize_alert_region(region)
@@ -225,13 +238,23 @@ class TelegramAlertBot:
         }
         return result
 
-    def _run(self) -> None:
+    def _run_updates(self) -> None:
         while not self._stop_event.is_set():
             try:
-                self.poll_once()
+                self._poll_updates_once()
             except Exception as exc:
-                logger.warning("Telegram bot poll failed: %s", exc)
-            self._stop_event.wait(self.poll_interval_seconds)
+                logger.warning("Telegram update poll failed: %s", exc)
+
+    def _run_alerts(self) -> None:
+        while not self._stop_event.is_set():
+            try:
+                now = time.monotonic()
+                if now - self._last_alert_poll_at >= self.poll_interval_seconds:
+                    self._poll_alerts_once()
+                    self._last_alert_poll_at = now
+            except Exception as exc:
+                logger.warning("Telegram alert poll failed: %s", exc)
+            self._stop_event.wait(1)
 
     def _poll_updates_once(self) -> None:
         updates = self._fetch_updates()
@@ -301,14 +324,15 @@ class TelegramAlertBot:
             return []
 
         params = {
-            "timeout": 1,
+            "timeout": self.update_poll_timeout_seconds,
             "allowed_updates": json.dumps(["message"]),
         }
         if self._update_offset is not None:
             params["offset"] = self._update_offset
         url = f"{self._api_base()}/getUpdates?{urllib.parse.urlencode(params)}"
         try:
-            with urllib.request.urlopen(url, timeout=self.request_timeout_seconds) as resp:
+            request_timeout = max(self.request_timeout_seconds, self.update_poll_timeout_seconds + 5)
+            with urllib.request.urlopen(url, timeout=request_timeout) as resp:
                 payload = json.loads(resp.read().decode("utf-8", errors="replace"))
         except urllib.error.URLError as exc:
             logger.debug("Telegram update poll failed: %s", exc)
