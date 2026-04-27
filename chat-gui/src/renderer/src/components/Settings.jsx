@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { ArrowLeft, Power, Keyboard, Radio, ScanLine, LayoutGrid } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { API_BASE_URL } from '../config.js';
+import { apiFetch } from '../apiClient.js';
 import { useKeyboardSettings } from '../contexts/KeyboardContext.jsx';
 
 const VERSION = '1.4.0';
@@ -35,6 +36,8 @@ export default function Settings() {
     const [voiceReconnectEnabled, setVoiceReconnectEnabled] = React.useState(() => readStoredBool(KEY_VOICE_AUTO_RECONNECT, true));
     const [scanlinesEnabled, setScanlinesEnabled] = React.useState(() => readStoredBool(KEY_SCANLINES_ENABLED, true));
     const [uiDensity, setUiDensity] = React.useState(readStoredDensity);
+    const [telegramTestState, setTelegramTestState] = React.useState('idle');
+    const [telegramTestError, setTelegramTestError] = React.useState('');
 
     React.useEffect(() => {
         localStorage.setItem(KEY_VOICE_AUTO_RECONNECT, String(voiceReconnectEnabled));
@@ -64,6 +67,25 @@ export default function Settings() {
         } else {
             console.log('Close button clicked (Electron API not available)');
             window.close();
+        }
+    };
+
+    const handleTelegramTest = async () => {
+        setTelegramTestState('loading');
+        setTelegramTestError('');
+        try {
+            const result = await apiFetch('/telegram/test-message', { method: 'POST' });
+            const sentCount = Number(result?.sent || 0);
+            setTelegramTestState(sentCount > 0 ? 'sent' : 'error');
+            if (sentCount > 0) {
+                setTelegramTestError(`Sent test message to ${sentCount} chat${sentCount === 1 ? '' : 's'}.`);
+            } else {
+                setTelegramTestError('No subscribed Telegram chats were found. Open Telegram and send /Nacka, /stockholm, or /test first.');
+            }
+        } catch (error) {
+            console.error('Telegram test message failed:', error);
+            setTelegramTestState('error');
+            setTelegramTestError(error?.message || 'Telegram test message failed.');
         }
     };
 
@@ -198,6 +220,28 @@ export default function Settings() {
 
                     <div className="font-['VT323'] text-lg text-[var(--pixel-secondary)] pt-1">
                         Voice mode now keeps replies stable across reconnects and applies smoother TTS playback.
+                    </div>
+
+                    <div className="pt-2 border-t-2 border-[var(--pixel-border)] space-y-3">
+                        <div className="font-['VT323'] text-xl text-[var(--pixel-text)] flex items-center gap-2">
+                            Telegram bot
+                        </div>
+                        <p className="font-['VT323'] text-lg text-[var(--pixel-secondary)]">
+                            Sends a real Telegram test message to every subscribed chat. This only works after you have messaged the bot in Telegram.
+                        </p>
+                        {telegramTestError ? (
+                            <div className={`font-['VT323'] text-lg px-3 py-2 border-2 ${telegramTestState === 'sent' ? 'bg-[rgba(0,180,120,0.18)] border-green-500 text-green-200' : 'bg-[rgba(180,0,0,0.18)] border-red-500 text-red-200'}`}>
+                                {telegramTestError}
+                            </div>
+                        ) : null}
+                        <button
+                            type="button"
+                            onClick={handleTelegramTest}
+                            disabled={telegramTestState === 'loading'}
+                            className="w-full py-4 px-6 bg-[var(--pixel-accent)] text-black font-['Press_Start_2P'] text-xs border-4 border-white shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:bg-[var(--pixel-primary)] active:translate-y-1 active:shadow-none transition-all flex items-center justify-center gap-3 disabled:opacity-60"
+                        >
+                            <span>{telegramTestState === 'loading' ? 'SENDING...' : 'SEND TELEGRAM TEST'}</span>
+                        </button>
                     </div>
 
                     <button

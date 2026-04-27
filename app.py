@@ -17,10 +17,11 @@ from datetime import datetime, timedelta
 
 import psutil
 import uvicorn
+from fastapi import HTTPException
 
 from config import PORT, setup_logging
 from news_alerts import fetch_swedish_alerts
-from telegram_bot import start_telegram_bot, stop_telegram_bot
+from telegram_bot import get_telegram_bot, start_telegram_bot, stop_telegram_bot
 
 
 def _pip_reinstall(packages):
@@ -137,6 +138,18 @@ app.include_router(chat_router)
 async def health():
     """Simple health check for monitoring and tests."""
     return {"status": "ok"}
+
+
+@app.post("/telegram/test-message")
+async def telegram_test_message():
+    """Send a Telegram test message to all subscribed chats."""
+    bot = get_telegram_bot()
+    result = bot.send_test_notification()
+    if int(result.get("sent") or 0) <= 0:
+        errors = result.get("errors") or []
+        detail = errors[0] if isinstance(errors, list) and errors else "Telegram test message could not be sent."
+        raise HTTPException(status_code=409, detail=detail)
+    return {"status": "sent", **result}
 
 
 @app.get("/system/stats")

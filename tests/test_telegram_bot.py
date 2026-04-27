@@ -95,3 +95,28 @@ def test_telegram_startup_notification_broadcasts_to_subscribers(tmp_path):
         (42, "NOVA started successfully and is now monitoring alerts."),
         (99, "NOVA started successfully and is now monitoring alerts."),
     ]
+
+
+def test_telegram_test_notification_reports_missing_subscribers(tmp_path):
+    from telegram_bot import TelegramAlertBot
+
+    sent_messages = []
+
+    def fake_sender(chat_id, text):
+        sent_messages.append((chat_id, text))
+        return True
+
+    bot = TelegramAlertBot(
+        token="token",
+        subscriptions_file=str(tmp_path / "subs.json"),
+        alert_fetcher=lambda limit, region: {"items": []},
+        send_message_fn=fake_sender,
+        poll_interval_seconds=15,
+        request_timeout_seconds=3,
+    )
+
+    result = bot.send_test_notification()
+
+    assert result["sent"] == 0
+    assert result["errors"]
+    assert sent_messages == []

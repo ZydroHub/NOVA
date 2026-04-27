@@ -29,6 +29,7 @@ _HELP_TEXT = (
 )
 
 _STARTUP_TEXT = "NOVA started successfully and is now monitoring alerts."
+_TEST_TEXT = "NOVA Telegram test OK."
 
 
 def _coerce_chat_id(value: object) -> int | None:
@@ -69,6 +70,24 @@ def _format_alert_message(alert: dict) -> str:
     if url:
         lines.append(f"Link: {url}")
     return "\n".join(lines)
+
+
+def _format_http_error(exc: urllib.error.HTTPError) -> str:
+    try:
+        body = exc.read().decode("utf-8", errors="replace")
+    except Exception:
+        body = ""
+
+    if body:
+        try:
+            payload = json.loads(body)
+            if isinstance(payload, dict):
+                description = payload.get("description") or payload.get("error") or body
+                return f"HTTP {exc.code}: {description}"
+        except json.JSONDecodeError:
+            pass
+
+    return f"HTTP {exc.code}: {body or exc.reason or 'Telegram request failed'}"
 
 
 class TelegramAlertBot:
@@ -162,20 +181,49 @@ class TelegramAlertBot:
         self._poll_alerts_once()
 
     def send_startup_notification(self) -> int:
+        result = self.send_message_to_subscribers(_STARTUP_TEXT)
+        sent_count = int(result.get("sent") or 0)
+        if sent_count:
+            logger.info("Telegram startup notification sent to %d chat(s).", sent_count)
+        elif result.get("errors"):
+            logger.warning("Telegram startup notification failed: %s", result.get("errors"))
+        else:
+            logger.debug("No Telegram startup notification sent; no subscribed chats yet.")
+        return sent_count
+
+    def send_test_notification(self, text: str = _TEST_TEXT) -> dict[str, object]:
+        return self.send_message_to_subscribers(text)
+
+    def send_message_to_subscribers(self, text: str) -> dict[str, object]:
         with self._state_lock:
             chat_ids = sorted({chat_id for ids in self._subscriptions.values() for chat_id in ids})
 
+        if not self.enabled:
+            message = "Telegram bot is disabled because TELEGRAM_BOT_TOKEN is missing."
+            logger.warning(message)
+            return {"sent": 0, "failed": 0, "chat_ids": [], "errors": [message]}
+
+        if not chat_ids:
+            message = "No Telegram subscribers are registered yet. Open Telegram and send /Nacka, /stockholm, or /test to the bot first."
+            logger.warning(message)
+            return {"sent": 0, "failed": 0, "chat_ids": [], "errors": [message]}
+
         sent_count = 0
+        failures: list[str] = []
         for chat_id in chat_ids:
-            if self._send_message(chat_id, _STARTUP_TEXT):
+            if self._send_message(chat_id, text):
                 sent_count += 1
+            else:
+                failures.append(f"chat {chat_id}: delivery failed")
 
-        if sent_count:
-            logger.info("Telegram startup notification sent to %d chat(s).", sent_count)
-        else:
-            logger.debug("No Telegram startup notification sent; no subscribed chats yet.")
-
-        return sent_count
+        result: dict[str, object] = {
+            "sent": sent_count,
+            "failed": len(failures),
+            "chat_ids": chat_ids,
+            "errors": failures,
+            "message": text,
+        }
+        return result
 
     def _run(self) -> None:
         while not self._stop_event.is_set():
@@ -303,9 +351,12 @@ class TelegramAlertBot:
                     response_payload = json.loads(resp.read().decode("utf-8", errors="replace"))
                 if isinstance(response_payload, dict) and response_payload.get("ok"):
                     return True
-                last_error = RuntimeError(str(response_payload))
+                error_description = response_payload.get("description") if isinstance(response_payload, dict) else str(response_payload)
+                last_error = RuntimeError(f"Telegram API rejected message: {error_description}")
+            except urllib.error.HTTPError as exc:
+                last_error = RuntimeError(_format_http_error(exc))
             except Exception as exc:
-                last_error = exc
+                last_error = RuntimeError(f"Telegram send failed: {exc}")
 
             if attempt < self.max_retries:
                 time.sleep(min(2 ** (attempt - 1), 5))
