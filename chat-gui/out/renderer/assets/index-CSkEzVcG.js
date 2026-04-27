@@ -37562,7 +37562,7 @@ function NewsPage() {
             }
           ) })
         ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(motion.div, { variants: fadeUpVariants, className: "flex-1 min-h-0 overflow-y-auto touch-scroll-y", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "px-6 py-4 space-y-3 pb-8", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(motion.div, { variants: fadeUpVariants, className: "flex-1 min-h-0 overflow-y-auto touch-scroll-y", "data-scroll-lock-nav": "true", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "px-6 py-4 space-y-3 pb-8", children: [
           region === "nacka" && statsEntries.length > 0 && /* @__PURE__ */ jsxRuntimeExports.jsx(
             motion.div,
             {
@@ -38588,7 +38588,7 @@ const AnimatedRoutes = () => {
     if (!target || typeof target.closest !== "function") return false;
     return Boolean(
       target.closest(
-        'button, a, input, select, textarea, option, [role="button"], [role="listbox"], [role="option"], [data-no-swipe-nav]'
+        'button, a, input, select, textarea, option, [role="button"], [role="listbox"], [role="option"], [data-no-swipe-nav], .touch-scroll-y, [data-scroll-lock-nav]'
       )
     );
   };

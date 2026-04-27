@@ -301,7 +301,7 @@ export default function NewsPage() {
             </motion.div>
 
             {/* Content */}
-            <motion.div variants={fadeUpVariants} className="flex-1 min-h-0 overflow-y-auto touch-scroll-y">
+            <motion.div variants={fadeUpVariants} className="flex-1 min-h-0 overflow-y-auto touch-scroll-y" data-scroll-lock-nav="true">
                 <div className="px-6 py-4 space-y-3 pb-8">
                     {region === 'nacka' && statsEntries.length > 0 && (
                         <motion.div

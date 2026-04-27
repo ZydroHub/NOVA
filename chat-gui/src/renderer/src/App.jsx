@@ -62,7 +62,7 @@ const AnimatedRoutes = () => {
     if (!target || typeof target.closest !== 'function') return false;
     return Boolean(
       target.closest(
-        'button, a, input, select, textarea, option, [role="button"], [role="listbox"], [role="option"], [data-no-swipe-nav]'
+        'button, a, input, select, textarea, option, [role="button"], [role="listbox"], [role="option"], [data-no-swipe-nav], .touch-scroll-y, [data-scroll-lock-nav]'
       )
     );
   };

@@ -514,6 +514,16 @@ def _is_within_last_days(value: str, days: int = 30) -> bool:
     return parsed >= (now - timedelta(days=days))
 
 
+def _published_sort_value(value: str) -> float:
+    parsed = _parse_published_datetime(value)
+    if parsed is None:
+        return float("-inf")
+    try:
+        return parsed.timestamp()
+    except (OverflowError, OSError, ValueError):
+        return float("-inf")
+
+
 def _balance_items_by_source(items: list[dict]) -> list[dict]:
     """Interleave sources so one feed does not dominate the Sweden list."""
     if not items:
@@ -793,7 +803,7 @@ async def swedish_alerts(limit: int = 12, region: str = "nacka"):
     deduped.sort(
         key=lambda item: (
             -int(item.get("priority_rank") or 0),
-            (item.get("published") or ""),
+            -_published_sort_value(item.get("published") or ""),
             (item.get("title") or ""),
         )
     )
