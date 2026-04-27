@@ -37400,7 +37400,7 @@ function NewsPage() {
       }
       if (initial) setError(null);
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 1e4);
+      const timeoutId = setTimeout(() => controller.abort(), 2e4);
       try {
         const query = new URLSearchParams({
           limit: "20",

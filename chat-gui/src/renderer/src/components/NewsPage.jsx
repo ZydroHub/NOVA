@@ -119,7 +119,7 @@ export default function NewsPage() {
             if (initial) setError(null);
 
             const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 10000);
+            const timeoutId = setTimeout(() => controller.abort(), 20000);
 
             try {
                 const query = new URLSearchParams({

@@ -470,6 +470,15 @@ def _match_region_text(region: str, *parts: str) -> bool:
     return any(keyword in haystack for keyword in keywords)
 
 
+def _polisen_location_name(entry: dict) -> str:
+    location = entry.get("location")
+    if isinstance(location, dict):
+        return str(location.get("name") or "").strip()
+    if isinstance(location, str):
+        return location.strip()
+    return ""
+
+
 def _extract_sos_statistics(payload: object) -> dict[str, str]:
     if not isinstance(payload, dict):
         return {}
@@ -560,13 +569,13 @@ async def swedish_alerts(limit: int = 12, region: str = "nacka"):
 
     # 1) Polisen events API (JSON) - https://polisen.se/om-polisen/om-webbplatsen/oppna-data/api-over-polisens-handelser/
     try:
-        polisen_data = _fetch_json("https://polisen.se/api/events")
+        polisen_data = _fetch_json("https://polisen.se/api/events", timeout=5.0)
         polisen_data_cache = [entry for entry in (polisen_data or []) if isinstance(entry, dict)]
-        scan_limit = max(limit * 30, 300)
-        for entry in polisen_data_cache[:scan_limit]:
+        for entry in polisen_data_cache:
             title = (entry.get("name") or "Polisen event").strip()
-            location = entry.get("location", {}).get("name") or ""
-            if not _match_region_text(selected_region, title, location):
+            summary = (entry.get("summary") or "").strip()
+            location = _polisen_location_name(entry)
+            if not _match_region_text(selected_region, title, location, summary):
                 continue
 
             items.append(
@@ -588,8 +597,11 @@ async def swedish_alerts(limit: int = 12, region: str = "nacka"):
     # 2) Krisinformation API v3 (v4 is not available)
     try:
         # Combine VMAs (critical alerts) with news headlines.
-        krisis_vmas = _fetch_json("https://api.krisinformation.se/v3/vmas?language=sv")
-        krisis_news = _fetch_json(f"https://api.krisinformation.se/v3/news?language=sv&numberOfNewsArticles={max(limit, 10)}")
+        krisis_vmas = _fetch_json("https://api.krisinformation.se/v3/vmas?language=sv", timeout=4.0)
+        krisis_news = _fetch_json(
+            f"https://api.krisinformation.se/v3/news?language=sv&numberOfNewsArticles={max(limit, 10)}",
+            timeout=4.0,
+        )
 
         vma_items = _as_items(krisis_vmas, ["vmas", "items", "data"])
         news_items = _as_items(krisis_news, ["news", "items", "data"])
@@ -641,7 +653,7 @@ async def swedish_alerts(limit: int = 12, region: str = "nacka"):
         else:
             sos_url = "https://henrikhjelm.se/api/sos/"
 
-        sos_data = _fetch_json(sos_url)
+        sos_data = _fetch_json(sos_url, timeout=4.0)
         if selected_region == "nacka":
             area_statistics = _extract_sos_statistics(sos_data)
 
@@ -669,15 +681,16 @@ async def swedish_alerts(limit: int = 12, region: str = "nacka"):
         source_errors.append(f"SOS Alarm: {error_msg}")
 
     # 4) Trafikverket traffic situations (requires API key).
-    try:
-        trafik_items, trafik_error = _fetch_trafikverket_items(limit=limit, region=selected_region)
-        if trafik_items:
-            items.extend(trafik_items)
-        elif trafik_error:
-            source_errors.append(f"Trafikverket: {trafik_error[:60]}")
-    except Exception as exc:
-        error_msg = str(exc)[:60]
-        source_errors.append(f"Trafikverket: {error_msg}")
+    if selected_region != "nacka":
+        try:
+            trafik_items, trafik_error = _fetch_trafikverket_items(limit=limit, region=selected_region)
+            if trafik_items:
+                items.extend(trafik_items)
+            elif trafik_error:
+                source_errors.append(f"Trafikverket: {trafik_error[:60]}")
+        except Exception as exc:
+            error_msg = str(exc)[:60]
+            source_errors.append(f"Trafikverket: {error_msg}")
 
     # Deduplicate by title and source, keep first seen entries
     deduped: list[dict] = []
@@ -697,8 +710,8 @@ async def swedish_alerts(limit: int = 12, region: str = "nacka"):
         )
     )
 
-    # If a local region is still empty, backfill with recent Polisen events.
-    if not deduped and selected_region in {"nacka", "stockholm"} and polisen_data_cache:
+    # If Stockholm is empty, backfill with broader recent Polisen events.
+    if not deduped and selected_region == "stockholm" and polisen_data_cache:
         for entry in polisen_data_cache[: max(limit * 10, 120)]:
             title = (entry.get("name") or "Polisen event").strip()
             if not title:
@@ -709,7 +722,7 @@ async def swedish_alerts(limit: int = 12, region: str = "nacka"):
                     "title": title,
                     "url": entry.get("url") or "https://polisen.se/aktuellt/",
                     "published": entry.get("datetime") or "",
-                    "location": entry.get("location", {}).get("name") or "",
+                    "location": _polisen_location_name(entry),
                     "priority_rank": _alert_priority("Polisen", title)[0],
                     "priority_label": "Police",
                 }
