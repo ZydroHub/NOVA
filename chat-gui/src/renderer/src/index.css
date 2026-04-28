@@ -707,6 +707,10 @@ body, html, #root {
   flex-shrink: 0;
 }
 
+.forecast-row-hourly {
+  grid-template-columns: 64px 28px minmax(0, 1fr);
+}
+
 .forecast-day {
   min-width: 0;
   white-space: nowrap;
@@ -749,10 +753,21 @@ body, html, #root {
   min-height: 44px;
 }
 
+.wake-pc-card-hero {
+  width: 100%;
+  min-height: 62px;
+  font-size: 0.92rem;
+  box-shadow: 0 12px 30px rgba(39, 123, 255, 0.18);
+}
+
 .wake-pc-card:hover {
   border-color: rgba(128, 228, 255, 0.85);
   background: linear-gradient(135deg, rgba(39, 123, 255, 0.65), rgba(27, 210, 255, 0.35));
   box-shadow: 0 0 16px rgba(39, 123, 255, 0.35);
+}
+
+.wake-pc-card-hero:hover {
+  box-shadow: 0 0 20px rgba(39, 123, 255, 0.28);
 }
 
 .wake-pc-card.sent {
@@ -774,6 +789,34 @@ body, html, #root {
   overflow: hidden;
   flex: 0.9;
   min-height: 0;
+}
+
+.rain-chance-card {
+  background: linear-gradient(135deg, rgba(20, 56, 103, 0.78), rgba(14, 33, 68, 0.58));
+  border: 1px solid rgba(120, 214, 255, 0.2);
+  backdrop-filter: blur(22px);
+  border-radius: 14px;
+  padding: 12px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  box-shadow: inset 0 0 0 1px rgba(120, 214, 255, 0.05);
+}
+
+.rain-chance-label {
+  color: rgba(208, 239, 255, 0.75);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 0.68rem;
+  font-weight: 700;
+}
+
+.rain-chance-value {
+  color: #ffffff;
+  font-size: 1.35rem;
+  font-weight: 800;
+  line-height: 1;
 }
 
 .alert-item {

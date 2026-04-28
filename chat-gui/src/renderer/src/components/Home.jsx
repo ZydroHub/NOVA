@@ -53,9 +53,6 @@ export default function Home() {
     const hourlyTemps = Array.isArray(hourly.temperature_2m) ? hourly.temperature_2m : [];
     const hourlyCodes = Array.isArray(hourly.weather_code) ? hourly.weather_code : [];
     const forecastDays = Array.isArray(weather?.daily?.time) ? weather.daily.time : [];
-    const forecastTempsMax = Array.isArray(weather?.daily?.temperature_2m_max) ? weather.daily.temperature_2m_max : [];
-    const forecastTempsMin = Array.isArray(weather?.daily?.temperature_2m_min) ? weather.daily.temperature_2m_min : [];
-
     const alertsSorted = useMemo(() => {
         return [...alerts].sort((a, b) => (b.priority_rank || 0) - (a.priority_rank || 0));
     }, [alerts]);
@@ -105,19 +102,6 @@ export default function Home() {
         return slots;
     }, [hourlyTimes, hourlyTemps, hourlyCodes, currentWeatherCode]);
 
-    const formatDay = (dateText, idx) => {
-        if (!dateText) return `Day ${idx + 1}`;
-        const date = new Date(dateText);
-        if (Number.isNaN(date.getTime())) return `Day ${idx + 1}`;
-        return date.toLocaleDateString('en-US', { weekday: 'short' });
-    };
-
-    const formatTempRange = (minTemp, maxTemp) => {
-        const low = typeof minTemp === 'number' ? Math.round(minTemp) : '-';
-        const high = typeof maxTemp === 'number' ? Math.round(maxTemp) : '-';
-        return `${low}° - ${high}°`;
-    };
-
     const stageLabel = {
         idle: '• SYSTEMS ONLINE',
         listening: '• LISTENING FOR VOICE...',
@@ -155,25 +139,26 @@ export default function Home() {
                     <div className="weather-main-container">
                         <div className="weather-left">
                             <div className="weather-location">Stockholm</div>
-                                    <div className="weather-rain-chance">Chance of rain: {forecastDays.length > 0 ? (weather?.daily?.precipitation_probability_max?.[0] ?? 0) : '-'}%</div>
-                                    <div className="weather-temp-huge">{typeof currentTemp === 'number' ? Math.round(currentTemp) : '-'}°</div>
-                        </div>
-
-                        <div className="weather-hourly-section">
-                            <div className="weather-hourly-title">TODAY'S FORECAST</div>
-                            <div className="weather-hourly-grid">
-                                {todayHours.length > 0 ? todayHours.map((entry) => {
-                                    return (
-                                        <div key={entry.key} className="weather-hour-col">
-                                            <div className="hour-time">{entry.hour}</div>
-                                            <div className="hour-emoji">{getWeatherEmoji(entry.code)}</div>
-                                            <div className="hour-temp">{typeof entry.temp === 'number' ? Math.round(entry.temp) : '-'}°</div>
-                                        </div>
-                                    );
-                                }) : <div className="opacity-50 text-xs col-span-6">Loading hourly weather...</div>}
-                            </div>
+                            <div className="weather-temp-huge">{typeof currentTemp === 'number' ? Math.round(currentTemp) : '-'}°</div>
                         </div>
                     </div>
+
+                    <motion.button
+                        whileTap={{ scale: 0.96 }}
+                        onClick={onWakePc}
+                        className={`wake-pc-card wake-pc-card-hero ${wakeState}`}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.4, delay: 0.3 }}
+                    >
+                        <Power size={20} />
+                        <span>
+                            {wakeState === 'loading' && 'Waking...'}
+                            {wakeState === 'sent' && '✓ Signal Sent'}
+                            {wakeState === 'error' && '✗ Failed'}
+                            {wakeState === 'idle' && 'Start PC'}
+                        </span>
+                    </motion.button>
 
                     <div className="air-conditions-grid">
                         <div className="air-condition-item">
@@ -196,50 +181,38 @@ export default function Home() {
                 </section>
             </motion.section>
 
-            {/* Right Section: 7-day + PC + Alerts */}
+            {/* Right Section: Today + Rain + Alerts */}
             <motion.section 
                 className="nova-home-right"
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.6, delay: 0.2, ease: 'easeOut' }}
             >
-                {/* 7-day Forecast */}
+                {/* Today's Forecast */}
                 <div className="forecast-7day">
-                    <div className="text-xs opacity-70 mb-2 font-semibold tracking-[0.18em]">7-DAY FORECAST</div>
+                    <div className="text-xs opacity-70 mb-2 font-semibold tracking-[0.18em]">TODAY'S FORECAST</div>
                     <div className="space-y-1">
-                        {forecastDays.length > 0 ? forecastDays.slice(0, 7).map((day, idx) => {
-                            const maxTemp = typeof forecastTempsMax[idx] === 'number' ? Math.round(forecastTempsMax[idx]) : '-';
-                            const minTemp = typeof forecastTempsMin[idx] === 'number' ? Math.round(forecastTempsMin[idx]) : '-';
-                            const dayName = formatDay(day, idx);
-                            const dayWeatherCode = weather?.daily?.weather_code?.[idx] || currentWeatherCode;
+                        {todayHours.length > 0 ? todayHours.map((entry) => {
                             return (
-                                <div key={day} className="forecast-row">
-                                    <span className="forecast-day text-sm font-medium">{dayName}</span>
-                                    <span className="forecast-icon" style={{fontSize: '1.1rem', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>{getWeatherEmoji(dayWeatherCode)}</span>
-                                    <span className="forecast-temp font-semibold ml-auto text-sm text-cyan-100">{formatTempRange(minTemp, maxTemp)}</span>
+                                <div key={entry.key} className="forecast-row forecast-row-hourly">
+                                    <span className="forecast-day text-sm font-medium">{entry.hour}</span>
+                                    <span className="forecast-icon" style={{fontSize: '1.1rem', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>{getWeatherEmoji(entry.code)}</span>
+                                    <span className="forecast-temp font-semibold ml-auto text-sm text-cyan-100">{typeof entry.temp === 'number' ? Math.round(entry.temp) : '-'}°</span>
                                 </div>
                             );
-                        }) : <div className="opacity-50 text-xs">Loading forecast...</div>}
+                        }) : <div className="opacity-50 text-xs">Loading hourly weather...</div>}
                     </div>
                 </div>
 
-                {/* Wake PC Card */}
-                <motion.button
-                    whileTap={{ scale: 0.93 }}
-                    onClick={onWakePc}
-                    className={`wake-pc-card ${wakeState}`}
-                    initial={{ opacity: 0, y: 10 }}
+                <motion.div
+                    className="rain-chance-card"
+                    initial={{ opacity: 0, y: 8 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.4, delay: 0.3 }}
+                    transition={{ duration: 0.35, delay: 0.32 }}
                 >
-                    <Power size={18} />
-                    <span>
-                        {wakeState === 'loading' && 'Waking...'}
-                        {wakeState === 'sent' && '✓ Signal Sent'}
-                        {wakeState === 'error' && '✗ Failed'}
-                        {wakeState === 'idle' && 'Start PC'}
-                    </span>
-                </motion.button>
+                    <div className="rain-chance-label">STOCKHOLM RAIN CHANCE</div>
+                    <div className="rain-chance-value">{forecastDays.length > 0 ? (weather?.daily?.precipitation_probability_max?.[0] ?? 0) : '-'}%</div>
+                </motion.div>
 
                 {/* Swedish Alerts */}
                 <motion.div 
