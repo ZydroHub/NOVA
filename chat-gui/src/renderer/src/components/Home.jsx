@@ -46,7 +46,6 @@ export default function Home() {
         };
     }, []);
 
-    const currentTemp = weather?.current?.temperature_2m ?? '-';
     const currentWeatherCode = weather?.current?.weather_code ?? 0;
     const hourly = weather?.hourly || {};
     const hourlyTimes = Array.isArray(hourly.time) ? hourly.time : [];
@@ -121,7 +120,7 @@ export default function Home() {
                 <motion.button
                     whileTap={{ scale: 0.96 }}
                     onClick={onWakePc}
-                    className={`wake-pc-card wake-pc-card-hero ${wakeState}`}
+                    className={`wake-pc-card wake-pc-card-hero wake-pc-card-hero-large ${wakeState}`}
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.4, delay: 0.3 }}
@@ -135,33 +134,6 @@ export default function Home() {
                     </span>
                 </motion.button>
 
-                {/* Weather Card */}
-                <section className="weather-card home-weather-remake">
-                    <div className="weather-main-container">
-                        <div className="weather-left">
-                            <div className="weather-temp-huge">{typeof currentTemp === 'number' ? Math.round(currentTemp) : '-'}°</div>
-                        </div>
-                    </div>
-
-                    <div className="air-conditions-grid">
-                        <div className="air-condition-item">
-                            <div className="condition-label">Real Feel</div>
-                            <div className="condition-value">{typeof weather?.current?.apparent_temperature === 'number' ? Math.round(weather.current.apparent_temperature) : '-'}°</div>
-                        </div>
-                        <div className="air-condition-item">
-                            <div className="condition-label">Wind</div>
-                            <div className="condition-value">{typeof weather?.current?.wind_speed_10m === 'number' ? Math.round(weather.current.wind_speed_10m) : '-'} km/h</div>
-                        </div>
-                        <div className="air-condition-item">
-                            <div className="condition-label">Humidity</div>
-                            <div className="condition-value">{weather?.current?.relative_humidity_2m ?? '-'}%</div>
-                        </div>
-                        <div className="air-condition-item">
-                            <div className="condition-label">UV Index</div>
-                            <div className="condition-value">{typeof weather?.current?.uv_index === 'number' ? Math.round(weather.current.uv_index * 10) / 10 : '-'}</div>
-                        </div>
-                    </div>
-                </section>
             </motion.section>
 
             {/* Right Section: Today + Alerts */}

@@ -678,7 +678,7 @@ body, html, #root {
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 22px;
   overflow: visible;
   min-height: 0;
   min-width: 0;
@@ -758,6 +758,24 @@ body, html, #root {
   min-height: 62px;
   font-size: 0.92rem;
   box-shadow: 0 12px 30px rgba(39, 123, 255, 0.18);
+}
+
+.wake-pc-card-hero-large {
+  min-height: 150px;
+  padding: 20px 22px;
+  border-radius: 16px;
+  justify-content: center;
+  align-items: center;
+  flex-direction: row;
+  gap: 12px;
+  font-size: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.wake-pc-card-hero-large span {
+  font-size: 1rem;
+  font-weight: 800;
 }
 
 .wake-pc-card:hover {
