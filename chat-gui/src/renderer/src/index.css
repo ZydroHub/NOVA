@@ -791,15 +791,14 @@ body, html, #root {
   min-height: 0;
 }
 
-.rain-chance-card {
+.weather-today-card {
   background: linear-gradient(135deg, rgba(20, 56, 103, 0.78), rgba(14, 33, 68, 0.58));
   border: 1px solid rgba(120, 214, 255, 0.2);
   backdrop-filter: blur(22px);
   border-radius: 14px;
-  padding: 12px 14px;
+  padding: 14px;
   display: flex;
-  align-items: center;
-  justify-content: space-between;
+  flex-direction: column;
   gap: 12px;
   box-shadow: inset 0 0 0 1px rgba(120, 214, 255, 0.05);
 }
@@ -812,11 +811,59 @@ body, html, #root {
   font-weight: 700;
 }
 
-.rain-chance-value {
+.weather-today-subtitle {
+  color: rgba(255, 255, 255, 0.92);
+  font-size: 1rem;
+  font-weight: 700;
+  margin-top: 2px;
+}
+
+.weather-today-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.weather-today-icon {
+  font-size: 2rem;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.weather-today-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.weather-today-item {
+  background: rgba(14, 33, 68, 0.45);
+  border: 1px solid rgba(120, 214, 255, 0.14);
+  border-radius: 12px;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.weather-today-item-label {
+  color: rgba(182, 229, 255, 0.72);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.66rem;
+  font-weight: 700;
+}
+
+.weather-today-item-value {
   color: #ffffff;
-  font-size: 1.35rem;
+  font-size: 1.05rem;
   font-weight: 800;
   line-height: 1;
+}
+
+.rain-chance-card {
+  display: none;
 }
 
 .alert-item {
