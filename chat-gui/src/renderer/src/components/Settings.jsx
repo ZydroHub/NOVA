@@ -1,15 +1,13 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Power, Keyboard, Radio, ScanLine, LayoutGrid } from 'lucide-react';
+import { ArrowLeft, Keyboard, Moon, Power, ScanLine } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { API_BASE_URL } from '../config.js';
 import { apiFetch } from '../apiClient.js';
 import { useKeyboardSettings } from '../contexts/KeyboardContext.jsx';
 
-const VERSION = '1.4.0';
-const KEY_VOICE_AUTO_RECONNECT = 'pocket-ai.voiceAutoReconnect';
 const KEY_SCANLINES_ENABLED = 'pocket-ai.scanlinesEnabled';
-const KEY_UI_DENSITY = 'pocket-ai.uiDensity';
+const KEY_SLEEP_MODE = 'pocket-ai.sleepMode';
 
 function readStoredBool(key, defaultValue = true) {
     try {
@@ -21,28 +19,13 @@ function readStoredBool(key, defaultValue = true) {
     }
 }
 
-function readStoredDensity() {
-    try {
-        const value = localStorage.getItem(KEY_UI_DENSITY);
-        return value === 'compact' ? 'compact' : 'comfortable';
-    } catch {
-        return 'comfortable';
-    }
-}
-
 export default function Settings() {
     const navigate = useNavigate();
     const { keyboardEnabled, setKeyboardEnabled } = useKeyboardSettings();
-    const [voiceReconnectEnabled, setVoiceReconnectEnabled] = React.useState(() => readStoredBool(KEY_VOICE_AUTO_RECONNECT, true));
     const [scanlinesEnabled, setScanlinesEnabled] = React.useState(() => readStoredBool(KEY_SCANLINES_ENABLED, true));
-    const [uiDensity, setUiDensity] = React.useState(readStoredDensity);
+    const [sleepModeEnabled, setSleepModeEnabled] = React.useState(() => readStoredBool(KEY_SLEEP_MODE, false));
     const [telegramTestState, setTelegramTestState] = React.useState('idle');
     const [telegramTestError, setTelegramTestError] = React.useState('');
-
-    React.useEffect(() => {
-        localStorage.setItem(KEY_VOICE_AUTO_RECONNECT, String(voiceReconnectEnabled));
-        window.dispatchEvent(new CustomEvent('nova-settings-updated'));
-    }, [voiceReconnectEnabled]);
 
     React.useEffect(() => {
         localStorage.setItem(KEY_SCANLINES_ENABLED, String(scanlinesEnabled));
@@ -50,10 +33,9 @@ export default function Settings() {
     }, [scanlinesEnabled]);
 
     React.useEffect(() => {
-        localStorage.setItem(KEY_UI_DENSITY, uiDensity);
-        document.body.dataset.novaDensity = uiDensity;
+        localStorage.setItem(KEY_SLEEP_MODE, String(sleepModeEnabled));
         window.dispatchEvent(new CustomEvent('nova-settings-updated'));
-    }, [uiDensity]);
+    }, [sleepModeEnabled]);
 
     const handleCloseApp = async () => {
         try {
@@ -93,10 +75,9 @@ export default function Settings() {
         <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.5, type: "spring" }}
+            transition={{ duration: 0.5, type: 'spring' }}
             className="relative w-full h-full max-w-full mx-auto overflow-hidden bg-[var(--pixel-bg)] flex flex-col"
         >
-            {/* Header */}
             <div className="flex items-center p-4 bg-[var(--pixel-surface)] border-b-4 border-[var(--pixel-border)] z-10">
                 <button
                     onClick={() => navigate('/')}
@@ -107,11 +88,10 @@ export default function Settings() {
                 <h1 className="ml-4 text-xl font-['Press_Start_2P'] text-[var(--pixel-primary)]">SETTINGS</h1>
             </div>
 
-            {/* Content */}
             <div className="flex-1 p-6 flex flex-col items-center justify-center space-y-8 overflow-y-auto">
                 <div className="text-center">
                     <h2 className="text-2xl font-['VT323'] text-[var(--pixel-text)] mb-2 uppercase tracking-widest">System Configuration</h2>
-                    <p className="text-[var(--pixel-secondary)] font-['VT323'] text-lg">MANAGE AI RUNTIME AND UI PREFERENCES</p>
+                    <p className="text-[var(--pixel-secondary)] font-['VT323'] text-lg">MANAGE AI RUNTIME AND DISPLAY PREFERENCES</p>
                 </div>
 
                 <div className="w-full max-w-2xl space-y-4 p-6 border-4 border-[var(--pixel-border)] bg-[var(--pixel-surface)] shadow-[8px_8px_0_0_rgba(0,0,0,0.3)]">
@@ -141,26 +121,30 @@ export default function Settings() {
 
                     <div className="flex items-center justify-between gap-4 py-3 border-b-2 border-[var(--pixel-border)]">
                         <span className="font-['VT323'] text-xl text-[var(--pixel-text)] flex items-center gap-2">
-                            <Radio size={22} className="text-[var(--pixel-primary)]" />
-                            Voice auto reconnect
+                            <Moon size={22} className="text-[var(--pixel-primary)]" />
+                            Sleep mode
                         </span>
                         <button
                             type="button"
                             role="switch"
-                            aria-checked={voiceReconnectEnabled}
-                            onClick={() => setVoiceReconnectEnabled((prev) => !prev)}
+                            aria-checked={sleepModeEnabled}
+                            onClick={() => setSleepModeEnabled((prev) => !prev)}
                             className={`relative w-14 h-8 border-4 flex-shrink-0 transition-colors ${
-                                voiceReconnectEnabled
+                                sleepModeEnabled
                                     ? 'bg-[var(--pixel-accent)] border-[var(--pixel-accent)]'
                                     : 'bg-[var(--pixel-bg)] border-[var(--pixel-border)]'
                             }`}
                         >
                             <span
                                 className={`absolute top-0.5 left-0.5 w-6 h-6 border-2 border-[var(--pixel-border)] bg-[var(--pixel-text)] transition-transform ${
-                                    voiceReconnectEnabled ? 'translate-x-7' : 'translate-x-0'
+                                    sleepModeEnabled ? 'translate-x-7' : 'translate-x-0'
                                 }`}
                             />
                         </button>
+                    </div>
+
+                    <div className="font-['VT323'] text-lg text-[var(--pixel-secondary)]">
+                        Blanks the screen after inactivity to save the panel, keep the room dark, and reduce heat. Tap the black screen to wake it instantly.
                     </div>
 
                     <div className="flex items-center justify-between gap-4 py-3 border-b-2 border-[var(--pixel-border)]">
@@ -185,41 +169,6 @@ export default function Settings() {
                                 }`}
                             />
                         </button>
-                    </div>
-
-                    <div className="flex items-center justify-between gap-4 py-3 border-b-2 border-[var(--pixel-border)]">
-                        <span className="font-['VT323'] text-xl text-[var(--pixel-text)] flex items-center gap-2">
-                            <LayoutGrid size={22} className="text-[var(--pixel-primary)]" />
-                            UI density
-                        </span>
-                        <div className="flex items-center gap-2">
-                            <button
-                                type="button"
-                                onClick={() => setUiDensity('comfortable')}
-                                className={`px-3 py-1.5 border-2 font-['VT323'] text-lg ${
-                                    uiDensity === 'comfortable'
-                                        ? 'bg-[var(--pixel-accent)] text-black border-[var(--pixel-accent)]'
-                                        : 'bg-[var(--pixel-bg)] text-[var(--pixel-text)] border-[var(--pixel-border)]'
-                                }`}
-                            >
-                                Comfortable
-                            </button>
-                            <button
-                                type="button"
-                                onClick={() => setUiDensity('compact')}
-                                className={`px-3 py-1.5 border-2 font-['VT323'] text-lg ${
-                                    uiDensity === 'compact'
-                                        ? 'bg-[var(--pixel-accent)] text-black border-[var(--pixel-accent)]'
-                                        : 'bg-[var(--pixel-bg)] text-[var(--pixel-text)] border-[var(--pixel-border)]'
-                                }`}
-                            >
-                                Compact
-                            </button>
-                        </div>
-                    </div>
-
-                    <div className="font-['VT323'] text-lg text-[var(--pixel-secondary)] pt-1">
-                        Voice mode now keeps replies stable across reconnects and applies smoother TTS playback.
                     </div>
 
                     <div className="pt-2 border-t-2 border-[var(--pixel-border)] space-y-3">
@@ -251,10 +200,6 @@ export default function Settings() {
                         <Power size={24} />
                         <span>SHUTDOWN</span>
                     </button>
-                </div>
-
-                <div className="text-xs font-['Press_Start_2P'] text-[var(--pixel-border)] mt-auto pt-8">
-                    VER {VERSION}
                 </div>
             </div>
         </motion.div>
