@@ -143,10 +143,6 @@ export default function Settings() {
                         </button>
                     </div>
 
-                    <div className="font-['VT323'] text-lg text-[var(--pixel-secondary)]">
-                        Blanks the screen after inactivity to save the panel, keep the room dark, and reduce heat. Tap the black screen to wake it instantly.
-                    </div>
-
                     <div className="flex items-center justify-between gap-4 py-3 border-b-2 border-[var(--pixel-border)]">
                         <span className="font-['VT323'] text-xl text-[var(--pixel-text)] flex items-center gap-2">
                             <ScanLine size={22} className="text-[var(--pixel-primary)]" />

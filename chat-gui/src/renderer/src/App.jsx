@@ -18,7 +18,6 @@ import { KeyboardProvider, useKeyboardSettings } from './contexts/KeyboardContex
 
 const KEY_SCANLINES_ENABLED = 'pocket-ai.scanlinesEnabled';
 const KEY_SLEEP_MODE = 'pocket-ai.sleepMode';
-const SLEEP_TIMEOUT_MS = 5 * 60 * 1000;
 
 function readScanlinesEnabled() {
   try {
@@ -180,79 +179,22 @@ function RandomScanlineOverlay() {
 export default function App() {
   const [scanlinesEnabled, setScanlinesEnabled] = useState(readScanlinesEnabled);
   const [sleepModeEnabled, setSleepModeEnabled] = useState(readSleepModeEnabled);
-  const [isSleeping, setIsSleeping] = useState(false);
-  const sleepTimerRef = useRef(null);
-  const sleepModeEnabledRef = useRef(sleepModeEnabled);
-  const isSleepingRef = useRef(isSleeping);
+  const [isSleeping, setIsSleeping] = useState(readSleepModeEnabled);
 
   useEffect(() => {
-    sleepModeEnabledRef.current = sleepModeEnabled;
-  }, [sleepModeEnabled]);
-
-  useEffect(() => {
-    isSleepingRef.current = isSleeping;
-  }, [isSleeping]);
-
-  useEffect(() => {
-    const clearSleepTimer = () => {
-      if (sleepTimerRef.current) {
-        clearTimeout(sleepTimerRef.current);
-        sleepTimerRef.current = null;
-      }
-    };
-
-    const armSleepTimer = () => {
-      clearSleepTimer();
-      if (!sleepModeEnabledRef.current) {
-        return;
-      }
-      sleepTimerRef.current = window.setTimeout(() => {
-        sleepTimerRef.current = null;
-        isSleepingRef.current = true;
-        setIsSleeping(true);
-      }, SLEEP_TIMEOUT_MS);
-    };
-
     const applyPrefs = () => {
       setScanlinesEnabled(readScanlinesEnabled());
       const enabled = readSleepModeEnabled();
-      sleepModeEnabledRef.current = enabled;
       setSleepModeEnabled(enabled);
-      if (!enabled) {
-        isSleepingRef.current = false;
-        setIsSleeping(false);
-        clearSleepTimer();
-        return;
-      }
-      if (!isSleepingRef.current) {
-        armSleepTimer();
-      }
-    };
-
-    const handleActivity = () => {
-      if (!readSleepModeEnabled()) {
-        return;
-      }
-      if (isSleepingRef.current) {
-        isSleepingRef.current = false;
-        setIsSleeping(false);
-      }
-      armSleepTimer();
+      setIsSleeping(enabled);
     };
 
     applyPrefs();
     window.addEventListener('storage', applyPrefs);
     window.addEventListener('nova-settings-updated', applyPrefs);
-    window.addEventListener('pointerdown', handleActivity, { passive: true });
-    window.addEventListener('keydown', handleActivity);
-    window.addEventListener('touchstart', handleActivity, { passive: true });
     return () => {
-      clearSleepTimer();
       window.removeEventListener('storage', applyPrefs);
       window.removeEventListener('nova-settings-updated', applyPrefs);
-      window.removeEventListener('pointerdown', handleActivity);
-      window.removeEventListener('keydown', handleActivity);
-      window.removeEventListener('touchstart', handleActivity);
     };
   }, []);
 
@@ -276,10 +218,7 @@ export default function App() {
               <button
                 type="button"
                 aria-label="Wake screen"
-                onPointerDown={() => {
-                  isSleepingRef.current = false;
-                  setIsSleeping(false);
-                }}
+                onPointerDown={() => setIsSleeping(false)}
                 className="fixed inset-0 z-[100] bg-black outline-none"
               />
             ) : null}
