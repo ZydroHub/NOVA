@@ -678,7 +678,7 @@ body, html, #root {
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 30px;
+  gap: 40px;
   overflow: visible;
   min-height: 0;
   min-width: 0;
@@ -761,8 +761,8 @@ body, html, #root {
 }
 
 .wake-pc-card-hero-large {
-  min-height: 78px;
-  padding: 10px 16px;
+  min-height: 58px;
+  padding: 8px 14px;
   border-radius: 16px;
   justify-content: center;
   align-items: center;
@@ -771,6 +771,7 @@ body, html, #root {
   font-size: 0.84rem;
   text-transform: uppercase;
   letter-spacing: 0.07em;
+  margin-top: auto;
 }
 
 .wake-pc-card-hero-large span {
@@ -819,7 +820,7 @@ body, html, #root {
   flex-direction: column;
   gap: 12px;
   box-shadow: inset 0 0 0 1px rgba(120, 214, 255, 0.05);
-  margin-bottom: 2px;
+  margin-bottom: 6px;
 }
 
 .rain-chance-label {
