@@ -181,6 +181,17 @@ export default function App() {
   const [sleepModeEnabled, setSleepModeEnabled] = useState(readSleepModeEnabled);
   const [isSleeping, setIsSleeping] = useState(readSleepModeEnabled);
 
+  const disableSleepMode = () => {
+    try {
+      localStorage.setItem(KEY_SLEEP_MODE, 'false');
+    } catch {
+      // Ignore storage failures and still update the UI state.
+    }
+    setSleepModeEnabled(false);
+    setIsSleeping(false);
+    window.dispatchEvent(new CustomEvent('nova-settings-updated'));
+  };
+
   useEffect(() => {
     const applyPrefs = () => {
       setScanlinesEnabled(readScanlinesEnabled());
@@ -206,7 +217,7 @@ export default function App() {
             <StatusBar />
             <div className="flex-1 overflow-hidden relative w-full flex">
               {/* CRT scanline overlay only for the route content area */}
-              {scanlinesEnabled ? <RandomScanlineOverlay /> : null}
+              {scanlinesEnabled && !isSleeping ? <RandomScanlineOverlay /> : null}
               <SideNav />
               <ErrorBoundary>
                 <div className="flex-1 min-w-0 min-h-0">
@@ -218,8 +229,9 @@ export default function App() {
               <button
                 type="button"
                 aria-label="Wake screen"
-                onPointerDown={() => setIsSleeping(false)}
-                className="fixed inset-0 z-[100] bg-black outline-none"
+                onPointerDown={disableSleepMode}
+                onClick={disableSleepMode}
+                className="fixed inset-0 z-[10001] bg-black outline-none"
               />
             ) : null}
             <OverlayKeyboard />
