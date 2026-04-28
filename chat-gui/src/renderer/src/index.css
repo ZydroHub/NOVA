@@ -678,7 +678,7 @@ body, html, #root {
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 18px;
   overflow: visible;
   min-height: 0;
   min-width: 0;

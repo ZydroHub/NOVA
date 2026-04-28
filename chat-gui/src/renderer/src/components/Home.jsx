@@ -139,7 +139,6 @@ export default function Home() {
                 <section className="weather-card home-weather-remake">
                     <div className="weather-main-container">
                         <div className="weather-left">
-                            <div className="weather-location">Stockholm</div>
                             <div className="weather-temp-huge">{typeof currentTemp === 'number' ? Math.round(currentTemp) : '-'}°</div>
                         </div>
                     </div>
