@@ -616,6 +616,69 @@ async def wake_pc():
         return {"status": "error", "target": "Start PC", "error": str(exc)}
 
 
+@app.get("/nova/pc-status")
+async def nova_pc_status():
+    """Check if PC-Oscar is online by pinging it."""
+    pc_ip = "192.168.1.173"
+    try:
+        result = subprocess.run(
+            ["ping", "-n" if sys.platform == "win32" else "-c", "1", "-w" if sys.platform == "win32" else "-W", "1000", pc_ip],
+            capture_output=True,
+            timeout=2,
+            check=False,
+        )
+        is_online = result.returncode == 0
+        status = "online" if is_online else "offline"
+        logger.debug("PC-Oscar at %s is %s", pc_ip, status)
+        return {"status": status, "ip": pc_ip, "timestamp": datetime.now().isoformat()}
+    except Exception as exc:
+        logger.warning("PC-Oscar status check failed: %s", exc)
+        return {"status": "offline", "ip": pc_ip, "error": str(exc), "timestamp": datetime.now().isoformat()}
+
+
+@app.post("/nova/screen-toggle")
+async def nova_screen_toggle(power_on: bool = True):
+    """Toggle the Raspberry Pi screen backlight power."""
+    try:
+        # power_on=True means turn ON (bl_power=0)
+        # power_on=False means turn OFF (bl_power=1)
+        bl_power_value = "0" if power_on else "1"
+        backlight_path = "/sys/class/backlight/rpi_backlight/bl_power"
+        
+        # Execute: echo {value} | sudo tee {path}
+        result = subprocess.run(
+            f"echo {bl_power_value} | sudo tee {backlight_path}",
+            shell=True,
+            capture_output=True,
+            text=True,
+            timeout=2,
+            check=False,
+        )
+        
+        if result.returncode == 0:
+            logger.info("Screen backlight power set to %s", "ON" if power_on else "OFF")
+            return {
+                "status": "success",
+                "power": "on" if power_on else "off",
+                "path": backlight_path,
+                "timestamp": datetime.now().isoformat(),
+            }
+        else:
+            logger.warning("Screen toggle failed: %s", result.stderr)
+            return {
+                "status": "error",
+                "error": result.stderr or "Failed to toggle screen",
+                "timestamp": datetime.now().isoformat(),
+            }
+    except Exception as exc:
+        logger.exception("Screen toggle exception: %s", exc)
+        return {
+            "status": "error",
+            "error": str(exc),
+            "timestamp": datetime.now().isoformat(),
+        }
+
+
 @app.post("/shutdown")
 async def shutdown():
     import threading

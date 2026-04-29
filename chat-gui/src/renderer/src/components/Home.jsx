@@ -4,13 +4,13 @@ import { Power } from 'lucide-react';
 import { useWebSocket } from '../contexts/WebSocketContext.jsx';
 import { apiFetch } from '../apiClient.js';
 import NovaOrb from './NovaOrb';
+import PCStatus from './PCStatus';
 
 export default function Home() {
     const { voiceStatus, voiceStage, toggleVoice } = useWebSocket();
     const [weather, setWeather] = useState(null);
     const [alerts, setAlerts] = useState([]);
     const [alertsError, setAlertsError] = useState(null);
-    const [wakeState, setWakeState] = useState('idle');
 
     useEffect(() => {
         let mounted = true;
@@ -68,18 +68,6 @@ export default function Home() {
         return '🌤️';
     }, []);
 
-    const onWakePc = useCallback(async () => {
-        setWakeState('loading');
-        try {
-            const result = await apiFetch('/actions/wake-pc', { method: 'POST' });
-            setWakeState(result.status === 'sent' ? 'sent' : 'error');
-        } catch (err) {
-            console.error('Wake PC failed', err);
-            setWakeState('error');
-        }
-        setTimeout(() => setWakeState('idle'), 2500);
-    }, []);
-
     const onNovaClick = useCallback(() => {
         console.info('[voice] home nova click -> toggleVoice');
         toggleVoice();
@@ -117,22 +105,7 @@ export default function Home() {
                     </div>
                 </div>
 
-                <motion.button
-                    whileTap={{ scale: 0.96 }}
-                    onClick={onWakePc}
-                    className={`wake-pc-card wake-pc-card-hero wake-pc-card-hero-large ${wakeState}`}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.4, delay: 0.3 }}
-                >
-                    <Power size={20} />
-                    <span>
-                        {wakeState === 'loading' && 'Waking...'}
-                        {wakeState === 'sent' && '✓ Signal Sent'}
-                        {wakeState === 'error' && '✗ Failed'}
-                        {wakeState === 'idle' && 'Start PC'}
-                    </span>
-                </motion.button>
+                <PCStatus />
 
             </motion.section>
 

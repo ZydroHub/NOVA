@@ -460,6 +460,65 @@ body, html, #root {
   background: linear-gradient(145deg, rgba(27, 210, 255, 0.75), rgba(31, 112, 255, 0.75));
 }
 
+/* Music Touch Buttons - Large fat-thumb targets */
+.music-touch-btn {
+  min-width: 52px;
+  min-height: 52px;
+  padding: 8px;
+  border-radius: 14px;
+  border: 1px solid rgba(124, 219, 255, 0.3);
+  background: rgba(26, 75, 150, 0.4);
+  color: #ebfcff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 150ms ease;
+}
+
+.music-touch-btn:hover {
+  background: rgba(26, 75, 150, 0.6);
+  border-color: rgba(124, 219, 255, 0.5);
+  box-shadow: 0 0 12px rgba(26, 209, 255, 0.3);
+}
+
+.music-touch-btn:active {
+  transform: scale(0.95);
+}
+
+.music-touch-btn-main {
+  background: linear-gradient(145deg, rgba(27, 210, 255, 0.8), rgba(31, 112, 255, 0.8));
+  min-width: 60px;
+  min-height: 60px;
+  border-color: rgba(27, 210, 255, 0.6);
+}
+
+.music-touch-btn-main:hover {
+  background: linear-gradient(145deg, rgba(27, 210, 255, 0.95), rgba(31, 112, 255, 0.95));
+  box-shadow: 0 0 16px rgba(26, 209, 255, 0.5);
+}
+
+/* Screen Toggle Dropdown */
+.screen-toggle-btn {
+  position: relative;
+}
+
+.screen-toggle-dropdown {
+  position: absolute;
+  bottom: 100%;
+  left: 0;
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 8px;
+  border-radius: 12px;
+  background: var(--nova-glass);
+  backdrop-filter: blur(25px);
+  -webkit-backdrop-filter: blur(25px);
+  border: 1px solid var(--nova-border);
+  box-shadow: 0 10px 36px rgba(2, 13, 34, 0.45);
+  z-index: 1000;
+}
+
 .news-list {
   display: flex;
   flex-direction: column;
