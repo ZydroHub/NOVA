@@ -7,7 +7,6 @@ export default function PCStatus() {
     const [pcStatus, setPcStatus] = useState('checking'); // 'checking' | 'online' | 'offline'
     const [wakeState, setWakeState] = useState('idle'); // 'idle' | 'loading' | 'sent' | 'error'
     const [isPlaying, setIsPlaying] = useState(false);
-    const [lastCheckTime, setLastCheckTime] = useState(null);
 
     // Poll PC status every 10 seconds
     useEffect(() => {
@@ -70,14 +69,8 @@ export default function PCStatus() {
                     <div className="flex items-center gap-3">
                         <div className="flex items-center gap-2">
                             <div className={`w-3 h-3 rounded-full ${statusIndicatorColor} animate-pulse`} />
-                            <h3 className="nova-title">PC-Oscar</h3>
                         </div>
                     </div>
-                    <span className={`text-xs font-mono px-3 py-1 rounded-full ${
-                        pcStatus === 'online' ? 'bg-emerald-900 text-emerald-300' : 'bg-red-900 text-red-300'
-                    }`}>
-                        {statusText}
-                    </span>
                 </div>
 
                 {pcStatus === 'offline' ? (
@@ -90,7 +83,7 @@ export default function PCStatus() {
                         <button
                             onClick={handleWakePc}
                             disabled={wakeState === 'loading'}
-                            className={`w-full py-6 px-6 rounded-lg font-bold text-lg transition-all flex items-center justify-center gap-3 min-h-[56px] ${
+                            className={`w-full py-4 px-4 rounded-lg font-bold text-lg transition-all flex items-center justify-center gap-3 min-h-[52px] ${
                                 wakeState === 'loading'
                                     ? 'bg-blue-700/40 text-blue-300 cursor-wait opacity-60'
                                     : wakeState === 'sent'
@@ -100,14 +93,9 @@ export default function PCStatus() {
                                     : 'bg-blue-600/30 hover:bg-blue-600/50 text-cyan-200 active:scale-95'
                             }`}
                         >
-                            <Power size={24} />
+                            <Power size={22} />
                             {wakeState === 'loading' ? 'Sending WoL...' : wakeState === 'sent' ? 'Packet Sent!' : wakeState === 'error' ? 'Failed' : 'Start PC'}
                         </button>
-                        {lastCheckTime && (
-                            <p className="text-xs text-cyan-200/50 text-center mt-2">
-                                Last check: {lastCheckTime.toLocaleTimeString('en-GB', { hour12: false })}
-                            </p>
-                        )}
                     </motion.div>
                 ) : pcStatus === 'online' ? (
                     // Show music controls when online
@@ -116,11 +104,10 @@ export default function PCStatus() {
                         animate={{ opacity: 1, scale: 1 }}
                         transition={{ duration: 0.3 }}
                     >
-                        <div className="flex items-center gap-2 mb-4 text-cyan-200/70">
-                            <Music3 size={18} />
-                            <p className="text-sm">PC Music Control</p>
+                        <div className="music-progress mb-4" aria-hidden="true">
+                            <div className="music-progress-move" />
                         </div>
-                        <div className="flex items-center justify-center gap-3 flex-wrap">
+                        <div className="music-controls flex items-center justify-between gap-3">
                             <button className="music-touch-btn" aria-label="Previous">
                                 <SkipBack size={20} />
                             </button>
@@ -138,11 +125,6 @@ export default function PCStatus() {
                                 <Repeat size={20} />
                             </button>
                         </div>
-                        {lastCheckTime && (
-                            <p className="text-xs text-cyan-200/50 text-center mt-3">
-                                Last check: {lastCheckTime.toLocaleTimeString('en-GB', { hour12: false })}
-                            </p>
-                        )}
                     </motion.div>
                 ) : (
                     // Checking state

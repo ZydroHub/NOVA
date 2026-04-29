@@ -519,6 +519,35 @@ body, html, #root {
   z-index: 1000;
 }
 
+/* Compact animated music progress for PC card */
+.music-progress {
+  height: 6px;
+  border-radius: 6px;
+  background: rgba(255,255,255,0.03);
+  overflow: hidden;
+  position: relative;
+}
+
+.music-progress-move {
+  position: absolute;
+  left: -40%;
+  top: 0;
+  bottom: 0;
+  width: 40%;
+  background: linear-gradient(90deg, rgba(42,198,255,0.12), rgba(42,198,255,0.36));
+  border-radius: 6px;
+  animation: musicMove 5s linear infinite;
+}
+
+@keyframes musicMove {
+  from { transform: translateX(0%); }
+  to { transform: translateX(220%); }
+}
+
+/* Ensure music controls are compact and evenly spaced to avoid extra scrolling */
+.music-controls { padding: 0; }
+
+
 .news-list {
   display: flex;
   flex-direction: column;
