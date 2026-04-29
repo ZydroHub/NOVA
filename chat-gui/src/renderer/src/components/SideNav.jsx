@@ -1,8 +1,6 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { House, MessageCircle, Music2, Newspaper, CloudSun, SlidersHorizontal, Power } from 'lucide-react';
-import { motion } from 'framer-motion';
-import ScreenToggle from './ScreenToggle';
+import { House, MessageCircle, Music2, Newspaper, CloudSun, SlidersHorizontal } from 'lucide-react';
 
 const items = [
     { to: '/', label: 'Home', icon: House },
@@ -14,8 +12,6 @@ const items = [
 ];
 
 export default function SideNav() {
-    const [showScreenToggle, setShowScreenToggle] = useState(false);
-
     return (
         <aside className="nova-side-nav" aria-label="NOVA navigation">
             {items.map((item) => {
@@ -32,30 +28,6 @@ export default function SideNav() {
                     </NavLink>
                 );
             })}
-            
-            {/* Screen Toggle Button - Large Touch Target */}
-            <motion.button
-                onClick={() => setShowScreenToggle(!showScreenToggle)}
-                className="nova-side-btn screen-toggle-btn"
-                title="Toggle screen power"
-                whileTap={{ scale: 0.92 }}
-            >
-                <Power size={28} />
-                <span>Screen</span>
-            </motion.button>
-
-            {/* Screen Toggle Modal/Dropdown */}
-            {showScreenToggle && (
-                <motion.div
-                    className="screen-toggle-dropdown"
-                    initial={{ opacity: 0, scale: 0.9, y: -10 }}
-                    animate={{ opacity: 1, scale: 1, y: 0 }}
-                    exit={{ opacity: 0, scale: 0.9, y: -10 }}
-                    transition={{ duration: 0.2 }}
-                >
-                    <ScreenToggle />
-                </motion.div>
-            )}
         </aside>
     );
 }

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
-import { Power, Music3, Play, Pause, SkipBack, SkipForward, Repeat } from 'lucide-react';
+import { Power, Play, Pause, SkipBack, SkipForward, Repeat } from 'lucide-react';
 import { apiFetch } from '../apiClient.js';
 
 export default function PCStatus() {
@@ -17,7 +17,6 @@ export default function PCStatus() {
                 const result = await apiFetch('/nova/pc-status');
                 if (!mounted) return;
                 setPcStatus(result.status || 'offline');
-                setLastCheckTime(new Date());
             } catch (err) {
                 console.error('PC status check failed:', err);
                 if (mounted) setPcStatus('offline');
@@ -53,9 +52,12 @@ export default function PCStatus() {
         setTimeout(() => setWakeState('idle'), 2500);
     }, []);
 
-    const statusIndicatorColor =
-        pcStatus === 'online' ? 'bg-emerald-400' : pcStatus === 'offline' ? 'bg-red-400' : 'bg-yellow-400';
-    const statusText = pcStatus === 'online' ? 'ONLINE' : pcStatus === 'offline' ? 'OFFLINE' : 'CHECKING...';
+    const statusIndicatorClasses =
+        pcStatus === 'online'
+            ? 'bg-emerald-400 shadow-[0_0_8px_rgba(34,197,94,0.18)]'
+            : pcStatus === 'offline'
+            ? 'bg-red-400'
+            : 'bg-yellow-400 animate-pulse';
 
     return (
         <motion.div
@@ -68,7 +70,7 @@ export default function PCStatus() {
                 <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-3">
                         <div className="flex items-center gap-2">
-                            <div className={`w-3 h-3 rounded-full ${statusIndicatorColor} animate-pulse`} />
+                            <div className={`w-3 h-3 rounded-full ${statusIndicatorClasses}`} />
                         </div>
                     </div>
                 </div>
